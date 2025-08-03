@@ -360,3 +360,34 @@
   },
   "timestamp": "2025-08-03T19:24:30.606838"
 }
+2025-08-03 19:34:28,591 - API - INFO - [logger.py:58] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "user_id": "test_user_001",
+      "age": 25,
+      "education_level": "本科",
+      "work_experience": 2,
+      "current_position": "软件开发工程师",
+      "industry": "互联网",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React"
+      ],
+      "interests": [
+        "技术创新",
+        "产品设计",
+        "团队管理"
+      ],
+      "career_goals": "成为技术专家并朝着技术管理方向发展",
+      "location": "北京",
+      "salary_expectation": "15-25K",
+      "additional_info": "希望在技术深度和管理能力上都有所提升"
+    },
+    "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
+  },
+  "timestamp": "2025-08-03T19:34:28.591603"
+}
