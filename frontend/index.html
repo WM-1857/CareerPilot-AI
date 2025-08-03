@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CareerNavigator - 智能职业规划助手</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .status {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .api-test {
+            margin-top: 30px;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 CareerNavigator</h1>
+            <p>智能职业规划助手</p>
+        </div>
+        
+        <div class="status success">
+            <h3>✅ 前端页面加载成功！</h3>
+            <p>后端服务器正在运行，等待API测试...</p>
+        </div>
+        
+        <div class="api-test">
+            <h3>API 连接测试</h3>
+            <p>点击按钮测试与后端服务器的连接:</p>
+            <button class="btn" onclick="testHealthCheck()">
+                <span id="health-loading" class="loading" style="display: none;"></span>
+                测试健康检查 API
+            </button>
+            <div id="health-result" class="result" style="display: none;"></div>
+            
+            <br><br>
+            
+            <button class="btn" onclick="testCareerAPI()" style="margin-top: 10px;">
+                <span id="career-loading" class="loading" style="display: none;"></span>
+                测试职业规划 API
+            </button>
+            <div id="career-result" class="result" style="display: none;"></div>
+            
+            <br><br>
+            
+            <button class="btn" onclick="testSessionStatus()" style="margin-top: 10px;" id="status-btn" disabled>
+                <span id="status-loading" class="loading" style="display: none;"></span>
+                查询会话状态
+            </button>
+            <div id="status-result" class="result" style="display: none;"></div>
+            
+            <br><br>
+            
+            <button class="btn" onclick="testAllSessions()" style="margin-top: 10px;">
+                <span id="sessions-loading" class="loading" style="display: none;"></span>
+                查询所有会话
+            </button>
+            <div id="sessions-result" class="result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let currentSessionId = null;
+        
+        async function testHealthCheck() {
+            const button = document.querySelector('button');
+            const loading = document.getElementById('health-loading');
+            const result = document.getElementById('health-result');
+            
+            button.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                
+                result.innerHTML = `
+                    <h4>✅ 健康检查成功</h4>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+                result.style.display = 'block';
+            } catch (error) {
+                result.innerHTML = `
+                    <h4>❌ 健康检查失败</h4>
+                    <p>错误: ${error.message}</p>
+                `;
+                result.style.display = 'block';
+            } finally {
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        async function testCareerAPI() {
+            const buttons = document.querySelectorAll('button');
+            const loading = document.getElementById('career-loading');
+            const result = document.getElementById('career-result');
+            
+            buttons[1].disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/career/start', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        "user_profile": {
+                            "user_id": "test_user_001",
+                            "age": 25,
+                            "education_level": "本科",
+                            "work_experience": 2,
+                            "current_position": "软件开发工程师",
+                            "industry": "互联网",
+                            "skills": ["Python", "JavaScript", "React"],
+                            "interests": ["技术创新", "产品设计", "团队管理"],
+                            "career_goals": "成为技术专家并朝着技术管理方向发展",
+                            "location": "北京",
+                            "salary_expectation": "15-25K",
+                            "additional_info": "希望在技术深度和管理能力上都有所提升"
+                        },
+                        "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    currentSessionId = data.session_id;
+                    document.getElementById('status-btn').disabled = false;
+                    
+                    result.innerHTML = `
+                        <h4>✅ 职业规划 API 测试成功</h4>
+                        <p><strong>会话ID:</strong> ${data.session_id}</p>
+                        <p><strong>当前阶段:</strong> ${data.stage_info ? data.stage_info.stage : '未知'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <h4>⚠️ 职业规划 API 返回错误</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                result.style.display = 'block';
+            } catch (error) {
+                result.innerHTML = `
+                    <h4>❌ 职业规划 API 测试失败</h4>
+                    <p>错误: ${error.message}</p>
+                `;
+                result.style.display = 'block';
+            } finally {
+                buttons[1].disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        async function testSessionStatus() {
+            if (!currentSessionId) {
+                alert('请先运行职业规划 API 测试来获取会话ID');
+                return;
+            }
+            
+            const loading = document.getElementById('status-loading');
+            const result = document.getElementById('status-result');
+            const button = document.getElementById('status-btn');
+            
+            button.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch(`/api/career/status/${currentSessionId}`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `
+                        <h4>✅ 会话状态查询成功</h4>
+                        <p><strong>会话ID:</strong> ${currentSessionId}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <h4>⚠️ 会话状态查询失败</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                result.style.display = 'block';
+            } catch (error) {
+                result.innerHTML = `
+                    <h4>❌ 会话状态查询失败</h4>
+                    <p>错误: ${error.message}</p>
+                `;
+                result.style.display = 'block';
+            } finally {
+                button.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        async function testAllSessions() {
+            const loading = document.getElementById('sessions-loading');
+            const result = document.getElementById('sessions-result');
+            const buttons = document.querySelectorAll('button');
+            const sessionsBtn = buttons[4];
+            
+            sessionsBtn.disabled = true;
+            loading.style.display = 'inline-block';
+            result.style.display = 'none';
+            
+            try {
+                const response = await fetch('/api/career/sessions');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `
+                        <h4>✅ 会话列表查询成功</h4>
+                        <p><strong>会话总数:</strong> ${data.sessions ? data.sessions.length : 0}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                } else {
+                    result.innerHTML = `
+                        <h4>⚠️ 会话列表查询失败</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    `;
+                }
+                result.style.display = 'block';
+            } catch (error) {
+                result.innerHTML = `
+                    <h4>❌ 会话列表查询失败</h4>
+                    <p>错误: ${error.message}</p>
+                `;
+                result.style.display = 'block';
+            } finally {
+                sessionsBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+        
+        // 页面加载时自动测试健康检查
+        window.addEventListener('load', function() {
+            setTimeout(testHealthCheck, 1000);
+        });
+    </script>
+</body>
+</html>
