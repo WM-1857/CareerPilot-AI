@@ -1,0 +1,263 @@
+2025-08-04 10:08:15,290 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:08:15.288619"
+}
+2025-08-04 10:08:15,290 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:08:15.290471"
+}
+2025-08-04 10:08:20,969 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:08:20.969768"
+}
+2025-08-04 10:08:20,972 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:08:20.972852"
+}
+2025-08-04 10:08:20,990 - API - INFO - [logger.py:58] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "user_id": "test_user_001",
+      "age": 28,
+      "education_level": "本科",
+      "work_experience": 5,
+      "current_position": "软件工程师",
+      "industry": "互联网",
+      "skills": [
+        "Python",
+        "Java",
+        "机器学习",
+        "数据分析"
+      ],
+      "interests": [
+        "人工智能",
+        "产品管理",
+        "技术领导"
+      ],
+      "career_goals": "希望在3年内成为技术总监，并转向AI产品管理方向发展",
+      "location": "北京",
+      "salary_expectation": "年薪50-80万",
+      "additional_info": "对创业感兴趣，希望能在大厂积累经验后自主创业"
+    },
+    "message": "请帮我分析我的职业发展路径，我想了解如何从技术转向管理，以及需要具备哪些能力。"
+  },
+  "timestamp": "2025-08-04T10:08:20.990622"
+}
+2025-08-04 10:08:51,017 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/sessions
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/sessions",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:08:51.017757"
+}
+2025-08-04 10:08:51,019 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/sessions - 200
+附加数据: {
+  "endpoint": "/api/career/sessions",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 173
+  },
+  "timestamp": "2025-08-04T10:08:51.019690"
+}
+2025-08-04 10:09:21,307 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/start - 500
+附加数据: {
+  "endpoint": "/api/career/start",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "60.317s",
+    "content_length": 62
+  },
+  "timestamp": "2025-08-04T10:09:21.307221"
+}
+2025-08-04 10:09:58,111 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:09:58.111252"
+}
+2025-08-04 10:09:58,111 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:09:58.111252"
+}
+2025-08-04 10:10:02,476 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:10:02.476959"
+}
+2025-08-04 10:10:02,478 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:10:02.476959"
+}
+2025-08-04 10:10:02,498 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/sessions
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/sessions",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:10:02.498009"
+}
+2025-08-04 10:10:02,499 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/sessions - 500
+附加数据: {
+  "endpoint": "/api/career/sessions",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 59
+  },
+  "timestamp": "2025-08-04T10:10:02.499015"
+}
+2025-08-04 10:10:40,495 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:10:40.495005"
+}
+2025-08-04 10:10:40,496 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:10:40.496132"
+}
+2025-08-04 10:10:48,572 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/health",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:10:48.571238"
+}
+2025-08-04 10:10:48,572 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/health - 200
+附加数据: {
+  "endpoint": "/api/career/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 114
+  },
+  "timestamp": "2025-08-04T10:10:48.572365"
+}
+2025-08-04 10:10:48,588 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/sessions
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/sessions",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:10:48.588415"
+}
+2025-08-04 10:10:48,588 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/sessions - 500
+附加数据: {
+  "endpoint": "/api/career/sessions",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 59
+  },
+  "timestamp": "2025-08-04T10:10:48.588415"
+}
+2025-08-04 10:11:32,026 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/sessions
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/sessions",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:11:32.026465"
+}
+2025-08-04 10:11:32,026 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/sessions - 500
+附加数据: {
+  "endpoint": "/api/career/sessions",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 59
+  },
+  "timestamp": "2025-08-04T10:11:32.026465"
+}
+2025-08-04 10:11:32,045 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:11:32.045232"
+}
+2025-08-04 10:11:32,045 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b - 500
+附加数据: {
+  "endpoint": "/api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 62
+  },
+  "timestamp": "2025-08-04T10:11:32.045232"
+}
+2025-08-04 10:12:09,093 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/sessions
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/sessions",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:12:09.093561"
+}
+2025-08-04 10:12:09,094 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/sessions - 500
+附加数据: {
+  "endpoint": "/api/career/sessions",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 59
+  },
+  "timestamp": "2025-08-04T10:12:09.094597"
+}
+2025-08-04 10:12:09,109 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b",
+  "request_data": null,
+  "timestamp": "2025-08-04T10:12:09.109521"
+}
+2025-08-04 10:12:09,109 - API - INFO - [logger.py:58] - 📤 API响应: /api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b - 500
+附加数据: {
+  "endpoint": "/api/career/status/1fbe6654-77a2-48a5-a3c4-21f150bac53b",
+  "status_code": 500,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 62
+  },
+  "timestamp": "2025-08-04T10:12:09.109521"
+}

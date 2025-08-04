@@ -252,7 +252,13 @@ class StateUpdater:
     @staticmethod
     def add_user_feedback(state: CareerNavigatorState, feedback: UserFeedback) -> Dict[str, Any]:
         """添加用户反馈"""
-        updated_feedback = state["user_feedback_history"].copy()
+        # 检查并初始化用户反馈历史
+        feedback_history = state.get("user_feedback_history", [])
+        if isinstance(feedback_history, list):
+            updated_feedback = feedback_history.copy()
+        else:
+            updated_feedback = []
+        
         updated_feedback.append(feedback)
         return {
             "user_feedback_history": updated_feedback,

@@ -87,7 +87,7 @@ class CareerNavigatorGraph:
             self._route_user_satisfaction_analysis,
             {
                 "satisfied": "goal_decomposer",
-                "not_satisfied": "planner"  # 不满意则返回计划员重新规划
+                "not_satisfied": "supervisor"  # 不满意则返回supervisor重新执行并行分析
             }
         )
         

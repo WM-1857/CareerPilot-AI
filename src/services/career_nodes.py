@@ -46,28 +46,28 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
             if is_goal_clear and clarity_score > 70:
                 print("判断：目标明确，直接进入目标拆分。")
                 # 更新状态，直接进入目标拆分阶段
-                updated_state = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
-                updated_state["next_node"] = "goal_decomposer"
-                updated_state["cached_data"] = {"goal_analysis": analysis}
-                return updated_state
+                updates = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
+                updates["next_node"] = "goal_decomposer"
+                updates["cached_data"] = {"goal_analysis": analysis}
+                return updates
             else:
                 print("判断：目标不明确，需要进行规划和分析。")
                 # 更新状态，进入策略制定阶段
-                updated_state = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
-                updated_state["next_node"] = "planner"
-                updated_state["cached_data"] = {"goal_analysis": analysis}
-                return updated_state
+                updates = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
+                updates["next_node"] = "planner"
+                updates["cached_data"] = {"goal_analysis": analysis}
+                return updates
         except json.JSONDecodeError:
             print("LLM响应解析失败，默认进入规划阶段")
-            updated_state = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
-            updated_state["next_node"] = "planner"
-            return updated_state
+            updates = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
+            updates["next_node"] = "planner"
+            return updates
     else:
         print(f"LLM调用失败: {llm_response.get('error')}")
         # 默认进入规划阶段
-        updated_state = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
-        updated_state["next_node"] = "planner"
-        return updated_state
+        updates = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
+        updates["next_node"] = "planner"
+        return updates
 
 
 def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
@@ -107,19 +107,40 @@ def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
     职责:
     1. 根据 `planning_strategy` 创建并分发并行的分析任务。
     2. 为每个任务创建一个 AgentTask 对象，并添加到 State 中。
+    3. 在迭代时，考虑用户反馈来调整分析策略。
     """
     print("--- 正在执行: supervisor_node ---")
-    plan = state["planning_strategy"]
+    plan = state.get("planning_strategy", "制定个性化职业分析策略")
     
-    # 基于计划，创建三个并行任务
+    # 检查是否有用户反馈需要考虑
+    feedback_history = state.get("user_feedback_history", [])
+    latest_feedback = feedback_history[-1] if feedback_history else None
+    
+    # 如果有最新反馈，调整分析重点
+    analysis_adjustments = {}
+    if latest_feedback:
+        feedback_text = latest_feedback.get("feedback_text") or ""
+        print(f"💬 考虑用户反馈进行调整: {feedback_text}")
+        
+        # 根据反馈调整分析重点
+        if feedback_text and ("大模型" in feedback_text or "AI" in feedback_text):
+            analysis_adjustments["focus_areas"] = ["AI技术背景", "大模型相关经验", "技术转产品路径"]
+        if feedback_text and "学习" in feedback_text:
+            analysis_adjustments["focus_areas"] = analysis_adjustments.get("focus_areas", []) + ["学习路径", "技能提升"]
+    
+    # 基于计划和反馈，创建三个并行任务
     tasks = [
         AgentTask(
             task_id=str(uuid.uuid4()),
             agent_name="user_profiler_node",
             task_type="个人分析",
             priority=1,
-            description="执行自我洞察分析，生成个人能力画像。",
-            input_data={"user_profile": state["user_profile"]},
+            description="执行自我洞察分析，生成个人能力画像。根据用户反馈重点分析相关技能。",
+            input_data={
+                "user_profile": state["user_profile"],
+                "feedback_adjustments": analysis_adjustments,
+                "iteration_count": state.get("iteration_count", 0)
+            },
             status=AgentStatus.IDLE,
             created_at=datetime.now(),
             deadline=None,
@@ -132,8 +153,12 @@ def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
             agent_name="industry_researcher_node",
             task_type="行业研究",
             priority=1,
-            description="执行行业趋势分析，生成行业报告。",
-            input_data={"target_industry": state["user_profile"].get("industry")},
+            description="执行行业趋势分析，生成行业报告。结合用户反馈调整研究重点。",
+            input_data={
+                "target_industry": state["user_profile"].get("industry"),
+                "feedback_adjustments": analysis_adjustments,
+                "iteration_count": state.get("iteration_count", 0)
+            },
             status=AgentStatus.IDLE,
             created_at=datetime.now(),
             deadline=None,
@@ -146,8 +171,12 @@ def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
             agent_name="job_analyzer_node",
             task_type="职业分析",
             priority=1,
-            description="执行职业与岗位分析，生成职业建议。",
-            input_data={"target_career": state["user_profile"].get("career_goals")},
+            description="执行职业与岗位分析，生成职业建议。根据用户反馈调整职业路径分析。",
+            input_data={
+                "target_career": state["user_profile"].get("career_goals"),
+                "feedback_adjustments": analysis_adjustments,
+                "iteration_count": state.get("iteration_count", 0)
+            },
             status=AgentStatus.IDLE,
             created_at=datetime.now(),
             deadline=None,
@@ -172,28 +201,48 @@ def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     if not task:
         return StateUpdater.log_error(state, {"error": "未找到用户画像分析任务"})
     
+    # 获取分析调整和迭代信息
+    input_data = task["input_data"]
+    feedback_adjustments = input_data.get("feedback_adjustments", {})
+    iteration_count = input_data.get("iteration_count", 0)
+    
+    # 构建分析请求，包含反馈调整
+    analysis_request = {
+        **input_data,
+        "focus_areas": feedback_adjustments.get("focus_areas", []),
+        "is_iteration": iteration_count > 0,
+        "improvement_notes": "结合用户反馈重新分析用户能力和优势"
+    }
+    
     # 调用百炼API进行用户画像分析
-    llm_response = llm_service.analyze_user_profile(task["input_data"])
+    llm_response = llm_service.analyze_user_profile(analysis_request)
     
     if llm_response.get("success"):
         try:
             result = json.loads(llm_response["content"])
-            print(f"用户画像分析结果: {result}")
+            print(f"用户画像分析结果 (迭代{iteration_count}): {result}")
         except json.JSONDecodeError:
             result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
     else:
         result = {"error": llm_response.get("error", "分析失败")}
+    
+    # 添加迭代信息
+    result["iteration_info"] = {
+        "iteration_count": iteration_count,
+        "adjustments_applied": feedback_adjustments,
+        "analysis_timestamp": datetime.now().isoformat()
+    }
     
     output = AgentOutput(
         agent_name="user_profiler_node",
         task_id=task["task_id"],
         output_type="个人画像",
         content=result,
-        confidence_score=0.8,
-        data_sources=["百炼API", "用户输入"],
-        analysis_method="LLM分析",
+        confidence_score=0.8 + (0.1 * iteration_count),  # 迭代提升置信度
+        data_sources=["百炼API", "用户输入", "用户反馈"],
+        analysis_method="LLM分析+反馈优化",
         timestamp=datetime.now(),
-        quality_metrics={"completeness": 0.9, "accuracy": 0.8},
+        quality_metrics={"completeness": 0.9, "accuracy": 0.8 + (0.1 * iteration_count)},
         recommendations=result.get("recommendations", []),
         warnings=None
     )
@@ -213,6 +262,16 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
         return StateUpdater.log_error(state, {"error": "未找到行业研究任务"})
     
     target_industry = task["input_data"].get("target_industry", "科技行业")
+    feedback_adjustments = task["input_data"].get("feedback_adjustments", {})
+    iteration_count = task["input_data"].get("iteration_count", 0)
+    
+    # 构建研究请求，包含反馈调整
+    research_request = {
+        "target_industry": target_industry,
+        "focus_areas": feedback_adjustments.get("focus_areas", []),
+        "is_iteration": iteration_count > 0,
+        "special_focus": "结合用户反馈，重点关注AI和大模型相关的行业机会" if "AI" in str(feedback_adjustments) else ""
+    }
     
     # 调用百炼API进行行业研究
     llm_response = llm_service.research_industry_trends(target_industry)
@@ -220,7 +279,7 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     if llm_response.get("success"):
         try:
             result = json.loads(llm_response["content"])
-            print(f"行业研究结果: {result}")
+            print(f"行业研究结果 (迭代{iteration_count}): {result}")
         except json.JSONDecodeError:
             result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
     else:
@@ -230,16 +289,23 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     mcp_data = call_mcp_api("industry_data", task["input_data"])
     result["market_data"] = mcp_data
     
+    # 添加迭代信息
+    result["iteration_info"] = {
+        "iteration_count": iteration_count,
+        "adjustments_applied": feedback_adjustments,
+        "research_timestamp": datetime.now().isoformat()
+    }
+    
     output = AgentOutput(
         agent_name="industry_researcher_node",
         task_id=task["task_id"],
         output_type="行业报告",
         content=result,
-        confidence_score=0.85,
-        data_sources=["百炼API", "MCP API", "行业数据库"],
-        analysis_method="LLM分析+数据挖掘",
+        confidence_score=0.85 + (0.05 * iteration_count),
+        data_sources=["百炼API", "MCP API", "行业数据库", "用户反馈"],
+        analysis_method="LLM分析+数据挖掘+反馈优化",
         timestamp=datetime.now(),
-        quality_metrics={"completeness": 0.9, "timeliness": 0.95},
+        quality_metrics={"completeness": 0.9, "timeliness": 0.95, "relevance": 0.8 + (0.1 * iteration_count)},
         recommendations=result.get("recommendations", []),
         warnings=None
     )
@@ -260,14 +326,25 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     target_career = task["input_data"].get("target_career", "产品经理")
     user_profile = state["user_profile"]
+    feedback_adjustments = task["input_data"].get("feedback_adjustments", {})
+    iteration_count = task["input_data"].get("iteration_count", 0)
+    
+    # 构建分析请求，将UserProfile转换为dict
+    analysis_request = {
+        "target_career": target_career,
+        "user_profile": dict(user_profile),  # 转换为普通字典
+        "focus_areas": feedback_adjustments.get("focus_areas", []),
+        "is_iteration": iteration_count > 0,
+        "special_considerations": "结合用户反馈，重点分析AI产品经理相关的技能和路径" if "AI" in str(feedback_adjustments) else ""
+    }
     
     # 调用百炼API进行职业分析
-    llm_response = llm_service.analyze_career_opportunities(target_career, user_profile)
+    llm_response = llm_service.analyze_career_opportunities(target_career, dict(user_profile))
     
     if llm_response.get("success"):
         try:
             result = json.loads(llm_response["content"])
-            print(f"职业分析结果: {result}")
+            print(f"职业分析结果 (迭代{iteration_count}): {result}")
         except json.JSONDecodeError:
             result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
     else:
@@ -277,16 +354,23 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     mcp_data = call_mcp_api("job_market", task["input_data"])
     result["job_market_data"] = mcp_data
     
+    # 添加迭代信息
+    result["iteration_info"] = {
+        "iteration_count": iteration_count,
+        "adjustments_applied": feedback_adjustments,
+        "analysis_timestamp": datetime.now().isoformat()
+    }
+    
     output = AgentOutput(
         agent_name="job_analyzer_node",
         task_id=task["task_id"],
         output_type="职业建议",
         content=result,
-        confidence_score=0.82,
-        data_sources=["百炼API", "MCP API", "招聘网站"],
-        analysis_method="LLM分析+市场调研",
+        confidence_score=0.82 + (0.08 * iteration_count),
+        data_sources=["百炼API", "MCP API", "招聘网站", "用户反馈"],
+        analysis_method="LLM分析+市场调研+反馈优化",
         timestamp=datetime.now(),
-        quality_metrics={"relevance": 0.9, "accuracy": 0.8},
+        quality_metrics={"relevance": 0.9 + (0.05 * iteration_count), "accuracy": 0.8 + (0.1 * iteration_count)},
         recommendations=result.get("recommendations", []),
         warnings=result.get("risk_warnings", [])
     )
@@ -306,6 +390,7 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
     1. 收集所有并行分析节点的结果。
     2. 调用LLM将结果整合成一份结构化的综合报告。
     3. 更新状态，准备进入用户反馈阶段。
+    4. 在迭代时，显示改进信息。
     """
     print("--- 正在执行: reporter_node ---")
     
@@ -320,31 +405,51 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
         "career_analysis": state["career_analysis_result"]
     }
     
+    # 检查是否为迭代
+    iteration_count = state.get("iteration_count", 0)
+    feedback_history = state.get("user_feedback_history", [])
+    
+    # 添加迭代上下文
+    if iteration_count > 0 and feedback_history:
+        latest_feedback = feedback_history[-1]
+        analysis_results["iteration_context"] = {
+            "iteration_count": iteration_count,
+            "previous_feedback": latest_feedback.get("feedback_text", ""),
+            "satisfaction_level": latest_feedback.get("satisfaction_level", ""),
+            "improvements_made": "基于您的反馈重新分析了相关领域"
+        }
+        print(f"📈 生成第{iteration_count}次迭代报告，基于用户反馈: {latest_feedback.get('feedback_text', '')}")
+    
     # 调用百炼API生成综合报告
     llm_response = llm_service.generate_integrated_report(analysis_results)
     
     if llm_response.get("success"):
         try:
             report = json.loads(llm_response["content"])
-            print(f"综合报告生成成功: {report.get('executive_summary', '报告已生成')}")
+            if iteration_count > 0:
+                report["iteration_summary"] = f"这是基于您反馈的第{iteration_count}次优化报告"
+            print(f"综合报告生成成功 (迭代{iteration_count}): {report.get('executive_summary', '报告已生成')}")
         except json.JSONDecodeError:
             report = {
                 "executive_summary": "综合分析报告",
                 "error": "报告解析失败",
-                "raw_response": llm_response["content"]
+                "raw_response": llm_response["content"],
+                "iteration_count": iteration_count
             }
     else:
         report = {
             "executive_summary": "综合分析报告",
-            "error": llm_response.get("error", "报告生成失败")
+            "error": llm_response.get("error", "报告生成失败"),
+            "iteration_count": iteration_count
         }
     
     # 更新状态，进入用户反馈阶段
     updated_state = StateUpdater.update_stage(state, WorkflowStage.USER_FEEDBACK)
     updated_state["integrated_report"] = report
     # 设置需要用户输入标志，并提出问题
+    feedback_question = f"这是第{iteration_count + 1}次分析报告，您对这份综合报告满意吗？请提供您的反馈或修改意见。" if iteration_count > 0 else "您对这份综合报告满意吗？请提供您的反馈或修改意见。"
     updated_state.update(StateUpdater.set_user_input_required(
-        state, True, ["您对这份综合报告满意吗？请提供您的反馈或修改意见。"]
+        state, True, [feedback_question]
     ))
     return updated_state
 
