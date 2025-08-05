@@ -3,8 +3,7 @@ echo CareerNavigator 服务启动脚本
 echo ============================
 
 REM 设置环境变量
-REM 请将下面的API密钥替换为您自己的密钥
-set DASHSCOPE_API_KEY=your_api_key_here
+set DASHSCOPE_API_KEY=Aliyun_API_KEY
 set FLASK_ENV=development
 set LOG_LEVEL=INFO
 
