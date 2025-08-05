@@ -17,8 +17,8 @@ if errorlevel 1 (
     exit /b 1
 )
 
-:: Set project root directory
-cd /d "%~dp0.."
+:: Set project root directory (current directory where the .bat file is located)
+cd /d "%~dp0"
 
 echo CareerNavigator Test Suite
 echo.

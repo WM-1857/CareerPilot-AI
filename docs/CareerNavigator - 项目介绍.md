@@ -68,51 +68,49 @@ React Application
 - pnpm
 - 阿里云百炼 API 密钥
 
-### 安装步骤
+### 安装步骤（Windows环境）
 
 1. **克隆项目**
-```bash
+```cmd
 git clone <repository-url>
-cd career_navigator_project
+cd CareerNavigator
 ```
 
-2. **后端设置**
-```bash
-cd career_navigator_backend
-source venv/bin/activate
+2. **环境设置**
+```cmd
+# 安装Python依赖
 pip install -r requirements.txt
 ```
 
 3. **前端设置**
-```bash
-cd ../career_navigator_frontend
-pnpm install
+```cmd
+cd frontend
+npm install
 ```
 
 4. **环境配置**
-```bash
+```cmd
 # 设置阿里云百炼 API 密钥
-export DASHSCOPE_API_KEY="your_api_key_here"
+set DASHSCOPE_API_KEY=your_api_key_here
 ```
 
 ### 本地运行
 
-1. **启动后端服务**
-```bash
-cd career_navigator_backend
-source venv/bin/activate
-python src/main.py
+1. **启动后端服务（推荐使用批处理脚本）**
+```cmd
+start_server.bat
 ```
 
-2. **启动前端服务**
-```bash
-cd career_navigator_frontend
-pnpm run dev --host
+或手动启动：
+```cmd
+set DASHSCOPE_API_KEY=your_api_key_here
+python main.py
 ```
 
-3. **访问应用**
-- 前端: http://localhost:5173
-- 后端 API: http://localhost:5050
+2. **访问应用**
+- 前端: http://localhost:5050 (静态文件服务)
+- 后端 API: http://localhost:5050/api
+- 健康检查: http://localhost:5050/api/health
 
 ## API 文档
 

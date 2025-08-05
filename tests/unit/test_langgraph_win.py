@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-LangGraph工作流测试模块
+LangGraph工作流测试模块（Windows兼容版本）
 测试工作流节点、状态管理和人机交互
 """
 
@@ -12,11 +13,12 @@ from typing import Dict, Any, Optional
 from unittest.mock import patch
 
 # 添加项目根目录到路径
-sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.insert(0, project_root)
 
 # 加载环境变量
 def load_env():
-    env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+    env_file = os.path.join(project_root, '.env')
     if os.path.exists(env_file):
         with open(env_file, 'r', encoding='utf-8') as f:
             for line in f:
@@ -28,6 +30,10 @@ def load_env():
 load_env()
 
 try:
+    # 临时设置API密钥避免导入错误
+    if not os.getenv('DASHSCOPE_API_KEY'):
+        os.environ['DASHSCOPE_API_KEY'] = 'sk-temp-for-testing'
+    
     from src.services.career_graph import CareerNavigatorGraph
     from src.services.career_nodes import (
         coordinator_node, planner_node, supervisor_node,
@@ -38,18 +44,21 @@ try:
         CareerNavigatorState, WorkflowStage, UserProfile, UserSatisfactionLevel,
         create_initial_state, StateUpdater, UserFeedback
     )
+    IMPORT_SUCCESS = True
+    MOCK_MODE = os.getenv('DASHSCOPE_API_KEY') == 'sk-temp-for-testing'
 except ImportError as e:
-    print(f"❌ 导入失败: {e}")
-    print("请先运行环境测试确保所有依赖正常")
-    sys.exit(1)
+    IMPORT_SUCCESS = False
+    IMPORT_ERROR = str(e)
+    MOCK_MODE = False
 
 
 class LangGraphTester:
     """LangGraph工作流测试器"""
     
     def __init__(self):
+        self.project_root = project_root
         self.results = {}
-        self.graph = CareerNavigatorGraph()
+        self.errors = []
         self.test_user_profile = {
             "user_id": "test_user_001",
             "age": 28,
@@ -71,17 +80,34 @@ class LangGraphTester:
         print('='*60)
     
     def print_result(self, test_name: str, success: bool, message: str, details: str = ""):
-        """打印测试结果"""
-        status = "✅ 通过" if success else "❌ 失败"
+        """打印测试结果（ASCII兼容）"""
+        status = "[PASS]" if success else "[FAIL]"
         print(f"{status} {test_name}: {message}")
         if details:
-            print(f"   📝 {details}")
+            print(f"   Details: {details}")
         self.results[test_name] = {"success": success, "message": message, "details": details}
         return success
     
+    def print_status(self, message: str, success: Optional[bool] = None):
+        """打印状态信息"""
+        if success is True:
+            print(f"[PASS] {message}")
+        elif success is False:
+            print(f"[FAIL] {message}")
+        else:
+            print(f"[INFO] {message}")
+    
     def test_state_creation(self) -> bool:
         """测试状态创建"""
-        print("\n🏗️ 测试状态创建...")
+        print("\n[Testing] State Creation...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "状态创建",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
             # 测试初始状态创建
@@ -121,12 +147,23 @@ class LangGraphTester:
     
     def test_coordinator_node(self) -> bool:
         """测试协调员节点"""
-        print("\n🎯 测试协调员节点...")
+        print("\n[Testing] Coordinator Node...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "协调员节点",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
             # 创建测试状态
             initial_state = create_initial_state(self.test_user_profile, "test_session")
-            initial_state["messages"] = [{"content": "我想转向AI产品经理"}]
+            
+            # 创建正确的消息格式
+            from langchain_core.messages import HumanMessage
+            initial_state["messages"] = [HumanMessage(content="我想转向AI产品经理")]
             
             # 模拟LLM响应
             with patch('src.services.llm_service.llm_service.analyze_career_goal_clarity') as mock_llm:
@@ -166,7 +203,15 @@ class LangGraphTester:
     
     def test_planner_node(self) -> bool:
         """测试计划员节点"""
-        print("\n📋 测试计划员节点...")
+        print("\n[Testing] Planner Node...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "计划员节点",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
             # 创建测试状态
@@ -209,7 +254,15 @@ class LangGraphTester:
     
     def test_supervisor_node(self) -> bool:
         """测试管理员节点"""
-        print("\n👨‍💼 测试管理员节点...")
+        print("\n[Testing] Supervisor Node...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "管理员节点",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
             # 创建测试状态
@@ -264,7 +317,15 @@ class LangGraphTester:
     
     def test_parallel_analysis_nodes(self) -> bool:
         """测试并行分析节点"""
-        print("\n🔄 测试并行分析节点...")
+        print("\n[Testing] Parallel Analysis Nodes...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "并行分析节点",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         # 创建基础测试状态和任务
         test_state = create_initial_state(self.test_user_profile, "test_session")
@@ -366,7 +427,15 @@ class LangGraphTester:
     
     def test_state_updater(self) -> bool:
         """测试状态更新器"""
-        print("\n🔄 测试状态更新器...")
+        print("\n[Testing] State Updater...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "状态更新器",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
             # 创建测试状态
@@ -421,11 +490,22 @@ class LangGraphTester:
     
     def test_graph_compilation(self) -> bool:
         """测试图编译"""
-        print("\n📊 测试图编译...")
+        print("\n[Testing] Graph Compilation...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "图编译",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
+            # 初始化图
+            graph = CareerNavigatorGraph()
+            
             # 检查图是否正确编译
-            if self.graph.app is not None:
+            if graph.app is not None:
                 return self.print_result(
                     "图编译",
                     True,
@@ -450,11 +530,20 @@ class LangGraphTester:
     
     def test_session_creation(self) -> bool:
         """测试会话创建"""
-        print("\n🆔 测试会话创建...")
+        print("\n[Testing] Session Creation...")
+        
+        if not IMPORT_SUCCESS:
+            return self.print_result(
+                "会话创建",
+                False,
+                "无法测试（模块导入失败）",
+                IMPORT_ERROR
+            )
         
         try:
+            graph = CareerNavigatorGraph()
             user_message = "我想从软件工程师转向AI产品经理"
-            session_state = self.graph.create_session(self.test_user_profile, user_message)
+            session_state = graph.create_session(self.test_user_profile, user_message)
             
             # 验证会话状态
             if (session_state.get("session_id") and 
@@ -486,46 +575,65 @@ class LangGraphTester:
         """运行所有LangGraph测试"""
         self.print_separator("CareerNavigator LangGraph工作流测试")
         
-        print("🔧 开始LangGraph工作流测试...")
+        print("Testing LangGraph Workflow...")
         start_time = time.time()
         
         # 运行各项测试
-        state_result = self.test_state_creation()
-        coordinator_result = self.test_coordinator_node()
-        planner_result = self.test_planner_node()
-        supervisor_result = self.test_supervisor_node()
-        parallel_result = self.test_parallel_analysis_nodes()
-        updater_result = self.test_state_updater()
-        graph_result = self.test_graph_compilation()
-        session_result = self.test_session_creation()
+        tests = [
+            ("状态创建", self.test_state_creation),
+            ("协调员节点", self.test_coordinator_node),
+            ("计划员节点", self.test_planner_node),
+            ("管理员节点", self.test_supervisor_node),
+            ("并行分析节点", self.test_parallel_analysis_nodes),
+            ("状态更新器", self.test_state_updater),
+            ("图编译", self.test_graph_compilation),
+            ("会话创建", self.test_session_creation)
+        ]
+        
+        results = {}
+        passed_tests = 0
+        total_tests = len(tests)
+        
+        for test_name, test_func in tests:
+            print(f"\nExecuting test: {test_name}")
+            try:
+                result = test_func()
+                results[test_name] = result
+                if result:
+                    passed_tests += 1
+            except Exception as e:
+                print(f"Test {test_name} exception: {str(e)}")
+                results[test_name] = False
+                self.errors.append(f"Test {test_name} exception: {str(e)}")
+        
+        end_time = time.time()
         
         # 汇总结果
-        end_time = time.time()
-        total_tests = len(self.results)
-        passed_tests = sum(1 for r in self.results.values() if r["success"])
-        
         self.print_separator("测试结果汇总")
-        print(f"📊 总测试数: {total_tests}")
-        print(f"✅ 通过: {passed_tests}")
-        print(f"❌ 失败: {total_tests - passed_tests}")
-        print(f"⏱️ 耗时: {end_time - start_time:.2f}秒")
+        print(f"Total Tests: {total_tests}")
+        print(f"Passed: {passed_tests}")
+        print(f"Failed: {total_tests - passed_tests}")
+        print(f"Duration: {end_time - start_time:.2f}s")
         
-        overall_success = all([
-            state_result, coordinator_result, planner_result, supervisor_result,
-            parallel_result, updater_result, graph_result, session_result
-        ])
+        overall_success = passed_tests == total_tests
         
         if overall_success:
-            print("\n🎉 所有LangGraph测试通过！工作流运行正常。")
+            print("\nAll LangGraph tests passed! Workflow is ready.")
         else:
-            print("\n⚠️ 存在工作流问题，请检查节点实现和状态管理。")
+            print("\nSome LangGraph tests failed. Please check the issues above.")
+            if self.errors:
+                print("\nDetailed errors:")
+                for error in self.errors:
+                    print(f"  - {error}")
         
         return {
-            "overall_success": overall_success,
-            "total_tests": total_tests,
-            "passed_tests": passed_tests,
-            "duration": end_time - start_time,
-            "details": self.results
+            'success': overall_success,
+            'total_tests': total_tests,
+            'passed_tests': passed_tests,
+            'failed_tests': total_tests - passed_tests,
+            'duration': end_time - start_time,
+            'results': results,
+            'errors': self.errors
         }
 
 
@@ -534,8 +642,8 @@ def main():
     tester = LangGraphTester()
     results = tester.run_all_tests()
     
-    # 返回退出码
-    exit_code = 0 if results["overall_success"] else 1
+    # 返回适当的退出码
+    exit_code = 0 if results['success'] else 1
     sys.exit(exit_code)
 
 

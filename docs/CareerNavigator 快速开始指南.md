@@ -1,36 +1,37 @@
 # CareerNavigator 快速开始指南
 
-本指南将帮助您在 5 分钟内快速启动 CareerNavigator 智能职业规划系统。
+本指南将帮助您在 Windows 环境下快速启动 CareerNavigator 智能职业规划系统。
 
 ## 🚀 一键启动
 
 ### 前提条件
 
-确保您的系统已安装：
-- Python 3.11+
-- Node.js 20+
-- pnpm
+确保您的 Windows 系统已安装：
+- Python 3.8+
+- Git
 
 ### 快速部署
 
 1. **克隆项目**
-```bash
+```cmd
 git clone <repository-url>
-cd career_navigator_project
+cd CareerNavigator
 ```
 
-2. **设置环境变量**
-```bash
-# 设置阿里云百炼 API 密钥
-export DASHSCOPE_API_KEY="your_api_key_here"
+2. **安装依赖**
+```cmd
+pip install -r requirements.txt
 ```
 
-3. **启动应用**
-```bash
-# 后端启动
-cd career_navigator_backend
-source venv/bin/activate
-python src/main.py
+3. **设置环境变量（方式一：使用批处理脚本）**
+```cmd
+start_server.bat
+```
+
+**或者手动设置（方式二）**
+```cmd
+set DASHSCOPE_API_KEY=your_api_key_here
+python main.py
 ```
 
 4. **访问应用**
@@ -78,26 +79,40 @@ python src/main.py
 
 ## 📋 API 快速测试
 
-### 使用 cURL 测试
+### 使用 PowerShell 测试
 
-```bash
+```powershell
 # 1. 开始职业规划
-curl -X POST http://localhost:5050/api/career/start \
-  -H "Content-Type: application/json" \
-  -d '{
-    "user_profile": {
-      "age": 25,
-      "education_level": "本科",
-      "work_experience": 3,
-      "current_position": "软件工程师",
-      "industry": "互联网",
-      "skills": ["Python", "React"],
-      "interests": ["AI", "产品设计"],
-      "career_goals": "成为AI产品经理",
-      "location": "北京",
-      "salary_expectation": "20-30k"
-    },
-    "message": "我希望从技术转向产品管理方向"
+$headers = @{
+    "Content-Type" = "application/json"
+}
+
+$body = @{
+    user_profile = @{
+        age = 25
+        education_level = "本科"
+        work_experience = 3
+        current_position = "软件工程师"
+        industry = "互联网"
+        skills = @("Python", "React")
+        interests = @("AI", "产品设计")
+        career_goals = "成为AI产品经理"
+        location = "北京"
+        salary_expectation = "20-30k"
+    }
+    message = "我希望从技术转向产品管理方向"
+} | ConvertTo-Json -Depth 3
+
+Invoke-RestMethod -Uri "http://localhost:5050/api/career/start" -Method POST -Headers $headers -Body $body
+```
+
+### 使用 curl 测试 (需要先安装 curl)
+
+```cmd
+curl -X POST http://localhost:5050/api/career/start ^
+  -H "Content-Type: application/json" ^
+  -d "{\"user_profile\":{\"age\":25,\"education_level\":\"本科\",\"work_experience\":3,\"current_position\":\"软件工程师\",\"industry\":\"互联网\",\"skills\":[\"Python\",\"React\"],\"interests\":[\"AI\",\"产品设计\"],\"career_goals\":\"成为AI产品经理\",\"location\":\"北京\",\"salary_expectation\":\"20-30k\"},\"message\":\"我希望从技术转向产品管理方向\"}"
+```
   }'
 
 # 2. 获取状态 (替换 SESSION_ID)

@@ -27,21 +27,21 @@ class TestSuiteManager:
         # 定义测试模块
         self.test_modules = {
             "environment": {
-                "path": "tests/unit/test_environment.py",
+                "path": "tests/unit/test_environment_win.py",
                 "name": "环境配置测试",
                 "description": "测试环境变量、依赖包、项目结构",
                 "category": "基础",
                 "required": True
             },
             "llm_service": {
-                "path": "tests/unit/test_llm_service.py", 
+                "path": "tests/unit/test_llm_service_win.py", 
                 "name": "LLM服务测试",
                 "description": "测试阿里云百炼API连接和响应",
                 "category": "服务",
                 "required": True
             },
             "langgraph": {
-                "path": "tests/unit/test_langgraph.py",
+                "path": "tests/unit/test_langgraph_win.py",
                 "name": "LangGraph工作流测试", 
                 "description": "测试工作流节点和状态管理",
                 "category": "核心",

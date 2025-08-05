@@ -11,9 +11,9 @@ CareerNavigator 测试套件是一个模块化、分层次的测试框架，用�
 ```
 tests/
 ├── unit/                    # 单元测试
-│   ├── test_environment.py     # 环境配置测试
-│   ├── test_llm_service.py     # LLM服务测试  
-│   └── test_langgraph.py       # LangGraph工作流测试
+│   ├── test_environment_win.py     # 环境配置测试 (Windows兼容版)
+│   ├── test_llm_service_win.py     # LLM服务测试 (Windows兼容版)
+│   └── test_langgraph_win.py       # LangGraph工作流测试 (Windows兼容版)
 ├── integration/             # 集成测试
 │   └── test_workflow.py        # 端到端工作流集成测试
 ├── e2e/                     # 端到端测试
@@ -22,9 +22,11 @@ tests/
 └── run_tests.py            # 测试套件管理器
 ```
 
+> **📝 注意**: Windows兼容版本（`*_win.py`）解决了控制台编码和模块导入问题，提供更好的Windows环境支持。推荐在Windows系统上使用这些版本。
+
 ### 测试模块说明
 
-#### 1. 环境配置测试 (`test_environment.py`)
+#### 1. 环境配置测试 (`test_environment_win.py`)
 - **目的**: 验证系统运行环境
 - **测试内容**:
   - 环境变量配置 (API密钥等)
@@ -32,7 +34,7 @@ tests/
   - 项目文件结构完整性
   - 配置文件有效性
 
-#### 2. LLM服务测试 (`test_llm_service.py`)
+#### 2. LLM服务测试 (`test_llm_service_win.py`)
 - **目的**: 验证大语言模型服务连接
 - **测试内容**:
   - 阿里云百炼API连接
@@ -40,7 +42,7 @@ tests/
   - 服务响应质量
   - 错误处理机制
 
-#### 3. LangGraph工作流测试 (`test_langgraph.py`)
+#### 3. LangGraph工作流测试 (`test_langgraph_win.py`)
 - **目的**: 验证工作流节点和状态管理
 - **测试内容**:
   - 工作流图构建
@@ -101,17 +103,17 @@ python tests\run_tests.py
 
 #### 环境配置测试
 ```bash
-python tests\unit\test_environment.py
+python tests\unit\test_environment_win.py
 ```
 
 #### LLM服务测试
 ```bash
-python tests\unit\test_llm_service.py
+python tests\unit\test_llm_service_win.py
 ```
 
 #### LangGraph工作流测试
 ```bash
-python tests\unit\test_langgraph.py
+python tests\unit\test_langgraph_win.py
 ```
 
 #### 集成测试

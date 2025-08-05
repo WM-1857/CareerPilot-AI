@@ -47,41 +47,62 @@ CareerNavigator/
 
 确保你有以下环境：
 - Python 3.8+
-- Node.js 16+ (如果需要前端开发)
+- Git（可选，用于获取项目）
 
 ### 2. 安装依赖
 
-```bash
-# 安装Python依赖
-pip install flask flask-cors requests langgraph dashscope
-
-# 或使用开发工具脚本
-python dev_tools.py
+```cmd
+pip install -r requirements.txt
 ```
 
-### 3. 配置环境变量
+### 3. 设置API密钥
 
-```bash
-# Windows
-set DASHSCOPE_API_KEY=your_actual_api_key
-set FLASK_ENV=development
-set LOG_LEVEL=DEBUG
-
-# Linux/Mac
-export DASHSCOPE_API_KEY=your_actual_api_key
-export FLASK_ENV=development
-export LOG_LEVEL=DEBUG
+编辑 `start_server.bat` 文件，将 `your_api_key_here` 替换为您的阿里云百炼API密钥：
+```bat
+set DASHSCOPE_API_KEY=your_actual_api_key_here
 ```
 
 ### 4. 启动服务
 
-```bash
-# 使用开发工具（推荐）
-python dev_tools.py
-
-# 或直接启动
-python main.py
+```cmd
+start_server.bat
 ```
+
+### 5. 访问应用
+
+打开浏览器访问：http://localhost:5050
+
+## 🧪 运行测试
+
+```cmd
+run_tests.bat
+```
+
+## 📚 文档
+
+详细文档请查看 `docs/` 目录：
+- [快速开始指南](docs/CareerNavigator%20快速开始指南.md)
+- [API 文档](docs/CareerNavigator%20API%20文档.md)  
+- [部署指南](docs/CareerNavigator%20部署指南.md)
+- [完整文档索引](docs/README.md)
+
+## 🔧 开发工具
+
+项目提供了便捷的开发工具脚本：
+
+### Windows 批处理脚本
+- `start_server.bat` - 启动开发服务器
+- `run_tests.bat` - 运行测试套件
+
+### Python 开发工具
+```cmd
+python dev_tools.py
+```
+提供交互式菜单，包括：
+- 启动开发服务器
+- 运行测试
+- 检查依赖
+- 生成API文档
 
 服务将在 http://localhost:5050 启动
 
@@ -97,86 +118,24 @@ python tests/test_components.py
 # 先启动后端服务
 python main.py
 
-# 然后在另一个终端运行
-python tests/test_backend.py
-```
+## � 相关链接
 
-## 📋 API文档
+- [阿里云百炼控制台](https://dashscope.console.aliyun.com/)
+- [LangGraph 文档](https://python.langchain.com/docs/langgraph)
+- [Flask 文档](https://flask.palletsprojects.com/)
+- [React 文档](https://react.dev/)
 
-### 健康检查
-```
-GET /api/health
-```
+## � 许可证
 
-### 开始职业规划
-```
-POST /api/career/start
-Content-Type: application/json
+本项目采用 MIT 许可证。详情请查看 LICENSE 文件。
 
-{
-  "user_profile": {
-    "user_id": "string",
-    "age": 25,
-    "education_level": "本科",
-    "work_experience": 2,
-    "current_position": "软件工程师",
-    "industry": "互联网",
-    "skills": ["Python", "JavaScript"],
-    "interests": ["技术管理"],
-    "career_goals": "成为技术leader",
-    "location": "北京",
-    "salary_expectation": "20-30万"
-  },
-  "message": "我想制定一个3年的职业发展计划"
-}
-```
+## 🤝 贡献
 
-### 获取规划状态
-```
-GET /api/career/status/{session_id}
-```
+欢迎提交 Issue 和 Pull Request 来改进项目。
 
-### 提交用户反馈
-```
-POST /api/career/feedback/{session_id}
-Content-Type: application/json
+---
 
-{
-  "satisfaction_level": "satisfied",
-  "feedback_text": "分析结果很好，请继续"
-}
-```
-
-## 🔧 开发指南
-
-### 添加新功能
-
-1. **添加新的API端点**: 在 `src/routes/career.py` 中添加
-2. **添加新的工作流节点**: 在 `src/services/career_nodes.py` 中添加
-3. **修改状态结构**: 在 `src/models/career_state.py` 中修改
-4. **添加日志**: 使用 `src/utils/logger.py` 中的日志工具
-
-### 调试技巧
-
-1. **查看实时日志**: 日志会输出到控制台和 `logs/` 目录
-2. **设置调试级别**: `set LOG_LEVEL=DEBUG`
-3. **使用开发工具**: `python dev_tools.py`
-
-## 📝 注意事项
-
-1. **API密钥**: 需要设置有效的阿里云百炼API密钥
-2. **内存存储**: 当前版本使用内存存储，重启服务会丢失会话数据
-3. **并发限制**: 建议同时处理的会话数不超过100个
-
-## 🔗 相关文档
-
-- [部署指南](docs/CareerNavigator%20部署指南.md)
-- [API文档](docs/CareerNavigator%20API%20文档.md)
-- [项目设计报告](docs/CareerNavigator%20LangGraph%20项目设计报告.md)
-
-## 📞 支持
-
-如果遇到问题，请：
+💡 **快速开始提示**: 如果您是首次使用，请直接运行 `start_server.bat` 并访问 http://localhost:5050
 1. 检查日志文件
 2. 运行健康检查 `GET /api/health`
 3. 运行测试脚本验证功能

@@ -4,10 +4,25 @@
 
 ## 基础信息
 
-- **基础 URL**: `http://localhost:5050/api/career`
+- **基础 URL**: `http://localhost:5050/api`
 - **API 版本**: v1.0
 - **内容类型**: `application/json`
 - **字符编码**: UTF-8
+
+## 健康检查
+
+### 服务健康检查
+
+**端点**: `GET /health`
+
+**响应示例**:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-08-05T10:30:00Z",
+  "version": "1.0.0"
+}
+```
 
 ## 认证
 
@@ -39,7 +54,7 @@
 
 启动新的职业规划会话。
 
-**端点**: `POST /start`
+**端点**: `POST /career/start`
 
 **请求体**:
 ```json
