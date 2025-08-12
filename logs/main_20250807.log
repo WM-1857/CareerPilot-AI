@@ -1,0 +1,48 @@
+2025-08-07 17:46:49,832 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-07 17:46:49,832 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-07 17:46:49,833 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-07 17:46:49,834 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-07 17:46:49,834 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-07 17:46:49,834 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-07 17:46:49,834 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-07 17:46:49,836 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-07 17:46:49,836 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-07 17:46:49,838 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-07 17:46:49,838 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-07 17:46:49,839 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-07 17:46:52,042 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-07 17:46:52,043 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-07 17:46:52,044 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-07 17:46:52,044 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-07 17:46:52,044 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-07 17:46:52,044 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-07 17:46:52,044 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-07 17:46:52,046 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-07 17:46:52,046 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-07 17:46:52,047 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-07 17:46:52,048 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-07 17:46:52,048 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-07 17:47:01,265 - Main - INFO - [logger.py:58] - 💓 健康检查完成
+附加数据: {
+  "status": "healthy",
+  "service": "CareerNavigator Backend",
+  "version": "1.0.0",
+  "timestamp": "2025-08-07T17:47:01.265298",
+  "components": {
+    "api": "healthy",
+    "memory_storage": "healthy"
+  },
+  "environment": "development"
+}
+2025-08-07 17:47:09,717 - Main - INFO - [logger.py:58] - 💓 健康检查完成
+附加数据: {
+  "status": "healthy",
+  "service": "CareerNavigator Backend",
+  "version": "1.0.0",
+  "timestamp": "2025-08-07T17:47:09.717390",
+  "components": {
+    "api": "healthy",
+    "memory_storage": "healthy"
+  },
+  "environment": "development"
+}

@@ -287,6 +287,7 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     # 补充模拟的市场数据
     mcp_data = call_mcp_api("industry_data", task["input_data"])
+    print(f"MCP industry_data 结果: {json.dumps(mcp_data, ensure_ascii=False)[:500]}")
     result["market_data"] = mcp_data
     
     # 添加迭代信息
@@ -352,6 +353,7 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     # 补充模拟的职位市场数据
     mcp_data = call_mcp_api("job_market", task["input_data"])
+    print(f"MCP job_market 结果: {json.dumps(mcp_data, ensure_ascii=False)[:500]}")
     result["job_market_data"] = mcp_data
     
     # 添加迭代信息

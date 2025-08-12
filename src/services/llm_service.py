@@ -9,6 +9,11 @@ from typing import Dict, Any, List, Optional
 from dashscope import Generation
 import dashscope
 
+# Tavily搜索工具集成
+import logging
+from langchain_community.tools.tavily_search import TavilySearchResults
+from searchsrc.config import TAVILY_MAX_RESULTS, TAVILY_API_KEY
+from decorators import create_logged_tool
 
 class DashScopeService:
     """阿里云百炼API服务类"""
@@ -465,57 +470,68 @@ class DashScopeService:
 llm_service = DashScopeService()
 
 
-# 模拟MCP API调用的函数
+
+
+logger = logging.getLogger(__name__)
+
+# 初始化Tavily搜索工具
+LoggedTavilySearch = create_logged_tool(TavilySearchResults)
+tavily_tool = LoggedTavilySearch(
+    name="tavily_search", 
+    max_results=TAVILY_MAX_RESULTS,
+    tavily_api_key=TAVILY_API_KEY
+)
+
+# 真实的外部API调用函数
 def call_mcp_api(api_name: str, params: Dict) -> Dict:
     """
-    模拟调用MCP（Manus Content Platform）API
-    在实际项目中，这里会调用真实的外部API
+    调用真实的外部API获取数据
+    使用Tavily搜索工具获取最新的行业和职位信息
     """
-    print(f"--- MCP API 调用 ---")
+    print(f"--- 外部API调用 ---")
     print(f"API: {api_name}, Params: {params}")
     
-    # 模拟返回数据
-    if api_name == "user_profile_analysis":
-        return {
-            "profile": {
-                "strengths": ["沟通能力强", "学习能力强", "团队协作"],
-                "weaknesses": ["编程经验不足", "行业经验有限"],
-                "personality_traits": ["外向", "创新", "责任心强"],
-                "skill_assessment": {
-                    "technical_skills": ["Python基础", "数据分析"],
-                    "soft_skills": ["项目管理", "演讲能力"],
-                    "skill_gaps": ["机器学习", "产品设计"]
-                }
+    try:
+        if api_name == "user_profile_analysis":
+            # 搜索用户画像相关的职业测评信息
+            search_query = f"职业测评 个人能力分析 {params.get('user_profile', {}).get('current_position', '')}"
+            search_results = tavily_tool.invoke({"query": search_query})
+            
+            # 直接返回Tavily获取到的文本信息
+            return {
+                "search_results": search_results,
+                "data_sources": [result.get("url", "") for result in search_results if isinstance(result, dict)]
             }
-        }
-    elif api_name == "industry_data":
-        return {
-            "trends": [
-                {"name": "人工智能", "growth": 0.25, "outlook": "非常积极"},
-                {"name": "数据科学", "growth": 0.20, "outlook": "积极"},
-                {"name": "产品管理", "growth": 0.15, "outlook": "稳定增长"}
-            ],
-            "salary_ranges": {
-                "AI产品经理": {"entry": "15-25k", "mid": "25-40k", "senior": "40-80k"}
+            
+        elif api_name == "industry_data":
+            # 搜索行业趋势和薪资数据
+            target_industry = params.get("target_industry", "科技行业")
+            search_query = f"{target_industry} 行业趋势 薪资水平 2024"
+            search_results = tavily_tool.invoke({"query": search_query})
+            
+            # 直接返回Tavily获取到的文本信息
+            return {
+                "search_results": search_results,
+                "data_sources": [result.get("url", "") for result in search_results if isinstance(result, dict)]
             }
-        }
-    elif api_name == "job_market":
-        return {
-            "jobs": [
-                {
-                    "title": "AI产品经理",
-                    "salary": "25-40k",
-                    "demand": "高",
-                    "requirements": ["产品思维", "技术理解", "数据分析"]
-                },
-                {
-                    "title": "数据产品经理",
-                    "salary": "20-35k",
-                    "demand": "中高",
-                    "requirements": ["数据分析", "业务理解", "用户研究"]
-                }
-            ]
-        }
-    
-    return {"data": "模拟API数据"}
+            
+        elif api_name == "job_market":
+            # 搜索职位市场信息
+            target_career = params.get("target_career", "产品经理")
+            search_query = f"{target_career} 职位要求 薪资 招聘 2024"
+            search_results = tavily_tool.invoke({"query": search_query})
+            
+            # 直接返回Tavily获取到的文本信息
+            return {
+                "search_results": search_results,
+                "data_sources": [result.get("url", "") for result in search_results if isinstance(result, dict)]
+            }
+        
+        else:
+            logger.warning(f"未知的API调用: {api_name}")
+            return {"error": f"未知的API: {api_name}"}
+            
+    except Exception as e:
+        logger.error(f"API调用失败: {api_name}, 错误: {str(e)}")
+        return {"error": f"API调用失败: {str(e)}"}
 
