@@ -1,0 +1,280 @@
+2025-08-17 17:32:58,116 - API - INFO - [logger.py:58] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:32:58.116243"
+}
+2025-08-17 17:32:58,180 - API - INFO - [logger.py:58] - 📤 API响应: / - 304
+附加数据: {
+  "endpoint": "/",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.064s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:32:58.180243"
+}
+2025-08-17 17:32:58,252 - API - INFO - [logger.py:58] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:32:58.252244"
+}
+2025-08-17 17:32:58,254 - API - INFO - [logger.py:58] - 📤 API响应: /favicon.ico - 304
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:32:58.254243"
+}
+2025-08-17 17:32:59,248 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/health",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:32:59.248314"
+}
+2025-08-17 17:32:59,249 - API - INFO - [logger.py:58] - 📤 API响应: /api/health - 200
+附加数据: {
+  "endpoint": "/api/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 242
+  },
+  "timestamp": "2025-08-17T17:32:59.249313"
+}
+2025-08-17 17:33:00,320 - API - INFO - [logger.py:58] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "user_id": "test_user_001",
+      "age": 25,
+      "education_level": "本科",
+      "work_experience": 2,
+      "current_position": "软件开发工程师",
+      "industry": "互联网",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React"
+      ],
+      "interests": [
+        "技术创新",
+        "产品设计",
+        "团队管理"
+      ],
+      "career_goals": "成为技术专家并朝着技术管理方向发展",
+      "location": "北京",
+      "salary_expectation": "15-25K",
+      "additional_info": "希望在技术深度和管理能力上都有所提升"
+    },
+    "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
+  },
+  "timestamp": "2025-08-17T17:33:00.320958"
+}
+2025-08-17 17:45:10,648 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/health",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:45:10.648359"
+}
+2025-08-17 17:45:10,649 - API - INFO - [logger.py:58] - 📤 API响应: /api/health - 200
+附加数据: {
+  "endpoint": "/api/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 242
+  },
+  "timestamp": "2025-08-17T17:45:10.649382"
+}
+2025-08-17 17:45:10,725 - API - INFO - [logger.py:58] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:45:10.725359"
+}
+2025-08-17 17:45:10,801 - API - INFO - [logger.py:58] - 📤 API响应: /favicon.ico - 200
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.076s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:45:10.801362"
+}
+2025-08-17 17:45:16,153 - API - INFO - [logger.py:58] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:45:16.153084"
+}
+2025-08-17 17:45:16,155 - API - INFO - [logger.py:58] - 📤 API响应: / - 304
+附加数据: {
+  "endpoint": "/",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:45:16.155126"
+}
+2025-08-17 17:45:16,270 - API - INFO - [logger.py:58] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:45:16.270078"
+}
+2025-08-17 17:45:16,271 - API - INFO - [logger.py:58] - 📤 API响应: /favicon.ico - 304
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:45:16.271077"
+}
+2025-08-17 17:45:17,221 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/health",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:45:17.221400"
+}
+2025-08-17 17:45:17,222 - API - INFO - [logger.py:58] - 📤 API响应: /api/health - 200
+附加数据: {
+  "endpoint": "/api/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 242
+  },
+  "timestamp": "2025-08-17T17:45:17.222404"
+}
+2025-08-17 17:45:18,146 - API - INFO - [logger.py:58] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "user_id": "test_user_001",
+      "age": 25,
+      "education_level": "本科",
+      "work_experience": 2,
+      "current_position": "软件开发工程师",
+      "industry": "互联网",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React"
+      ],
+      "interests": [
+        "技术创新",
+        "产品设计",
+        "团队管理"
+      ],
+      "career_goals": "成为技术专家并朝着技术管理方向发展",
+      "location": "北京",
+      "salary_expectation": "15-25K",
+      "additional_info": "希望在技术深度和管理能力上都有所提升"
+    },
+    "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
+  },
+  "timestamp": "2025-08-17T17:45:18.146510"
+}
+2025-08-17 17:49:12,589 - API - INFO - [logger.py:58] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:49:12.589178"
+}
+2025-08-17 17:49:12,661 - API - INFO - [logger.py:58] - 📤 API响应: / - 304
+附加数据: {
+  "endpoint": "/",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.072s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:49:12.661025"
+}
+2025-08-17 17:49:12,733 - API - INFO - [logger.py:58] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:49:12.732818"
+}
+2025-08-17 17:49:12,734 - API - INFO - [logger.py:58] - 📤 API响应: /favicon.ico - 304
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 12896
+  },
+  "timestamp": "2025-08-17T17:49:12.734818"
+}
+2025-08-17 17:49:13,728 - API - INFO - [logger.py:58] - 📥 API请求: GET /api/health
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/health",
+  "request_data": null,
+  "timestamp": "2025-08-17T17:49:13.728587"
+}
+2025-08-17 17:49:13,729 - API - INFO - [logger.py:58] - 📤 API响应: /api/health - 200
+附加数据: {
+  "endpoint": "/api/health",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 242
+  },
+  "timestamp": "2025-08-17T17:49:13.729571"
+}
+2025-08-17 17:49:15,056 - API - INFO - [logger.py:58] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "user_id": "test_user_001",
+      "age": 25,
+      "education_level": "本科",
+      "work_experience": 2,
+      "current_position": "软件开发工程师",
+      "industry": "互联网",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React"
+      ],
+      "interests": [
+        "技术创新",
+        "产品设计",
+        "团队管理"
+      ],
+      "career_goals": "成为技术专家并朝着技术管理方向发展",
+      "location": "北京",
+      "salary_expectation": "15-25K",
+      "additional_info": "希望在技术深度和管理能力上都有所提升"
+    },
+    "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
+  },
+  "timestamp": "2025-08-17T17:49:15.056206"
+}
