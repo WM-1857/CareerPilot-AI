@@ -1,0 +1,96 @@
+2025-08-16 15:06:38,005 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:06:38,006 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:06:38,008 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:06:38,008 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:06:38,008 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:06:38,009 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:06:38,009 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:06:38,013 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:06:38,013 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:06:38,016 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:06:38,016 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:06:38,016 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:06:41,274 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:06:41,275 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:06:41,277 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:06:41,278 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:06:41,278 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:06:41,279 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:06:41,279 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:06:41,284 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:06:41,284 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:06:41,287 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:06:41,287 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:06:41,288 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:06:42,567 - Main - INFO - [logger.py:58] - 💓 健康检查完成
+附加数据: {
+  "status": "healthy",
+  "service": "CareerNavigator Backend",
+  "version": "1.0.0",
+  "timestamp": "2025-08-16T15:06:42.566011",
+  "components": {
+    "api": "healthy",
+    "memory_storage": "healthy"
+  },
+  "environment": "development"
+}
+2025-08-16 15:21:40,751 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:21:40,752 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:21:40,753 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:21:40,754 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:21:40,754 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:21:40,754 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:21:40,754 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:21:40,756 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:21:40,756 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:21:40,757 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:21:40,757 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:21:40,758 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:21:42,811 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:21:42,812 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:21:42,813 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:21:42,814 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:21:42,814 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:21:42,814 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:21:42,814 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:21:42,816 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:21:42,816 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:21:42,817 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:21:42,817 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:21:42,818 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:22:02,601 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:22:02,602 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:22:02,602 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:22:02,603 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:22:02,603 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:22:02,603 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:22:02,604 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:22:02,605 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:22:02,606 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:22:02,606 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:22:02,607 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:22:02,607 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:22:04,738 - Main - INFO - [logger.py:58] - ✅ 配置验证通过
+2025-08-16 15:22:04,739 - Main - INFO - [logger.py:58] - 📋 使用配置: type
+2025-08-16 15:22:04,740 - Main - INFO - [logger.py:58] - 🚀 CareerNavigator后端启动中...
+2025-08-16 15:22:04,740 - Main - INFO - [logger.py:58] - 📊 调试模式: True
+2025-08-16 15:22:04,740 - Main - INFO - [logger.py:58] - 📝 日志级别: DEBUG
+2025-08-16 15:22:04,740 - Main - INFO - [logger.py:58] - 📁 静态文件夹: D:\桌面\career\CareerPilot-AI\frontend
+2025-08-16 15:22:04,741 - Main - INFO - [logger.py:58] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2025-08-16 15:22:04,742 - Main - INFO - [logger.py:58] - 📚 API蓝图注册完成
+2025-08-16 15:22:04,743 - Main - INFO - [logger.py:58] - � 无数据库模式，跳过数据库初始化
+2025-08-16 15:22:04,743 - Main - INFO - [logger.py:58] - 🌟 CareerNavigator后端启动完成
+2025-08-16 15:22:04,744 - Main - INFO - [logger.py:58] - 🔗 服务地址: http://0.0.0.0:5050
+2025-08-16 15:22:04,744 - Main - INFO - [logger.py:58] - 🔧 调试模式: 开启
+2025-08-16 15:22:13,097 - Main - INFO - [logger.py:58] - 💓 健康检查完成
+附加数据: {
+  "status": "healthy",
+  "service": "CareerNavigator Backend",
+  "version": "1.0.0",
+  "timestamp": "2025-08-16T15:22:13.097148",
+  "components": {
+    "api": "healthy",
+    "memory_storage": "healthy"
+  },
+  "environment": "development"
+}

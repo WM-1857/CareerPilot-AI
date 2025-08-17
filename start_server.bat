@@ -3,7 +3,7 @@ echo CareerNavigator 服务启动脚本
 echo ============================
 
 REM 设置环境变量
-set DASHSCOPE_API_KEY=#
+set DASHSCOPE_API_KEY=sk-ede164c675ec44e6a50f9e0e5c87be9d
 set TAVILY_API_KEY=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
 set FLASK_ENV=development
 set LOG_LEVEL=INFO
