@@ -580,17 +580,32 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
         }
         print(f"❌ 报告生成失败: {report}")
     
-    # 更新状态，进入用户反馈阶段
-    updated_state = StateUpdater.update_stage(state, WorkflowStage.USER_FEEDBACK)
-    updated_state["integrated_report"] = report
-    # 设置需要用户输入标志，并提出问题
-    feedback_question = f"这是第{iteration_count + 1}次分析报告，您对这份综合报告满意吗？请提供您的反馈或修改意见。" if iteration_count > 0 else "您对这份综合报告满意吗？请提供您的反馈或修改意见。"
-    updated_state.update(StateUpdater.set_user_input_required(
-        state, True, [feedback_question]
-    ))
+    # 检查是否达到最大迭代次数
+    iteration_count = state.get("iteration_count", 0)
+    max_iterations = state.get("max_iterations", 3)
     
-    print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
-    return updated_state
+    if iteration_count >= max_iterations:
+        print(f"⚠️ 已达到最大迭代次数({max_iterations})，跳过用户反馈，直接进入目标拆分阶段")
+        # 直接进入目标拆分阶段，跳过用户反馈
+        updated_state = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
+        updated_state["integrated_report"] = report
+        updated_state["skip_feedback_reason"] = "达到最大迭代次数"
+        
+        print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
+        return updated_state
+    else:
+        print(f"📝 迭代次数({iteration_count}/{max_iterations})，进入用户反馈阶段")
+        # 更新状态，进入用户反馈阶段
+        updated_state = StateUpdater.update_stage(state, WorkflowStage.USER_FEEDBACK)
+        updated_state["integrated_report"] = report
+        # 设置需要用户输入标志，并提出问题
+        feedback_question = f"这是第{iteration_count + 1}次分析报告，您对这份综合报告满意吗？请提供您的反馈或修改意见。" if iteration_count > 0 else "您对这份综合报告满意吗？请提供您的反馈或修改意见。"
+        updated_state.update(StateUpdater.set_user_input_required(
+            state, True, [feedback_question]
+        ))
+        
+        print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
+        return updated_state
 
 
 def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
@@ -706,7 +721,7 @@ def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     # 更新状态，进入最终确认阶段
     updated_state = StateUpdater.update_stage(state, WorkflowStage.FINAL_CONFIRMATION)
-    updated_state["final_plan"] = final_schedule
+    updated_state["final_career_plan"] = final_schedule  # 使用与interactive_workflow.py一致的键名
     # 再次请求用户输入
     updated_state.update(StateUpdater.set_user_input_required(
         state, True, ["这是为您生成的最终行动计划，您是否满意？"]

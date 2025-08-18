@@ -15,6 +15,9 @@ from langchain_community.tools.tavily_search import TavilySearchResults
 from searchsrc.config import TAVILY_MAX_RESULTS, TAVILY_API_KEY
 from decorators import create_logged_tool
 
+# 导入自定义JSON编码器
+from src.utils.logger import CustomJsonEncoder
+
 class DashScopeService:
     """阿里云百炼API服务类"""
     
@@ -28,6 +31,11 @@ class DashScopeService:
         self.api_key = api_key or os.getenv('DASHSCOPE_API_KEY')
         if not self.api_key:
             raise ValueError("请设置DASHSCOPE_API_KEY环境变量或提供api_key参数")
+        
+        # 验证API密钥格式
+        if self.api_key.startswith('sk-demo-') or self.api_key == 'sk-temp-for-testing':
+            print("⚠️  检测到演示/测试密钥，API调用将失败")
+            print("   请设置有效的阿里云百炼API密钥")
         
         dashscope.api_key = self.api_key
         
@@ -65,6 +73,7 @@ class DashScopeService:
                 result_format='message'
             )
             
+            # 检查响应状态
             if response.status_code == 200:
                 return {
                     "success": True,
@@ -73,16 +82,22 @@ class DashScopeService:
                     "request_id": response.request_id
                 }
             else:
+                error_msg = f"API调用失败: {response.code} - {response.message}"
+                if response.status_code == 401:
+                    error_msg += " (请检查DASHSCOPE_API_KEY是否正确)"
                 return {
                     "success": False,
-                    "error": f"API调用失败: {response.code} - {response.message}",
+                    "error": error_msg,
                     "status_code": response.status_code
                 }
                 
         except Exception as e:
+            error_msg = f"调用百炼API时发生异常: {str(e)}"
+            if "InvalidApiKey" in str(e) or "401" in str(e):
+                error_msg += " (请检查DASHSCOPE_API_KEY是否正确设置)"
             return {
                 "success": False,
-                "error": f"调用百炼API时发生异常: {str(e)}"
+                "error": error_msg
             }
     
     def _build_prompt(self, prompt: str, context: Optional[Dict] = None) -> str:
@@ -104,7 +119,8 @@ class DashScopeService:
             context_str = "\n\n上下文信息:\n"
             for key, value in context.items():
                 if isinstance(value, (dict, list)):
-                    context_str += f"{key}: {json.dumps(value, ensure_ascii=False, indent=2)}\n"
+                    # 使用自定义JSON编码器处理枚举类型
+                    context_str += f"{key}: {json.dumps(value, ensure_ascii=False, indent=2, cls=CustomJsonEncoder)}\n"
                 else:
                     context_str += f"{key}: {value}\n"
         

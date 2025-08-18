@@ -31,10 +31,16 @@ load_env()
 
 # 设置临时API密钥（如果未配置）
 if not os.getenv('DASHSCOPE_API_KEY'):
-    os.environ['DASHSCOPE_API_KEY'] = 'sk-temp-for-testing'
+    print("⚠️  警告：未设置DASHSCOPE_API_KEY环境变量")
+    print("   请在.env文件中设置正确的阿里云百炼API密钥")
+    print("   格式示例：DASHSCOPE_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+    print("   注意：这里使用的是演示密钥，请替换为您的真实密钥")
+    # 这里仍然设置一个无效密钥用于演示，但会提供明确的错误信息
+    os.environ['DASHSCOPE_API_KEY'] = 'sk-demo-invalid-key-for-testing'
 
 try:
     from src.services.career_graph import CareerNavigatorGraph
+    from src.services.career_nodes import goal_decomposer_node, scheduler_node
     from src.models.career_state import (
         CareerNavigatorState, WorkflowStage, UserProfile, UserSatisfactionLevel,
         create_initial_state, StateUpdater, UserFeedback
@@ -194,92 +200,137 @@ class InteractiveWorkflowRunner:
                 print("❌ 工作流应用未正确初始化")
                 return False
             
-            max_interactions = 3  # 最大交互次数
-            interaction_count = 0
+            workflow_completed = False
+            safety_counter = 0  # 安全计数器，防止无限循环
+            max_safety_iterations = 10  # 最大安全迭代次数
             
-            while interaction_count < max_interactions:
-                interaction_count += 1
-                print(f"\n🔄 第 {interaction_count} 轮执行...")
+            # 执行工作流直到完成或需要用户交互
+            while not workflow_completed and safety_counter < max_safety_iterations:
+                safety_counter += 1
+                print(f"\n🔄 工作流执行轮次: {safety_counter}")
                 
-                # 执行工作流直到需要用户交互
-                workflow_completed = False
-                config = RunnableConfig(recursion_limit=5)  # 设置递归限制
+                config = RunnableConfig(recursion_limit=10)  # 增加递归限制，匹配工作流复杂度
                 
-                for state_update in self.graph.app.stream(self.current_state, config=config):
-                    print(f"📈 工作流进度: {list(state_update.keys())}")
-                    
-                    # 更新当前状态 - 正确合并状态而不是替换
-                    node_name = list(state_update.keys())[-1]
-                    node_update = state_update[node_name]
-                    
-                    # 合并状态而不是替换
-                    if isinstance(node_update, dict):
-                        self.current_state.update(node_update)
-                    else:
-                        self.current_state = node_update
-                    
-                    # 检查当前阶段
-                    current_stage = self.current_state.get("current_stage")
-                    
-                    # 1. 分析报告反馈阶段
-                    if current_stage == WorkflowStage.USER_FEEDBACK and "integrated_report" in self.current_state:
-                        report = self.current_state["integrated_report"]
-                        self.display_report(report)
+                # 获取工作流当前状态快照
+                current_snapshot = self.current_state.copy()
+                
+                try:
+                    for state_update in self.graph.app.stream(self.current_state, config=config):
+                        print(f"📈 工作流进度: {list(state_update.keys())}")
                         
-                        # 收集用户反馈
-                        satisfaction, feedback_text = self.get_user_feedback()
+                        # 更新当前状态 - 正确合并状态而不是替换
+                        node_name = list(state_update.keys())[-1]
+                        node_update = state_update[node_name]
                         
-                        # 更新状态
-                        self.current_state = self.graph.update_user_feedback(
-                            self.current_state, satisfaction, feedback_text
-                        )
-                        
-                        # 设置满意度到状态中供路由使用
-                        self.current_state["current_satisfaction"] = satisfaction
-                        
-                        if satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
-                            print(f"\n✅ 用户满意，继续进入目标拆分阶段...")
+                        # 合并状态而不是替换
+                        if isinstance(node_update, dict):
+                            self.current_state.update(node_update)
                         else:
-                            print(f"\n🔄 用户不满意，将重新执行分析...")
+                            self.current_state = node_update
                         
-                        break  # 跳出当前流，重新开始下一轮
-                    
-                    # 2. 最终规划反馈阶段  
-                    elif current_stage == WorkflowStage.FINAL_CONFIRMATION and "final_career_plan" in self.current_state:
-                        plan = self.current_state["final_career_plan"]
-                        self.display_goal_plan(plan)
+                        # 检查当前阶段
+                        current_stage = self.current_state.get("current_stage")
                         
-                        # 收集用户对最终规划的反馈
-                        satisfaction, feedback_text = self.get_user_feedback()
+                        # 1. 分析报告反馈阶段
+                        if current_stage == WorkflowStage.USER_FEEDBACK and "integrated_report" in self.current_state:
+                            report = self.current_state["integrated_report"]
+                            if report:  # 确保报告存在
+                                self.display_report(report)
+                            
+                            # 收集用户反馈
+                            satisfaction, feedback_text = self.get_user_feedback()
+                            
+                            # 更新状态
+                            self.current_state = self.graph.update_user_feedback(
+                                self.current_state, satisfaction, feedback_text
+                            )
+                            
+                            # 设置满意度到状态中供路由使用
+                            self.current_state["current_satisfaction"] = satisfaction
+                            
+                            # 清除用户输入需求标志，让工作流知道可以继续
+                            self.current_state["requires_user_input"] = False
+                            self.current_state["pending_questions"] = []
+                            
+                            if satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+                                print(f"\n✅ 用户满意，继续进入目标拆分阶段...")
+                                # 直接调用目标拆分节点执行，跳过重新循环
+                                try:
+                                    print("🎯 开始执行目标拆分...")
+                                    goal_result = goal_decomposer_node(self.current_state)
+                                    if isinstance(goal_result, dict):
+                                        # 将结果字典的键值对合并到当前状态
+                                        for key, value in goal_result.items():
+                                            if key in self.current_state or hasattr(self.current_state, key):
+                                                self.current_state[key] = value  # type: ignore
+                                    
+                                    print("📅 开始执行日程规划...")
+                                    schedule_result = scheduler_node(self.current_state)
+                                    if isinstance(schedule_result, dict):
+                                        # 将结果字典的键值对合并到当前状态
+                                        for key, value in schedule_result.items():
+                                            if key in self.current_state or hasattr(self.current_state, key):
+                                                self.current_state[key] = value  # type: ignore
+                                    
+                                    # 显示最终计划并直接完成工作流
+                                    if "final_career_plan" in self.current_state:
+                                        self.display_goal_plan(self.current_state["final_career_plan"])
+                                        print(f"\n🎉 职业规划完成！用户满意度: {satisfaction.value}")
+                                        self.current_state["current_stage"] = WorkflowStage.COMPLETED
+                                        workflow_completed = True
+                                        break
+                                        
+                                except Exception as e:
+                                    print(f"❌ 执行目标拆分和规划出错: {e}")
+                                    break
+                            else:
+                                print(f"\n🔄 用户不满意，将重新执行分析...")
+                                # 不满意用户跳出当前流处理，重新启动工作流
+                                break
                         
-                        # 更新状态
-                        self.current_state = self.graph.update_user_feedback(
-                            self.current_state, satisfaction, feedback_text
-                        )
+                        # 1.5. 检查是否跳过了用户反馈阶段（达到最大迭代次数）
+                        elif current_stage == WorkflowStage.GOAL_DECOMPOSITION and "skip_feedback_reason" in self.current_state:
+                            skip_reason = self.current_state.get("skip_feedback_reason", "未知原因")
+                            print(f"\n⚠️ 跳过用户反馈阶段：{skip_reason}")
+                            print("📊 显示最终分析报告...")
+                            
+                            # 显示报告但不收集反馈
+                            if "integrated_report" in self.current_state:
+                                report = self.current_state["integrated_report"]
+                                if report:  # 确保报告存在
+                                    self.display_report(report)
+                            
+                            print("🎯 工作流将直接进入目标拆分阶段...")
+                            continue  # 继续执行工作流
                         
-                        # 设置满意度到状态中供路由使用
-                        self.current_state["current_satisfaction"] = satisfaction
-                        
-                        if satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
-                            print(f"\n🎉 规划完成！用户满意度: {satisfaction.value}")
+                        # 2. 工作流完成
+                        elif current_stage == WorkflowStage.COMPLETED:
+                            print(f"\n🎉 职业规划完成！")
                             workflow_completed = True
                             break
-                        else:
-                            print(f"\n🔄 用户不满意最终规划，将重新调整...")
-                            break  # 跳出当前流，重新开始下一轮
                     
-                    # 3. 工作流完成
-                    elif current_stage == WorkflowStage.COMPLETED:
-                        print(f"\n🎉 职业规划完成！")
+                    # 如果正常完成了一轮流处理，检查是否真的完成了
+                    if workflow_completed:
+                        break
+                    
+                    # 如果没有触发任何用户交互，可能是工作流正常结束了
+                    final_stage = self.current_state.get("current_stage")
+                    if final_stage == WorkflowStage.COMPLETED:
+                        print(f"\n🎉 职业规划自然完成！")
                         workflow_completed = True
                         break
                 
-                # 如果工作流已完成，跳出主循环
+                except Exception as e:
+                    print(f"❌ 工作流执行出错: {e}")
+                    # 可以选择重试或退出
+                    break
                 if workflow_completed:
                     break
             
-            if interaction_count >= max_interactions:
-                print(f"\n⚠️ 已达到最大交互次数（{max_interactions}），工作流结束")
+            # 检查是否因为安全计数器达到限制而结束
+            if safety_counter >= max_safety_iterations:
+                print(f"\n⚠️ 达到最大安全迭代次数（{max_safety_iterations}），强制结束工作流")
+                print("🔄 这可能表示工作流存在无限循环问题")
             
             # 显示最终结果
             self.display_final_results()

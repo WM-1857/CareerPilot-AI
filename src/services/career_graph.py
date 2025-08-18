@@ -88,44 +88,64 @@ class CareerNavigatorGraph:
         self.workflow.add_edge("industry_researcher", "reporter")
         self.workflow.add_edge("job_analyzer", "reporter")
         
-        # 汇报员的条件路由 (用户对分析报告的满意度)
+        # 汇报员的条件路由 (检查迭代次数和用户满意度)
         self.workflow.add_conditional_edges(
             "reporter",
-            self._route_user_satisfaction_analysis,
+            self._route_reporter_decision,
             {
-                "satisfied": "goal_decomposer",
-                "not_satisfied": "goal_decomposer",  # 即使不满意也进入下一阶段，避免循环
-                "needs_input": END  # 需要用户输入时结束，等待外部交互
+                "max_iterations_reached": "goal_decomposer",  # 达到最大迭代次数，直接进入目标拆分
+                "needs_user_feedback": END,  # 需要用户反馈时暂停
+                "satisfied": "goal_decomposer",  # 用户满意，进入目标拆分
+                "not_satisfied": "supervisor",  # 用户不满意，重新分析
             }
         )
         
         # 目标拆分 -> 日程计划
         self.workflow.add_edge("goal_decomposer", "scheduler")
         
-        # 日程计划的条件路由 (用户对最终计划的满意度)
-        self.workflow.add_conditional_edges(
-            "scheduler",
-            self._route_user_satisfaction_planning,
-            {
-                "satisfied": END,  # 满意则结束
-                "not_satisfied": END,  # 不满意也结束，避免循环
-                "needs_input": END  # 需要用户输入时结束
-            }
-        )
+        # 日程计划直接结束，不需要用户确认
+        self.workflow.add_edge("scheduler", END)
     
     def _route_coordinator(self, state: CareerNavigatorState) -> str:
         """协调员节点后的路由逻辑"""
         # coordinator_node 会在 state 中设置 'next_node'
         return state.get("next_node", "planner")  # 默认路由到 planner
     
+    def _route_reporter_decision(self, state: CareerNavigatorState) -> str:
+        """reporter节点后的路由决策逻辑"""
+        # 首先检查是否达到最大迭代次数
+        iteration_count = state.get("iteration_count", 0)
+        max_iterations = state.get("max_iterations", 3)
+        
+        if iteration_count >= max_iterations:
+            print(f"🔄 达到最大迭代次数({max_iterations})，直接进入目标拆分阶段")
+            return "max_iterations_reached"
+        
+        # 检查是否需要用户输入（未达到最大迭代次数的情况下）
+        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
+            print(f"📝 迭代次数({iteration_count}/{max_iterations})，等待用户反馈")
+            return "needs_user_feedback"
+        
+        # 检查用户满意度（已收到用户反馈的情况）
+        current_satisfaction = state.get("current_satisfaction")
+        if current_satisfaction is not None:
+            if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+                print(f"✅ 用户满意({current_satisfaction.value})，进入目标拆分阶段")
+                return "satisfied"
+            else:
+                print(f"🔄 用户不满意({current_satisfaction.value})，重新进行分析")
+                return "not_satisfied"
+        
+        # 默认情况：需要用户反馈
+        print("📝 默认进入用户反馈阶段")
+        return "needs_user_feedback"
+    
     def _route_user_satisfaction_analysis(self, state: CareerNavigatorState) -> str:
         """用户对分析报告满意度判断后的路由逻辑"""
         # 检查是否需要用户输入
         if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
             print("⏸️ 等待用户反馈，暂停工作流执行")
-            # 如果需要用户输入但还没有收到反馈，应该暂停而不是循环
-            # 这里我们强制进入下一阶段以避免无限循环
-            return "satisfied"
+            return "needs_input"
         
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
@@ -134,13 +154,28 @@ class CareerNavigatorGraph:
 
         # 检查用户满意度
         current_satisfaction = state.get("current_satisfaction")
-        if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+        
+        # 评分1-3：不满意，需要迭代优化（但要检查迭代次数限制）
+        if current_satisfaction in [UserSatisfactionLevel.VERY_DISSATISFIED, 
+                                  UserSatisfactionLevel.DISSATISFIED, 
+                                  UserSatisfactionLevel.NEUTRAL]:
+            iteration_count = state.get("iteration_count", 0)
+            max_iterations = state.get("max_iterations", 3)
+            
+            if iteration_count < max_iterations:
+                print(f"用户满意度较低({current_satisfaction.value})，进行第{iteration_count + 1}次迭代优化")
+                return "not_satisfied"  # 触发重新分析
+            else:
+                print(f"已达到最大迭代次数({max_iterations})，强制进入目标拆分阶段")
+                return "satisfied"
+        
+        # 评分4-5：满意，直接进入目标拆分阶段
+        elif current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+            print(f"用户满意({current_satisfaction.value})，进入目标拆分阶段")
             return "satisfied"
-        elif current_satisfaction in [UserSatisfactionLevel.DISSATISFIED, UserSatisfactionLevel.VERY_DISSATISFIED]:
-            print("用户不满意，但继续进入目标拆分阶段以避免循环")
-            return "satisfied"  # 改为satisfied避免循环
         else:
-            # 如果满意度为中性或未设置，默认进入下一阶段
+            # 如果满意度未设置，默认进入下一阶段
+            print("满意度未设置，默认进入目标拆分阶段")
             return "satisfied"
     
     def _route_user_satisfaction_planning(self, state: CareerNavigatorState) -> str:
@@ -148,8 +183,7 @@ class CareerNavigatorGraph:
         # 检查是否需要用户输入
         if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
             print("⏸️ 等待用户对规划的反馈，暂停工作流执行")
-            # 如果需要用户输入但还没有收到反馈，应该结束而不是循环
-            return "satisfied"
+            return "needs_input"
         
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
@@ -158,11 +192,28 @@ class CareerNavigatorGraph:
 
         # 检查用户满意度
         current_satisfaction = state.get("current_satisfaction")
-        if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+        
+        # 评分1-3：不满意，需要重新规划（但要检查迭代次数限制）
+        if current_satisfaction in [UserSatisfactionLevel.VERY_DISSATISFIED, 
+                                  UserSatisfactionLevel.DISSATISFIED, 
+                                  UserSatisfactionLevel.NEUTRAL]:
+            iteration_count = state.get("iteration_count", 0)
+            max_iterations = state.get("max_iterations", 3)
+            
+            if iteration_count < max_iterations:
+                print(f"用户对规划满意度较低({current_satisfaction.value})，重新进行目标拆分")
+                return "not_satisfied"  # 重新规划
+            else:
+                print(f"已达到最大迭代次数({max_iterations})，强制完成规划")
+                return "satisfied"
+        
+        # 评分4-5：满意，完成规划
+        elif current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+            print(f"用户对规划满意({current_satisfaction.value})，完成规划")
             return "satisfied"
         else:
-            print("用户对规划不满意，但继续执行以避免无限循环")
-            return "satisfied"  # 改为satisfied避免循环
+            print("满意度未设置，默认完成规划")
+            return "satisfied"
     
     def create_session(self, user_profile: UserProfile, user_message: str) -> CareerNavigatorState:
         """
@@ -250,7 +301,14 @@ class CareerNavigatorGraph:
         # 更新状态
         updated_state = state.copy()
         updated_state.update(StateUpdater.add_user_feedback(state, feedback))
-        updated_state.update(StateUpdater.increment_iteration(state))
+        
+        # 只有在用户不满意时才增加迭代计数器
+        if satisfaction_level in [UserSatisfactionLevel.VERY_DISSATISFIED, 
+                                UserSatisfactionLevel.DISSATISFIED, 
+                                UserSatisfactionLevel.NEUTRAL]:
+            iteration_updates = StateUpdater.increment_iteration(state)
+            for key, value in iteration_updates.items():
+                updated_state[key] = value
         
         return updated_state
     

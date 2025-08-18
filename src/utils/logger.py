@@ -9,6 +9,17 @@ import sys
 from datetime import datetime
 from typing import Any, Dict, Optional
 import json
+from enum import Enum
+
+
+class CustomJsonEncoder(json.JSONEncoder):
+    """自定义JSON编码器，用于处理枚举和日期时间类型"""
+    def default(self, obj):
+        if isinstance(obj, Enum):
+            return obj.value
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
 
 
 class CareerNavigatorLogger:
@@ -76,7 +87,7 @@ class CareerNavigatorLogger:
         """格式化日志消息"""
         if extra_data:
             try:
-                formatted_data = json.dumps(extra_data, ensure_ascii=False, indent=2, default=str)
+                formatted_data = json.dumps(extra_data, ensure_ascii=False, indent=2, cls=CustomJsonEncoder)
                 return f"{message}\n附加数据: {formatted_data}"
             except Exception as e:
                 return f"{message}\n附加数据格式化失败: {str(e)}"
