@@ -268,11 +268,12 @@ class StateUpdater:
     @staticmethod
     def increment_iteration(state: CareerNavigatorState) -> Dict[str, Any]:
         """增加迭代次数"""
-        new_count = state["iteration_count"] + 1
+        current_count = state.get("iteration_count", 0)
+        new_count = current_count + 1
         return {
             "iteration_count": new_count,
             "system_metrics": {
-                **state["system_metrics"],
+                **state.get("system_metrics", {}),
                 "iteration_count": new_count,
                 "last_updated": datetime.now()
             }

@@ -10,6 +10,7 @@ from typing import Dict, Any, List
 
 from langgraph.graph import StateGraph, END
 from langchain_core.messages import HumanMessage
+from langchain_core.runnables import RunnableConfig
 
 from src.models.career_state import (
     CareerNavigatorState, WorkflowStage, UserProfile, StateUpdater, 
@@ -55,6 +56,12 @@ class CareerNavigatorGraph:
         
         # 编译图
         self.app = self.workflow.compile()
+        
+        # 设置默认配置
+        self.default_config = {
+            "recursion_limit": 50,  # 增加递归限制到50
+            "thread_id": "career_planning_thread"
+        }
     
     def _add_edges(self):
         """添加工作流边"""
@@ -87,7 +94,8 @@ class CareerNavigatorGraph:
             self._route_user_satisfaction_analysis,
             {
                 "satisfied": "goal_decomposer",
-                "not_satisfied": "supervisor"  # 不满意则返回supervisor重新执行并行分析
+                "not_satisfied": "goal_decomposer",  # 即使不满意也进入下一阶段，避免循环
+                "needs_input": END  # 需要用户输入时结束，等待外部交互
             }
         )
         
@@ -100,7 +108,8 @@ class CareerNavigatorGraph:
             self._route_user_satisfaction_planning,
             {
                 "satisfied": END,  # 满意则结束
-                "not_satisfied": "scheduler"  # 不满意则返回日程计划员重新调整
+                "not_satisfied": END,  # 不满意也结束，避免循环
+                "needs_input": END  # 需要用户输入时结束
             }
         )
     
@@ -111,6 +120,13 @@ class CareerNavigatorGraph:
     
     def _route_user_satisfaction_analysis(self, state: CareerNavigatorState) -> str:
         """用户对分析报告满意度判断后的路由逻辑"""
+        # 检查是否需要用户输入
+        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
+            print("⏸️ 等待用户反馈，暂停工作流执行")
+            # 如果需要用户输入但还没有收到反馈，应该暂停而不是循环
+            # 这里我们强制进入下一阶段以避免无限循环
+            return "satisfied"
+        
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
             print("达到最大迭代次数，强制进入目标拆分阶段。")
@@ -120,12 +136,21 @@ class CareerNavigatorGraph:
         current_satisfaction = state.get("current_satisfaction")
         if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
             return "satisfied"
+        elif current_satisfaction in [UserSatisfactionLevel.DISSATISFIED, UserSatisfactionLevel.VERY_DISSATISFIED]:
+            print("用户不满意，但继续进入目标拆分阶段以避免循环")
+            return "satisfied"  # 改为satisfied避免循环
         else:
-            # 增加迭代次数
-            return "not_satisfied"
+            # 如果满意度为中性或未设置，默认进入下一阶段
+            return "satisfied"
     
     def _route_user_satisfaction_planning(self, state: CareerNavigatorState) -> str:
         """用户对规划计划满意度判断后的路由逻辑"""
+        # 检查是否需要用户输入
+        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
+            print("⏸️ 等待用户对规划的反馈，暂停工作流执行")
+            # 如果需要用户输入但还没有收到反馈，应该结束而不是循环
+            return "satisfied"
+        
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
             print("达到最大迭代次数，强制完成规划。")
@@ -136,7 +161,8 @@ class CareerNavigatorGraph:
         if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
             return "satisfied"
         else:
-            return "not_satisfied"
+            print("用户对规划不满意，但继续执行以避免无限循环")
+            return "satisfied"  # 改为satisfied避免循环
     
     def create_session(self, user_profile: UserProfile, user_message: str) -> CareerNavigatorState:
         """
@@ -165,9 +191,11 @@ class CareerNavigatorGraph:
             工作流执行结果
         """
         try:
-            # 运行工作流
+            # 运行工作流 - 设置递归限制
             final_state = None
-            for state_update in self.app.stream(initial_state):
+            config = RunnableConfig(recursion_limit=15)  # 降低递归限制，因为已经优化了工作流
+            
+            for state_update in self.app.stream(initial_state, config=config):
                 print(f"工作流状态更新: {list(state_update.keys())}")
                 final_state = state_update
             

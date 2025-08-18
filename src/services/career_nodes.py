@@ -28,14 +28,29 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("🚀 正在执行: coordinator_node")
     print("=" * 60)
     
-    messages = state["messages"]
+    messages = state.get("messages", [])
     user_request = messages[-1].content if messages else ""
     print(f"📝 用户请求: {user_request}")
     
+    # 安全获取用户画像
+    user_profile = state.get("user_profile")
+    if not user_profile:
+        print("❌ 用户画像信息缺失，跳过目标明确度分析")
+        result = {
+            "planning_strategy": {
+                "analysis_approach": "direct_execution",
+                "confidence_level": 0.5,
+                "reasoning": "用户画像信息缺失，采用直接执行策略"
+            }
+        }
+        print("🔄 coordinator_node 返回值:")
+        print(f"📤 {json.dumps(result, ensure_ascii=False, indent=2)}")
+        return result
+
     # 调用百炼API分析目标明确度
     llm_response = llm_service.analyze_career_goal_clarity(
         user_request, 
-        state["user_profile"]
+        user_profile
     )
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
