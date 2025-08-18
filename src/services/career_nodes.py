@@ -5,6 +5,7 @@ CareerNavigator LangGraph 节点实现
 
 import uuid
 import json
+import re
 from datetime import datetime
 from typing import Dict, Any, List
 
@@ -13,6 +14,90 @@ from src.models.career_state import (
     WorkflowStage, StateUpdater, UserFeedback, UserSatisfactionLevel
 )
 from src.services.llm_service import llm_service, call_mcp_api
+
+
+def parse_llm_json_content(content: str) -> Dict[str, Any]:
+    """
+    智能解析LLM返回的JSON内容，处理多种格式
+    
+    Args:
+        content: LLM返回的原始内容
+        
+    Returns:
+        解析后的字典对象
+        
+    Raises:
+        json.JSONDecodeError: 当所有解析方法都失败时
+    """
+    if not content or not isinstance(content, str):
+        raise json.JSONDecodeError("内容为空或格式错误", content or "", 0)
+    
+    content = content.strip()
+    
+    # 方法1: 直接解析JSON
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError:
+        pass
+    
+    # 方法2: 提取```json代码块中的内容
+    json_block_pattern = r'```json\s*(.*?)\s*```'
+    json_match = re.search(json_block_pattern, content, re.DOTALL | re.IGNORECASE)
+    if json_match:
+        try:
+            json_content = json_match.group(1).strip()
+            return json.loads(json_content)
+        except json.JSONDecodeError:
+            pass
+    
+    # 方法3: 提取任意代码块中的内容（可能是```没有指定语言）
+    code_block_pattern = r'```\s*(.*?)\s*```'
+    code_match = re.search(code_block_pattern, content, re.DOTALL)
+    if code_match:
+        try:
+            json_content = code_match.group(1).strip()
+            return json.loads(json_content)
+        except json.JSONDecodeError:
+            pass
+    
+    # 方法4: 提取{}包围的JSON内容
+    if '{' in content and '}' in content:
+        try:
+            # 找到第一个{和最后一个}
+            start = content.find('{')
+            end = content.rfind('}') + 1
+            json_content = content[start:end]
+            return json.loads(json_content)
+        except json.JSONDecodeError:
+            pass
+    
+    # 方法5: 尝试移除可能的前后缀文本，提取JSON部分
+    lines = content.split('\n')
+    json_lines = []
+    in_json = False
+    brace_count = 0
+    
+    for line in lines:
+        stripped_line = line.strip()
+        if '{' in stripped_line and not in_json:
+            in_json = True
+            json_lines.append(line)
+            brace_count += stripped_line.count('{') - stripped_line.count('}')
+        elif in_json:
+            json_lines.append(line)
+            brace_count += stripped_line.count('{') - stripped_line.count('}')
+            if brace_count == 0:
+                break
+    
+    if json_lines:
+        try:
+            json_content = '\n'.join(json_lines)
+            return json.loads(json_content)
+        except json.JSONDecodeError:
+            pass
+    
+    # 如果所有方法都失败，抛出异常
+    raise json.JSONDecodeError(f"无法解析JSON内容。原始内容: {content[:200]}...", content, 0)
 
 
 def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
@@ -57,8 +142,8 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            # 解析JSON响应
-            analysis = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            analysis = parse_llm_json_content(llm_response["content"])
             is_goal_clear = analysis.get("is_goal_clear", False)
             clarity_score = analysis.get("clarity_score", 0)
             
@@ -85,8 +170,10 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
                 
                 print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2, default=str)}")
                 return updates
-        except json.JSONDecodeError:
-            print("❌ LLM响应解析失败，默认进入规划阶段")
+        except json.JSONDecodeError as e:
+            print(f"❌ LLM响应解析失败: {str(e)}")
+            print(f"📄 原始响应内容: {llm_response['content'][:300]}...")
+            print("🔄 默认进入规划阶段")
             updates = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
             updates["next_node"] = "planner"
             
@@ -130,14 +217,17 @@ def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            strategy = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            strategy = parse_llm_json_content(llm_response["content"])
             print(f"📊 分析策略结果: {json.dumps(strategy, ensure_ascii=False, indent=2)}")
             
             updates = {"planning_strategy": strategy.get("strategy_overview", "制定个性化职业分析策略")}
             print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2)}")
             return updates
-        except json.JSONDecodeError:
-            print("❌ 策略解析失败，使用默认策略")
+        except json.JSONDecodeError as e:
+            print(f"❌ 策略解析失败: {str(e)}")
+            print(f"📄 原始响应内容: {llm_response['content'][:300]}...")
+            print("🔄 使用默认策略")
             updates = {"planning_strategy": "制定个性化职业分析策略"}
             print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2)}")
             return updates
@@ -294,10 +384,11 @@ def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            result = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            result = parse_llm_json_content(llm_response["content"])
             print(f"📊 用户画像分析结果 (迭代{iteration_count}): {json.dumps(result, ensure_ascii=False, indent=2)}")
-        except json.JSONDecodeError:
-            result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
+        except json.JSONDecodeError as e:
+            result = {"error": f"响应解析失败: {str(e)}", "raw_response": llm_response["content"][:500]}
             print(f"❌ 响应解析失败: {result}")
     else:
         result = {"error": llm_response.get("error", "分析失败")}
@@ -372,10 +463,11 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            result = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            result = parse_llm_json_content(llm_response["content"])
             print(f"📊 行业研究结果 (迭代{iteration_count}): {json.dumps(result, ensure_ascii=False, indent=2)}")
-        except json.JSONDecodeError:
-            result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
+        except json.JSONDecodeError as e:
+            result = {"error": f"响应解析失败: {str(e)}", "raw_response": llm_response["content"][:500]}
             print(f"❌ 响应解析失败: {result}")
     else:
         result = {"error": llm_response.get("error", "研究失败")}
@@ -458,10 +550,11 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            result = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            result = parse_llm_json_content(llm_response["content"])
             print(f"📊 职业分析结果 (迭代{iteration_count}): {json.dumps(result, ensure_ascii=False, indent=2)}")
-        except json.JSONDecodeError:
-            result = {"error": "响应解析失败", "raw_response": llm_response["content"]}
+        except json.JSONDecodeError as e:
+            result = {"error": f"响应解析失败: {str(e)}", "raw_response": llm_response["content"][:500]}
             print(f"❌ 响应解析失败: {result}")
     else:
         result = {"error": llm_response.get("error", "分析失败")}
@@ -560,15 +653,16 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            report = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            report = parse_llm_json_content(llm_response["content"])
             if iteration_count > 0:
                 report["iteration_summary"] = f"这是基于您反馈的第{iteration_count}次优化报告"
             print(f"📊 综合报告生成成功 (迭代{iteration_count}): {json.dumps(report, ensure_ascii=False, indent=2)}")
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             report = {
                 "executive_summary": "综合分析报告",
-                "error": "报告解析失败",
-                "raw_response": llm_response["content"],
+                "error": f"报告解析失败: {str(e)}",
+                "raw_response": llm_response["content"][:500],
                 "iteration_count": iteration_count
             }
             print(f"❌ 报告解析失败: {report}")
@@ -640,15 +734,16 @@ def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            decomposed_goals = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            decomposed_goals = parse_llm_json_content(llm_response["content"])
             print(f"📊 目标拆分完成: {json.dumps(decomposed_goals, ensure_ascii=False, indent=2)}")
             print(f"   - 短期目标: {len(decomposed_goals.get('short_term_goals', []))} 个")
             print(f"   - 中期目标: {len(decomposed_goals.get('medium_term_goals', []))} 个")
             print(f"   - 长期目标: {len(decomposed_goals.get('long_term_goals', []))} 个")
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             decomposed_goals = {
-                "error": "目标拆分解析失败",
-                "raw_response": llm_response["content"]
+                "error": f"目标拆分解析失败: {str(e)}",
+                "raw_response": llm_response["content"][:500]
             }
             print(f"❌ 目标拆分解析失败: {decomposed_goals}")
     else:
@@ -704,13 +799,14 @@ def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     if llm_response.get("success"):
         try:
-            final_schedule = json.loads(llm_response["content"])
+            # 使用智能JSON解析
+            final_schedule = parse_llm_json_content(llm_response["content"])
             print(f"📊 行动计划制定完成: {json.dumps(final_schedule, ensure_ascii=False, indent=2)}")
             print(f"   - 计划概述: {final_schedule.get('schedule_overview', '计划已生成')}")
-        except json.JSONDecodeError:
+        except json.JSONDecodeError as e:
             final_schedule = {
-                "error": "计划解析失败",
-                "raw_response": llm_response["content"]
+                "error": f"计划解析失败: {str(e)}",
+                "raw_response": llm_response["content"][:500]
             }
             print(f"❌ 计划解析失败: {final_schedule}")
     else:
