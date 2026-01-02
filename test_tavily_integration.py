@@ -6,7 +6,8 @@ import sys
 import os
 
 # 设置环境变量
-os.environ["DASHSCOPE_API_KEY"] = "sk-1234567890abcdef"  # 使用测试用的API key
+os.environ["SPARK_API_KEY"] = "Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk"
+os.environ["DASHSCOPE_API_KEY"] = os.environ["SPARK_API_KEY"]
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 

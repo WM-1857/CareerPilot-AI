@@ -11,7 +11,11 @@ class BaseConfig:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
     
     # LLM配置
-    DASHSCOPE_API_KEY = os.environ.get('DASHSCOPE_API_KEY')
+    SPARK_API_KEY = os.environ.get('SPARK_API_KEY') or "Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk"
+    SPARK_API_URL = os.environ.get('SPARK_API_URL') or "https://spark-api-open.xf-yun.com/v1/chat/completions"
+    
+    # 兼容旧配置名
+    DASHSCOPE_API_KEY = SPARK_API_KEY
     
     # 日志配置
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
@@ -77,7 +81,7 @@ def get_config(config_name: Optional[str] = None) -> BaseConfig:
 # 验证必需的环境变量
 def validate_config():
     """验证配置是否完整"""
-    required_vars = ['DASHSCOPE_API_KEY']
+    required_vars = ['SPARK_API_KEY']
     missing_vars = []
     
     for var in required_vars:

@@ -39,7 +39,7 @@ class EnvironmentTester:
         
         # 检查必需的环境变量
         required_vars = [
-            'DASHSCOPE_API_KEY',
+            'SPARK_API_KEY',
         ]
         
         optional_vars = [
@@ -176,7 +176,7 @@ class EnvironmentTester:
                     elif config_file.endswith('.env'):
                         with open(full_path, 'r', encoding='utf-8') as f:
                             content = f.read()
-                            if 'DASHSCOPE_API_KEY' in content:
+                            if 'SPARK_API_KEY' in content:
                                 self.print_status(f"配置文件 {config_file}: 包含API密钥", True)
                             else:
                                 self.print_status(f"配置文件 {config_file}: 未包含API密钥", False)

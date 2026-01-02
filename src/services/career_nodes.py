@@ -152,7 +152,7 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
             print(f"   - 明确度评分: {clarity_score}")
             print(f"   - 详细分析: {json.dumps(analysis, ensure_ascii=False, indent=2)}")
             
-            if is_goal_clear and clarity_score > 70:
+            if is_goal_clear:
                 print("✅ 判断：目标明确，直接进入目标拆分。")
                 # 更新状态，直接进入目标拆分阶段
                 updates = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
@@ -715,14 +715,16 @@ def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("=" * 60)
     
     # 获取职业方向
-    integrated_report = state.get("integrated_report", {})
-    career_direction = integrated_report.get("career_match", {}).get("recommended_career", "")
+    integrated_report = state.get("integrated_report") or {}
+    career_match = integrated_report.get("career_match") or {}
+    career_direction = career_match.get("recommended_career", "")
     
     if not career_direction:
         # 从用户画像中获取职业目标
-        career_direction = state["user_profile"].get("career_goals", "职业发展")
+        user_profile = state.get("user_profile") or {}
+        career_direction = user_profile.get("career_goals", "职业发展")
     
-    user_profile = state["user_profile"]
+    user_profile = state.get("user_profile") or {}
     
     print(f"🎯 目标职业方向: {career_direction}")
     print(f"👤 用户画像: {json.dumps(dict(user_profile), ensure_ascii=False, indent=2)}")
@@ -772,8 +774,8 @@ def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("📅 正在执行: scheduler_node")
     print("=" * 60)
     
-    career_goals = state.get("career_goals", {})
-    user_profile = state["user_profile"]
+    career_goals = state.get("career_goals") or {}
+    user_profile = state.get("user_profile") or {}
     
     print(f"🎯 职业目标: {json.dumps(career_goals, ensure_ascii=False, indent=2)}")
     print(f"👤 用户画像: {json.dumps(dict(user_profile), ensure_ascii=False, indent=2)}")

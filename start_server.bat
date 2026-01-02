@@ -3,16 +3,18 @@ echo CareerNavigator 服务启动脚本
 echo ============================
 
 REM 设置环境变量
-set DASHSCOPE_API_KEY=#
+set SPARK_API_KEY=Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk
+set SPARK_API_URL=https://spark-api-open.xf-yun.com/v1/chat/completions
+set DASHSCOPE_API_KEY=%SPARK_API_KEY%
 set TAVILY_API_KEY=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
 set FLASK_ENV=development
 set LOG_LEVEL=INFO
 
 echo 环境变量设置完成:
-echo DASHSCOPE_API_KEY: %DASHSCOPE_API_KEY%
+echo SPARK_API_KEY: %SPARK_API_KEY%
 echo FLASK_ENV: %FLASK_ENV%
 echo LOG_LEVEL: %LOG_LEVEL%
-echo.
+echo.    
 
 echo 启动CareerNavigator后端服务...
 echo 服务地址: http://localhost:5050

@@ -12,6 +12,7 @@ import time
 from config.config import get_config, validate_config
 from src.routes.career import career_bp
 from src.utils.logger import main_logger, api_logger, log_api_request, log_api_response
+from interactive_workflow import InteractiveWorkflowRunner
 
 # 验证配置
 try:

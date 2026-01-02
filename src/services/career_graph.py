@@ -177,7 +177,7 @@ class CareerNavigatorGraph:
             # 如果满意度未设置，默认进入下一阶段
             print("满意度未设置，默认进入目标拆分阶段")
             return "satisfied"
-    
+        
     def _route_user_satisfaction_planning(self, state: CareerNavigatorState) -> str:
         """用户对规划计划满意度判断后的路由逻辑"""
         # 检查是否需要用户输入
@@ -214,7 +214,6 @@ class CareerNavigatorGraph:
         else:
             print("满意度未设置，默认完成规划")
             return "satisfied"
-    
     def create_session(self, user_profile: UserProfile, user_message: str) -> CareerNavigatorState:
         """
         创建新的会话状态

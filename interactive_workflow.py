@@ -30,13 +30,13 @@ def load_env():
 load_env()
 
 # 设置临时API密钥（如果未配置）
-if not os.getenv('DASHSCOPE_API_KEY'):
-    print("⚠️  警告：未设置DASHSCOPE_API_KEY环境变量")
-    print("   请在.env文件中设置正确的阿里云百炼API密钥")
-    print("   格式示例：DASHSCOPE_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
-    print("   注意：这里使用的是演示密钥，请替换为您的真实密钥")
+if not os.getenv('SPARK_API_KEY'):
+    print("⚠️  警告：未设置SPARK_API_KEY环境变量")
+    print("   请在.env文件中设置正确的讯飞星火API密钥")
+    print("   格式示例：SPARK_API_KEY=Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk")
     # 这里仍然设置一个无效密钥用于演示，但会提供明确的错误信息
-    os.environ['DASHSCOPE_API_KEY'] = 'sk-demo-invalid-key-for-testing'
+    os.environ['SPARK_API_KEY'] = 'Bearer sk-demo-invalid-key-for-testing'
+    os.environ['DASHSCOPE_API_KEY'] = os.environ['SPARK_API_KEY']
 
 try:
     from src.services.career_graph import CareerNavigatorGraph
@@ -202,7 +202,7 @@ class InteractiveWorkflowRunner:
             
             workflow_completed = False
             safety_counter = 0  # 安全计数器，防止无限循环
-            max_safety_iterations = 10  # 最大安全迭代次数
+            max_safety_iterations = 3  # 最大安全迭代次数
             
             # 执行工作流直到完成或需要用户交互
             while not workflow_completed and safety_counter < max_safety_iterations:
@@ -288,20 +288,56 @@ class InteractiveWorkflowRunner:
                                 # 不满意用户跳出当前流处理，重新启动工作流
                                 break
                         
-                        # 1.5. 检查是否跳过了用户反馈阶段（达到最大迭代次数）
-                        elif current_stage == WorkflowStage.GOAL_DECOMPOSITION and "skip_feedback_reason" in self.current_state:
-                            skip_reason = self.current_state.get("skip_feedback_reason", "未知原因")
-                            print(f"\n⚠️ 跳过用户反馈阶段：{skip_reason}")
-                            print("📊 显示最终分析报告...")
+                        # 1.5. 检查是否进入了目标拆分阶段（可能是因为目标明确直接跳过分析，或达到最大迭代次数）
+                        elif current_stage == WorkflowStage.GOAL_DECOMPOSITION:
+                            skip_reason = self.current_state.get("skip_feedback_reason")
+                            if skip_reason:
+                                print(f"\n⚠️ 跳过用户反馈阶段：{skip_reason}")
+                            else:
+                                print(f"\n✅ 目标已明确，直接进入目标拆分阶段")
                             
-                            # 显示报告但不收集反馈
+                            print("📊 显示分析报告...")
+                            
+                            # 显示报告（如果有）
                             if "integrated_report" in self.current_state:
                                 report = self.current_state["integrated_report"]
-                                if report:  # 确保报告存在
+                                if report:
                                     self.display_report(report)
+                            else:
+                                print("ℹ️ 由于直接进入目标拆分，跳过了详细的行业和职业分析报告。")
                             
-                            print("🎯 工作流将直接进入目标拆分阶段...")
-                            continue  # 继续执行工作流
+                            print("🎯 正在生成最终职业规划...")
+                            
+                            # 手动执行后续节点以确保完成
+                            try:
+                                print("🎯 开始执行目标拆分...")
+                                goal_result = goal_decomposer_node(self.current_state)
+                                if isinstance(goal_result, dict):
+                                    for key, value in goal_result.items():
+                                        if key in self.current_state or hasattr(self.current_state, key):
+                                            self.current_state[key] = value  # type: ignore
+                                
+                                print("📅 开始执行日程规划...")
+                                schedule_result = scheduler_node(self.current_state)
+                                if isinstance(schedule_result, dict):
+                                    for key, value in schedule_result.items():
+                                        if key in self.current_state or hasattr(self.current_state, key):
+                                            self.current_state[key] = value  # type: ignore
+                                
+                                # 显示最终计划并直接完成工作流
+                                if "final_career_plan" in self.current_state:
+                                    self.display_goal_plan(self.current_state["final_career_plan"])
+                                    if skip_reason:
+                                        print(f"\n🎉 职业规划完成！(由于达到最大迭代次数跳过反馈)")
+                                    else:
+                                        print(f"\n🎉 职业规划完成！(目标明确，直接生成规划)")
+                                    self.current_state["current_stage"] = WorkflowStage.COMPLETED
+                                    workflow_completed = True
+                                    break
+                                    
+                            except Exception as e:
+                                print(f"❌ 执行目标拆分和规划出错: {e}")
+                                break
                         
                         # 2. 工作流完成
                         elif current_stage == WorkflowStage.COMPLETED:

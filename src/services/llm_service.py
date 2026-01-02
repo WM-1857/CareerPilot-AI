@@ -5,9 +5,8 @@
 
 import os
 import json
+import requests
 from typing import Dict, Any, List, Optional
-from dashscope import Generation
-import dashscope
 
 # Tavily搜索工具集成
 import logging
@@ -19,28 +18,24 @@ from decorators import create_logged_tool
 from src.utils.logger import CustomJsonEncoder
 
 class DashScopeService:
-    """阿里云百炼API服务类"""
+    """讯飞星火API服务类 (原DashScope服务)"""
     
     def __init__(self, api_key: Optional[str] = None):
         """
-        初始化百炼API服务
+        初始化星火API服务
         
         Args:
-            api_key: 阿里云百炼API密钥，如果不提供则从环境变量获取
+            api_key: 讯飞星火API密钥，如果不提供则从环境变量或配置获取
         """
-        self.api_key = api_key or os.getenv('DASHSCOPE_API_KEY')
+        from config.config import BaseConfig
+        self.api_key = api_key or os.getenv('SPARK_API_KEY') or BaseConfig.SPARK_API_KEY
+        self.api_url = os.getenv('SPARK_API_URL') or BaseConfig.SPARK_API_URL
+        
         if not self.api_key:
-            raise ValueError("请设置DASHSCOPE_API_KEY环境变量或提供api_key参数")
-        
-        # 验证API密钥格式
-        if self.api_key.startswith('sk-demo-') or self.api_key == 'sk-temp-for-testing':
-            print("⚠️  检测到演示/测试密钥，API调用将失败")
-            print("   请设置有效的阿里云百炼API密钥")
-        
-        dashscope.api_key = self.api_key
+            raise ValueError("请设置SPARK_API_KEY环境变量或提供api_key参数")
         
         # 默认模型配置
-        self.default_model = "qwen-plus"
+        self.default_model = "4.0Ultra"
         self.default_temperature = 0.7
         self.default_max_tokens = 2000
     
@@ -48,7 +43,7 @@ class DashScopeService:
                  model: Optional[str] = None, temperature: Optional[float] = None,
                  max_tokens: Optional[int] = None) -> Dict[str, Any]:
         """
-        调用大语言模型
+        调用大语言模型 (讯飞星火)
         
         Args:
             prompt: 输入提示词
@@ -64,27 +59,43 @@ class DashScopeService:
             # 构建完整的提示词
             full_prompt = self._build_prompt(prompt, context)
             
-            # 调用百炼API
-            response = Generation.call(
-                model=model or self.default_model,
-                prompt=full_prompt,
-                temperature=temperature or self.default_temperature,
-                max_tokens=max_tokens or self.default_max_tokens,
-                result_format='message'
-            )
+            headers = {
+                'Authorization': self.api_key,
+                'Content-Type': 'application/json'
+            }
+            
+            body = {
+                "model": model or self.default_model,
+                "messages": [
+                    {"role": "user", "content": full_prompt}
+                ],
+                "temperature": temperature or self.default_temperature,
+                "max_tokens": max_tokens or self.default_max_tokens,
+                "stream": False
+            }
+            
+            response = requests.post(url=self.api_url, json=body, headers=headers)
             
             # 检查响应状态
             if response.status_code == 200:
-                return {
-                    "success": True,
-                    "content": response.output.choices[0].message.content,
-                    "usage": response.usage,
-                    "request_id": response.request_id
-                }
+                result = response.json()
+                if 'choices' in result and len(result['choices']) > 0:
+                    return {
+                        "success": True,
+                        "content": result['choices'][0]['message']['content'],
+                        "usage": result.get('usage', {}),
+                        "request_id": result.get('id', '')
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"API返回格式异常: {response.text}",
+                        "status_code": response.status_code
+                    }
             else:
-                error_msg = f"API调用失败: {response.code} - {response.message}"
+                error_msg = f"API调用失败: {response.status_code} - {response.text}"
                 if response.status_code == 401:
-                    error_msg += " (请检查DASHSCOPE_API_KEY是否正确)"
+                    error_msg += " (请检查API_KEY是否正确)"
                 return {
                     "success": False,
                     "error": error_msg,
@@ -92,9 +103,7 @@ class DashScopeService:
                 }
                 
         except Exception as e:
-            error_msg = f"调用百炼API时发生异常: {str(e)}"
-            if "InvalidApiKey" in str(e) or "401" in str(e):
-                error_msg += " (请检查DASHSCOPE_API_KEY是否正确设置)"
+            error_msg = f"调用星火API时发生异常: {str(e)}"
             return {
                 "success": False,
                 "error": error_msg

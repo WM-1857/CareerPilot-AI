@@ -17,14 +17,17 @@ sys.path.insert(0, project_root)
 
 try:
     # 临时设置一个假的API密钥来避免导入错误
+    if not os.getenv('SPARK_API_KEY'):
+        os.environ['SPARK_API_KEY'] = 'Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk'
+    
     if not os.getenv('DASHSCOPE_API_KEY'):
-        os.environ['DASHSCOPE_API_KEY'] = 'sk-4b6f138ba0f74331a6092090b1c7cce1'
+        os.environ['DASHSCOPE_API_KEY'] = os.environ['SPARK_API_KEY']
     
     from src.services.llm_service import llm_service, call_mcp_api
     IMPORT_SUCCESS = True
     
     # 如果使用的是临时密钥，标记为测试模式
-    MOCK_MODE = os.getenv('DASHSCOPE_API_KEY') == 'sk-4b6f138ba0f74331a6092090b1c7cce1'
+    MOCK_MODE = os.getenv('SPARK_API_KEY') == 'Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk'
 except ImportError as e:
     IMPORT_SUCCESS = False
     IMPORT_ERROR = str(e)
@@ -436,9 +439,9 @@ class LLMServiceTester:
         """测试API密钥配置"""
         print("\n[Testing] API Key Configuration...")
         
-        api_key = os.getenv('DASHSCOPE_API_KEY')
+        api_key = os.getenv('SPARK_API_KEY')
         if api_key:
-            if api_key.startswith('sk-'):
+            if api_key.startswith('Bearer '):
                 if MOCK_MODE:
                     return self.print_result(
                         "API密钥配置",
@@ -458,14 +461,14 @@ class LLMServiceTester:
                     "API密钥配置",
                     False,
                     "API密钥格式不正确",
-                    "API密钥应以'sk-'开头"
+                    "API密钥应以'Bearer '开头"
                 )
         else:
             return self.print_result(
                 "API密钥配置",
                 False,
                 "API密钥未配置",
-                "未找到DASHSCOPE_API_KEY环境变量"
+                "未找到SPARK_API_KEY环境变量"
             )
     
     def test_error_handling(self) -> bool:

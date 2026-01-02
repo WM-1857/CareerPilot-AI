@@ -31,8 +31,11 @@ load_env()
 
 try:
     # 临时设置API密钥避免导入错误
+    if not os.getenv('SPARK_API_KEY'):
+        os.environ['SPARK_API_KEY'] = 'Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk'
+    
     if not os.getenv('DASHSCOPE_API_KEY'):
-        os.environ['DASHSCOPE_API_KEY'] = 'sk-temp-for-testing'
+        os.environ['DASHSCOPE_API_KEY'] = os.environ['SPARK_API_KEY']
     
     from src.services.career_graph import CareerNavigatorGraph
     from src.services.career_nodes import (
@@ -45,7 +48,7 @@ try:
         create_initial_state, StateUpdater, UserFeedback
     )
     IMPORT_SUCCESS = True
-    MOCK_MODE = os.getenv('DASHSCOPE_API_KEY') == 'sk-temp-for-testing'
+    MOCK_MODE = os.getenv('SPARK_API_KEY') == 'Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk'
 except ImportError as e:
     IMPORT_SUCCESS = False
     IMPORT_ERROR = str(e)
