@@ -1,342 +1,553 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CareerNavigator - 智能职业规划助手</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 40px;
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .header h1 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        
-        .header p {
-            color: #666;
-            font-size: 1.1em;
-        }
-        
-        .status {
-            text-align: center;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            margin-bottom: 30px;
-        }
-        
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .api-test {
-            margin-top: 30px;
-        }
-        
-        .btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.3s;
-        }
-        
-        .btn:hover {
-            background: #5a6fd8;
-        }
-        
-        .btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
-        }
-        
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        [v-cloak] { display: none; }
+        .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
+        .fade-enter-from, .fade-leave-to { opacity: 0; }
+        .chat-bubble { max-width: 80%; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
+        .chat-bubble-user { background-color: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; }
+        .chat-bubble-bot { background-color: #f3f4f6; color: #1f2937; align-self: flex-start; border-bottom-left-radius: 0.25rem; }
     </style>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🚀 CareerNavigator</h1>
-            <p>智能职业规划助手</p>
-        </div>
-        
-        <div class="status success">
-            <h3>✅ 前端页面加载成功！</h3>
-            <p>后端服务器正在运行，等待API测试...</p>
-        </div>
-        
-        <div class="api-test">
-            <h3>API 连接测试</h3>
-            <p>点击按钮测试与后端服务器的连接:</p>
-            <button class="btn" onclick="testHealthCheck()">
-                <span id="health-loading" class="loading" style="display: none;"></span>
-                测试健康检查 API
-            </button>
-            <div id="health-result" class="result" style="display: none;"></div>
-            
-            <br><br>
-            
-            <button class="btn" onclick="testCareerAPI()" style="margin-top: 10px;">
-                <span id="career-loading" class="loading" style="display: none;"></span>
-                测试职业规划 API
-            </button>
-            <div id="career-result" class="result" style="display: none;"></div>
-            
-            <br><br>
-            
-            <button class="btn" onclick="testSessionStatus()" style="margin-top: 10px;" id="status-btn" disabled>
-                <span id="status-loading" class="loading" style="display: none;"></span>
-                查询会话状态
-            </button>
-            <div id="status-result" class="result" style="display: none;"></div>
-            
-            <br><br>
-            
-            <button class="btn" onclick="testAllSessions()" style="margin-top: 10px;">
-                <span id="sessions-loading" class="loading" style="display: none;"></span>
-                查询所有会话
-            </button>
-            <div id="sessions-result" class="result" style="display: none;"></div>
-        </div>
+<body class="bg-gray-50 min-h-screen">
+    <div id="app" v-cloak class="max-w-4xl mx-auto p-4 md:p-8">
+        <!-- Header -->
+        <header class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-blue-600 flex items-center justify-center gap-2">
+                <i class="fas fa-compass"></i> CareerNavigator
+            </h1>
+            <p class="text-gray-600 mt-2">基于 AI 的智能职业规划与导航系统</p>
+        </header>
+
+        <!-- Main Content -->
+        <main>
+            <!-- Step 1: Questionnaire -->
+            <section v-if="currentStep === 'questionnaire'" class="bg-white rounded-xl shadow-md p-6 md:p-8">
+                <h2 class="text-xl font-semibold mb-6 border-b pb-2">个人信息问卷</h2>
+                <form @submit.prevent="startPlanning" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">年龄</label>
+                            <input v-model.number="profile.age" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">学历</label>
+                            <select v-model="profile.education_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                                <option value="本科">本科</option>
+                                <option value="硕士">硕士</option>
+                                <option value="博士">博士</option>
+                                <option value="大专">大专</option>
+                                <option value="其他">其他</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">工作年限</label>
+                            <input v-model.number="profile.work_experience" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">当前职位</label>
+                            <input v-model="profile.current_position" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：软件工程师" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">所在行业</label>
+                            <input v-model="profile.industry" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：互联网" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">所在地区</label>
+                            <input v-model="profile.location" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：北京" required>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">技能 (逗号分隔)</label>
+                        <input v-model="skillsInput" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Python, React, 项目管理">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">兴趣爱好 (逗号分隔)</label>
+                        <input v-model="interestsInput" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="人工智能, 摄影, 徒步">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">职业目标</label>
+                        <textarea v-model="profile.career_goals" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="描述您未来的职业愿景" required></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">薪资期望</label>
+                        <input v-model="profile.salary_expectation" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：30-50万">
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
+                            <span v-if="loading" class="animate-spin"><i class="fas fa-spinner"></i></span>
+                            <span v-else>开始职业规划</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Step 2: Interactive Workflow -->
+            <section v-if="currentStep === 'workflow'" class="flex flex-col h-[70vh]">
+                <!-- Chat History -->
+                <div class="flex-1 overflow-y-auto bg-white rounded-t-xl shadow-md p-4 space-y-4" ref="chatContainer">
+                    <div v-for="(msg, index) in chatHistory" :key="index" :class="['flex flex-col', msg.role === 'user' ? 'items-end' : 'items-start']">
+                        <div :class="['chat-bubble', msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot']">
+                            <div v-if="msg.type === 'text'" class="whitespace-pre-wrap">{{ msg.content }}</div>
+                            
+                            <!-- Report Display -->
+                            <div v-if="msg.type === 'report'" class="space-y-4">
+                                <h3 class="font-bold text-lg border-b pb-1 mb-2">📊 职业规划分析报告</h3>
+                                
+                                <!-- 错误提示 -->
+                                <div v-if="msg.content.error" class="bg-red-50 p-3 rounded border-l-4 border-red-500 text-red-700 text-xs mb-2">
+                                    <p class="font-bold">⚠️ 分析异常</p>
+                                    <p>{{ msg.content.error }}</p>
+                                </div>
+
+                                <div v-if="msg.content.executive_summary" class="bg-blue-50 p-3 rounded border-l-4 border-blue-500">
+                                    <p class="text-sm italic">{{ msg.content.executive_summary }}</p>
+                                </div>
+                                
+                                <div class="space-y-4 mt-4">
+                                    <!-- 个人分析 -->
+                                    <div v-if="msg.content.personal_analysis" class="bg-white p-3 rounded-lg border shadow-sm">
+                                        <h4 class="font-bold text-blue-700 text-sm mb-2 flex items-center gap-2">
+                                            <i class="fas fa-user-check"></i> 个人能力分析
+                                        </h4>
+                                        <p class="text-xs text-gray-700 leading-relaxed">{{ msg.content.personal_analysis }}</p>
+                                    </div>
+
+                                    <!-- 行业机会 -->
+                                    <div v-if="msg.content.industry_opportunities" class="bg-white p-3 rounded-lg border shadow-sm">
+                                        <h4 class="font-bold text-green-700 text-sm mb-2 flex items-center gap-2">
+                                            <i class="fas fa-lightbulb"></i> 行业机会分析
+                                        </h4>
+                                        <p class="text-xs text-gray-700 leading-relaxed">{{ msg.content.industry_opportunities }}</p>
+                                    </div>
+
+                                    <!-- 职业匹配度 -->
+                                    <div v-if="msg.content.career_match" class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                                        <div class="flex justify-between items-center mb-2">
+                                            <h4 class="font-bold text-purple-800 text-sm">🎯 职业匹配评估</h4>
+                                            <span class="text-xl font-black text-purple-600">{{ msg.content.career_match.match_score }}%</span>
+                                        </div>
+                                        <div class="space-y-2">
+                                            <div v-if="msg.content.career_match.match_reasons">
+                                                <p class="text-[10px] font-bold text-purple-700 uppercase tracking-wider">匹配优势</p>
+                                                <ul class="text-xs list-disc list-inside text-gray-700">
+                                                    <li v-for="reason in msg.content.career_match.match_reasons">{{ reason }}</li>
+                                                </ul>
+                                            </div>
+                                            <div v-if="msg.content.career_match.concerns">
+                                                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">潜在挑战</p>
+                                                <ul class="text-xs list-disc list-inside text-gray-700">
+                                                    <li v-for="concern in msg.content.career_match.concerns">{{ concern }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- 发展建议 -->
+                                    <div v-if="msg.content.development_plan" class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                        <div v-for="(plan, period) in msg.content.development_plan" :key="period" class="p-2 rounded border bg-gray-50">
+                                            <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">{{ period === 'short_term' ? '短期' : (period === 'medium_term' ? '中期' : '长期') }}建议</p>
+                                            <ul class="text-[11px] list-disc list-inside text-gray-600">
+                                                <li v-for="item in plan">{{ item }}</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- 风险提示 -->
+                                    <div v-if="msg.content.risk_warnings" class="p-3 bg-red-50 rounded-lg border border-red-100">
+                                        <h4 class="font-bold text-red-800 text-sm mb-1 flex items-center gap-2">
+                                            <i class="fas fa-exclamation-triangle"></i> 风险提示
+                                        </h4>
+                                        <ul class="text-xs list-disc list-inside text-red-700">
+                                            <li v-for="risk in msg.content.risk_warnings">{{ risk }}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Goals Display -->
+                            <div v-if="msg.type === 'goals'" class="space-y-4">
+                                <h3 class="font-bold text-lg border-b pb-1 mb-2">🎯 职业目标拆解</h3>
+                                <div class="space-y-6">
+                                    <div v-for="(goals, type) in { '短期目标 (3-12个月)': msg.content.short_term_goals, '中期目标 (1-3年)': msg.content.medium_term_goals, '长期目标 (3-5年)': msg.content.long_term_goals }" :key="type">
+                                        <div v-if="goals && goals.length > 0">
+                                            <h4 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
+                                                <span class="w-2 h-2 rounded-full" :class="type.includes('短期') ? 'bg-green-500' : (type.includes('中期') ? 'bg-blue-500' : 'bg-purple-500')"></span>
+                                                {{ type }}
+                                            </h4>
+                                            <div class="space-y-3 ml-4">
+                                                <div v-for="goal in goals" :key="goal.title" class="bg-white p-3 rounded-lg border shadow-sm">
+                                                    <div class="flex justify-between items-start mb-1">
+                                                        <h5 class="font-bold text-gray-900 text-xs">{{ goal.title }}</h5>
+                                                        <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500">{{ goal.timeline }}</span>
+                                                    </div>
+                                                    <p class="text-[11px] text-gray-600 mb-2">{{ goal.description }}</p>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 pt-2 border-t border-gray-50">
+                                                        <div>
+                                                            <p class="text-[9px] font-bold text-gray-400 uppercase">所需技能</p>
+                                                            <div class="flex flex-wrap gap-1 mt-1">
+                                                                <span v-for="skill in goal.required_skills" class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{{ skill }}</span>
+                                                            </div>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-[9px] font-bold text-gray-400 uppercase">关键里程碑</p>
+                                                            <ul class="text-[10px] list-disc list-inside text-gray-500 mt-1">
+                                                                <li v-for="ms in goal.milestones">{{ ms }}</li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Final Plan Display -->
+                            <div v-if="msg.type === 'plan'" class="space-y-4">
+                                <h3 class="font-bold text-lg border-b pb-1 mb-2">📅 职业行动计划</h3>
+                                
+                                <div v-if="msg.content.schedule_overview" class="bg-gray-50 p-3 rounded border-l-4 border-gray-400 mb-4">
+                                    <p class="text-sm italic">{{ msg.content.schedule_overview }}</p>
+                                </div>
+
+                                <!-- 每周计划 -->
+                                <div v-if="msg.content.weekly_schedule" class="space-y-4">
+                                    <h4 class="font-bold text-sm text-blue-700 flex items-center gap-2">
+                                        <i class="fas fa-calendar-week"></i> 近期周计划
+                                    </h4>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                        <div v-for="week in msg.content.weekly_schedule" :key="week.week" class="bg-white p-3 rounded-lg border shadow-sm">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="text-xs font-black text-blue-600">第 {{ week.week }} 周</span>
+                                                <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full">{{ week.focus_area }}</span>
+                                            </div>
+                                            <div class="space-y-2">
+                                                <div v-for="(task, tidx) in week.tasks" :key="tidx" class="border-l-2 border-gray-100 pl-2">
+                                                    <p class="text-xs font-medium text-gray-800">{{ task.task }}</p>
+                                                    <div class="flex justify-between items-center mt-1">
+                                                        <span class="text-[10px] text-gray-400"><i class="far fa-clock"></i> {{ task.duration }}</span>
+                                                        <span :class="['text-[9px] px-1 rounded', task.priority === '高' ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-500']">{{ task.priority }}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 月度里程碑 -->
+                                <div v-if="msg.content.monthly_milestones" class="mt-6">
+                                    <h4 class="font-bold text-sm text-green-700 mb-3 flex items-center gap-2">
+                                        <i class="fas fa-flag-checkered"></i> 月度里程碑
+                                    </h4>
+                                    <div class="space-y-3">
+                                        <div v-for="ms in msg.content.monthly_milestones" :key="ms.month" class="flex gap-3">
+                                            <div class="flex flex-col items-center">
+                                                <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">{{ ms.month }}月</div>
+                                                <div class="w-0.5 flex-1 bg-green-50 my-1"></div>
+                                            </div>
+                                            <div class="flex-1 bg-green-50/30 p-3 rounded-lg border border-green-100 mb-2">
+                                                <h5 class="text-xs font-bold text-green-800">{{ ms.milestone }}</h5>
+                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
+                                                    <div>
+                                                        <p class="text-[9px] font-bold text-green-600 uppercase">交付成果</p>
+                                                        <ul class="text-[10px] list-disc list-inside text-gray-600">
+                                                            <li v-for="d in ms.deliverables">{{ d }}</li>
+                                                        </ul>
+                                                    </div>
+                                                    <div>
+                                                        <p class="text-[9px] font-bold text-green-600 uppercase">成功指标</p>
+                                                        <ul class="text-[10px] list-disc list-inside text-gray-600">
+                                                            <li v-for="s in ms.success_metrics">{{ s }}</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 学习与资源 -->
+                                <div v-if="msg.content.learning_plan" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div class="p-3 bg-amber-50 rounded-lg border border-amber-100">
+                                        <h4 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2">
+                                            <i class="fas fa-graduation-cap"></i> 学习计划
+                                        </h4>
+                                        <div class="space-y-2">
+                                            <div v-if="msg.content.learning_plan.courses">
+                                                <p class="text-[9px] font-bold text-amber-600 uppercase">推荐课程</p>
+                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
+                                                    <li v-for="c in msg.content.learning_plan.courses">{{ c }}</li>
+                                                </ul>
+                                            </div>
+                                            <div v-if="msg.content.learning_plan.books">
+                                                <p class="text-[9px] font-bold text-amber-600 uppercase">推荐书籍</p>
+                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
+                                                    <li v-for="b in msg.content.learning_plan.books">{{ b }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="p-3 bg-blue-50 rounded-lg border border-blue-100">
+                                        <h4 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
+                                            <i class="fas fa-users"></i> 人脉与跟踪
+                                        </h4>
+                                        <div class="space-y-2">
+                                            <div v-if="msg.content.networking_plan">
+                                                <p class="text-[9px] font-bold text-blue-600 uppercase">人脉建设</p>
+                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
+                                                    <li v-for="n in msg.content.networking_plan">{{ n }}</li>
+                                                </ul>
+                                            </div>
+                                            <div v-if="msg.content.progress_tracking">
+                                                <p class="text-[9px] font-bold text-blue-600 uppercase">进度跟踪</p>
+                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
+                                                    <li v-for="p in msg.content.progress_tracking">{{ p }}</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div v-if="loading" class="flex items-start">
+                        <div class="chat-bubble chat-bubble-bot flex items-center gap-2">
+                            <span class="animate-bounce">●</span>
+                            <span class="animate-bounce" style="animation-delay: 0.2s">●</span>
+                            <span class="animate-bounce" style="animation-delay: 0.4s">●</span>
+                            <span class="ml-2 text-sm text-gray-500">AI 正在思考中...</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Input Area / Feedback Area -->
+                <div class="bg-gray-100 p-4 rounded-b-xl border-t">
+                    <!-- Feedback Form -->
+                    <div v-if="waitingForFeedback" class="space-y-4">
+                        <div v-if="pendingQuestions && pendingQuestions.length > 0" class="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400 mb-4">
+                            <p class="text-sm font-bold text-yellow-700 mb-1">AI 提出了以下问题：</p>
+                            <ul class="text-xs list-disc list-inside text-yellow-600">
+                                <li v-for="q in pendingQuestions">{{ q }}</li>
+                            </ul>
+                        </div>
+                        <p class="text-sm font-medium text-gray-700">您对上述分析报告满意吗？</p>
+                        <div class="flex flex-wrap gap-2">
+                            <button v-for="level in satisfactionLevels" :key="level.value" 
+                                @click="submitFeedback(level.value)"
+                                class="px-3 py-1 rounded-full text-xs border transition-colors"
+                                :class="feedback.satisfaction === level.value ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:border-blue-500'">
+                                {{ level.label }}
+                            </button>
+                        </div>
+                        <div class="flex gap-2">
+                            <input v-model="feedback.text" type="text" placeholder="输入您的具体意见 (可选)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm border">
+                            <button @click="submitFeedback(feedback.satisfaction)" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold">提交反馈</button>
+                        </div>
+                    </div>
+
+                    <!-- Normal Chat Input (Disabled for now as it's workflow driven) -->
+                    <div v-else-if="currentStage === 'completed'" class="text-center py-2">
+                        <p class="text-green-600 font-semibold"><i class="fas fa-check-circle"></i> 规划已完成！</p>
+                        <button @click="reset" class="mt-2 text-blue-600 text-sm hover:underline">重新开始</button>
+                    </div>
+                    <div v-else class="text-center py-2 text-gray-500 text-sm italic">
+                        工作流正在自动执行中...
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="mt-8 text-center text-gray-400 text-xs">
+            &copy; 2024 CareerNavigator. All rights reserved.
+        </footer>
     </div>
 
     <script>
-        let currentSessionId = null;
-        
-        async function testHealthCheck() {
-            const button = document.querySelector('button');
-            const loading = document.getElementById('health-loading');
-            const result = document.getElementById('health-result');
-            
-            button.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-            
-            try {
-                const response = await fetch('/api/health');
-                const data = await response.json();
-                
-                result.innerHTML = `
-                    <h4>✅ 健康检查成功</h4>
-                    <pre>${JSON.stringify(data, null, 2)}</pre>
-                `;
-                result.style.display = 'block';
-            } catch (error) {
-                result.innerHTML = `
-                    <h4>❌ 健康检查失败</h4>
-                    <p>错误: ${error.message}</p>
-                `;
-                result.style.display = 'block';
-            } finally {
-                button.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-        
-        async function testCareerAPI() {
-            const buttons = document.querySelectorAll('button');
-            const loading = document.getElementById('career-loading');
-            const result = document.getElementById('career-result');
-            
-            buttons[1].disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-            
-            try {
-                const response = await fetch('/api/career/start', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        "user_profile": {
-                            "user_id": "test_user_001",
-                            "age": 25,
-                            "education_level": "本科",
-                            "work_experience": 2,
-                            "current_position": "软件开发工程师",
-                            "industry": "互联网",
-                            "skills": ["Python", "JavaScript", "React"],
-                            "interests": ["技术创新", "产品设计", "团队管理"],
-                            "career_goals": "成为技术专家并朝着技术管理方向发展",
-                            "location": "北京",
-                            "salary_expectation": "15-25K",
-                            "additional_info": "希望在技术深度和管理能力上都有所提升"
-                        },
-                        "message": "我是一名有2年经验的软件开发工程师，希望制定一个职业发展规划，平衡技术深度和管理能力的提升。"
-                    })
+        const { createApp, ref, reactive, onMounted, nextTick } = Vue;
+
+        createApp({
+            setup() {
+                const currentStep = ref('questionnaire'); // questionnaire, workflow
+                const currentStage = ref('initial');
+                const loading = ref(false);
+                const sessionId = ref(null);
+                const chatHistory = ref([]);
+                const chatContainer = ref(null);
+                const waitingForFeedback = ref(false);
+                const pendingQuestions = ref([]);
+
+                const profile = reactive({
+                    age: 28,
+                    education_level: '本科',
+                    work_experience: 3,
+                    current_position: '软件工程师',
+                    industry: '互联网',
+                    location: '北京',
+                    career_goals: '希望转向 AI 产品经理方向发展',
+                    salary_expectation: '30-50万'
                 });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    currentSessionId = data.session_id;
-                    document.getElementById('status-btn').disabled = false;
+
+                const skillsInput = ref('Python, JavaScript, React, SQL');
+                const interestsInput = ref('人工智能, 产品设计, 心理学');
+
+                const feedback = reactive({
+                    satisfaction: 'satisfied',
+                    text: ''
+                });
+
+                const satisfactionLevels = [
+                    { label: '非常满意', value: 'very_satisfied' },
+                    { label: '满意', value: 'satisfied' },
+                    { label: '一般', value: 'neutral' },
+                    { label: '不满意', value: 'dissatisfied' },
+                    { label: '非常不满意', value: 'very_dissatisfied' }
+                ];
+
+                const scrollToBottom = async () => {
+                    await nextTick();
+                    if (chatContainer.value) {
+                        chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
+                    }
+                };
+
+                const addMessage = (role, content, type = 'text') => {
+                    chatHistory.value.push({ role, content, type });
+                    scrollToBottom();
+                };
+
+                const startPlanning = async () => {
+                    loading.value = true;
+                    try {
+                        const payload = {
+                            user_profile: {
+                                ...profile,
+                                skills: skillsInput.value.split(',').map(s => s.trim()).filter(s => s),
+                                interests: interestsInput.value.split(',').map(s => s.trim()).filter(s => s)
+                            },
+                            message: `我想进行职业规划，我的目标是：${profile.career_goals}`
+                        };
+
+                        const response = await axios.post('/api/career/start', payload);
+                        if (response.data.success) {
+                            sessionId.value = response.data.session_id;
+                            currentStep.value = 'workflow';
+                            addMessage('user', payload.message);
+                            addMessage('bot', '收到！我已开始为您分析职业路径，请稍候...');
+                            
+                            // Start polling for status
+                            pollStatus();
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert('启动失败: ' + (error.response?.data?.error || error.message));
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                const pollStatus = async () => {
+                    if (!sessionId.value) return;
                     
-                    result.innerHTML = `
-                        <h4>✅ 职业规划 API 测试成功</h4>
-                        <p><strong>会话ID:</strong> ${data.session_id}</p>
-                        <p><strong>当前阶段:</strong> ${data.stage_info ? data.stage_info.stage : '未知'}</p>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                } else {
-                    result.innerHTML = `
-                        <h4>⚠️ 职业规划 API 返回错误</h4>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                }
-                result.style.display = 'block';
-            } catch (error) {
-                result.innerHTML = `
-                    <h4>❌ 职业规划 API 测试失败</h4>
-                    <p>错误: ${error.message}</p>
-                `;
-                result.style.display = 'block';
-            } finally {
-                buttons[1].disabled = false;
-                loading.style.display = 'none';
+                    try {
+                        const response = await axios.get(`/api/career/status/${sessionId.value}`);
+                        const data = response.data;
+                        
+                        // 修正字段读取路径
+                        currentStage.value = data.stage_info.current_stage;
+                        pendingQuestions.value = data.stage_info.pending_questions || [];
+                        
+                        // 检查结果
+                        if (data.results.integrated_report && !chatHistory.value.some(m => m.type === 'report')) {
+                            const report = data.results.integrated_report;
+                            // 如果报告中有错误信息，添加到内容中显示
+                            if (report.error) {
+                                report.executive_summary = "⚠️ 分析过程中出现错误: " + report.error;
+                            }
+                            addMessage('bot', report, 'report');
+                        }
+
+                        if (data.results.career_goals && !chatHistory.value.some(m => m.type === 'goals')) {
+                            addMessage('bot', data.results.career_goals, 'goals');
+                        }
+
+                        if (data.results.final_career_plan && !chatHistory.value.some(m => m.type === 'plan')) {
+                            addMessage('bot', data.results.final_career_plan, 'plan');
+                        }
+
+                        // Check if waiting for feedback
+                        if (currentStage.value === 'user_feedback') {
+                            waitingForFeedback.value = true;
+                            loading.value = false;
+                        } else if (currentStage.value === 'completed') {
+                            waitingForFeedback.value = false;
+                            loading.value = false;
+                        } else {
+                            // Continue polling if not completed and not waiting for feedback
+                            setTimeout(pollStatus, 2000);
+                        }
+                    } catch (error) {
+                        console.error('Polling error:', error);
+                    }
+                };
+
+                const submitFeedback = async (level) => {
+                    feedback.satisfaction = level;
+                    loading.value = true;
+                    waitingForFeedback.value = false;
+                    
+                    try {
+                        addMessage('user', `满意度: ${satisfactionLevels.find(l => l.value === level).label}. ${feedback.text}`);
+                        
+                        const response = await axios.post(`/api/career/feedback/${sessionId.value}`, {
+                            satisfaction_level: level,
+                            feedback_text: feedback.text
+                        });
+                        
+                        if (response.data.success) {
+                            addMessage('bot', response.data.message);
+                            feedback.text = '';
+                            pollStatus();
+                        }
+                    } catch (error) {
+                        console.error(error);
+                        alert('提交反馈失败');
+                        waitingForFeedback.value = true;
+                    } finally {
+                        loading.value = false;
+                    }
+                };
+
+                const reset = () => {
+                    currentStep.value = 'questionnaire';
+                    chatHistory.value = [];
+                    sessionId.value = null;
+                    waitingForFeedback.value = false;
+                };
+
+                return {
+                    currentStep, profile, skillsInput, interestsInput, loading,
+                    startPlanning, chatHistory, chatContainer, waitingForFeedback,
+                    satisfactionLevels, feedback, submitFeedback, currentStage, reset
+                };
             }
-        }
-        
-        async function testSessionStatus() {
-            if (!currentSessionId) {
-                alert('请先运行职业规划 API 测试来获取会话ID');
-                return;
-            }
-            
-            const loading = document.getElementById('status-loading');
-            const result = document.getElementById('status-result');
-            const button = document.getElementById('status-btn');
-            
-            button.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-            
-            try {
-                const response = await fetch(`/api/career/status/${currentSessionId}`);
-                const data = await response.json();
-                
-                if (response.ok) {
-                    result.innerHTML = `
-                        <h4>✅ 会话状态查询成功</h4>
-                        <p><strong>会话ID:</strong> ${currentSessionId}</p>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                } else {
-                    result.innerHTML = `
-                        <h4>⚠️ 会话状态查询失败</h4>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                }
-                result.style.display = 'block';
-            } catch (error) {
-                result.innerHTML = `
-                    <h4>❌ 会话状态查询失败</h4>
-                    <p>错误: ${error.message}</p>
-                `;
-                result.style.display = 'block';
-            } finally {
-                button.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-        
-        async function testAllSessions() {
-            const loading = document.getElementById('sessions-loading');
-            const result = document.getElementById('sessions-result');
-            const buttons = document.querySelectorAll('button');
-            const sessionsBtn = buttons[4];
-            
-            sessionsBtn.disabled = true;
-            loading.style.display = 'inline-block';
-            result.style.display = 'none';
-            
-            try {
-                const response = await fetch('/api/career/sessions');
-                const data = await response.json();
-                
-                if (response.ok) {
-                    result.innerHTML = `
-                        <h4>✅ 会话列表查询成功</h4>
-                        <p><strong>会话总数:</strong> ${data.sessions ? data.sessions.length : 0}</p>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                } else {
-                    result.innerHTML = `
-                        <h4>⚠️ 会话列表查询失败</h4>
-                        <pre>${JSON.stringify(data, null, 2)}</pre>
-                    `;
-                }
-                result.style.display = 'block';
-            } catch (error) {
-                result.innerHTML = `
-                    <h4>❌ 会话列表查询失败</h4>
-                    <p>错误: ${error.message}</p>
-                `;
-                result.style.display = 'block';
-            } finally {
-                sessionsBtn.disabled = false;
-                loading.style.display = 'none';
-            }
-        }
-        
-        // 页面加载时自动测试健康检查
-        window.addEventListener('load', function() {
-            setTimeout(testHealthCheck, 1000);
-        });
+        }).mount('#app');
     </script>
 </body>
 </html>

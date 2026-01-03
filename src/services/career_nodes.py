@@ -676,7 +676,7 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     # 检查是否达到最大迭代次数
     iteration_count = state.get("iteration_count", 0)
-    max_iterations = state.get("max_iterations", 3)
+    max_iterations = state.get("max_iterations", 2)
     
     if iteration_count >= max_iterations:
         print(f"⚠️ 已达到最大迭代次数({max_iterations})，跳过用户反馈，直接进入目标拆分阶段")

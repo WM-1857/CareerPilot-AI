@@ -203,7 +203,7 @@ class InteractiveWorkflowRunner:
             
             workflow_completed = False
             safety_counter = 0  # 安全计数器，防止无限循环
-            max_safety_iterations = 3  # 最大安全迭代次数
+            max_safety_iterations = 2  # 最大安全迭代次数
             
             # 执行工作流直到完成或需要用户交互
             while not workflow_completed and safety_counter < max_safety_iterations:
@@ -242,7 +242,6 @@ class InteractiveWorkflowRunner:
                             satisfaction, feedback_text = self.get_user_feedback()
                             
                             # 更新状态
-
                             self.current_state = self.graph.update_user_feedback(
                                 self.current_state, satisfaction, feedback_text
                             )

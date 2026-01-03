@@ -183,9 +183,10 @@ class CareerNavigatorState(TypedDict):
     pending_questions: Optional[List[str]]              # 待回答问题
     
     # === 目标规划 ===
-    career_goals: Optional[List[CareerGoal]]           # 职业目标列表
+    career_goals: Optional[Dict[str, Any]]             # 职业目标拆解结果
     schedule_items: Optional[List[ScheduleItem]]       # 日程安排项目
     final_plan: Optional[Dict[str, Any]]               # 最终规划方案
+    final_career_plan: Optional[Dict[str, Any]]        # 最终职业规划(与final_plan同义)
     
     # === 系统控制 ===
     iteration_count: int                               # 迭代次数

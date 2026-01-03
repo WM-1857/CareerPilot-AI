@@ -242,21 +242,24 @@ class CareerNavigatorGraph:
         """
         try:
             # 运行工作流 - 设置递归限制
-            final_state = None
+            current_state = initial_state.copy()
             config = RunnableConfig(recursion_limit=15)  # 降低递归限制，因为已经优化了工作流
             
             for state_update in self.app.stream(initial_state, config=config):
                 print(f"工作流状态更新: {list(state_update.keys())}")
-                final_state = state_update
+                # 合并每个节点的更新到当前状态
+                for node_name, node_update in state_update.items():
+                    if isinstance(node_update, dict):
+                        current_state.update(node_update)
+                    else:
+                        current_state = node_update
             
-            # 提取最终状态
-            if final_state:
-                # 获取最后一个节点的状态
-                last_node = list(final_state.keys())[-1]
+            # 检查是否成功执行并获得了状态
+            if current_state:
                 return {
                     "success": True,
-                    "final_state": final_state[last_node],
-                    "session_id": final_state[last_node]["session_id"]
+                    "final_state": current_state,
+                    "session_id": current_state.get("session_id")
                 }
             else:
                 return {
@@ -265,6 +268,8 @@ class CareerNavigatorGraph:
                 }
                 
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return {
                 "success": False,
                 "error": f"工作流执行异常: {str(e)}"

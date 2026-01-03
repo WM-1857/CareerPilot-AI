@@ -129,8 +129,10 @@ def get_planning_status(session_id):
         if state.get('career_goals'):
             response_data['results']['career_goals'] = state['career_goals']
         
-        if state.get('final_plan'):
-            response_data['results']['final_plan'] = state['final_plan']
+        if state.get('final_career_plan'):
+            response_data['results']['final_career_plan'] = state['final_career_plan']
+        elif state.get('final_plan'):
+            response_data['results']['final_career_plan'] = state['final_plan']
         
         return jsonify(response_data)
         
