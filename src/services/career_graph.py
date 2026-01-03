@@ -230,12 +230,13 @@ class CareerNavigatorGraph:
         initial_state["messages"] = [HumanMessage(content=user_message)]
         return initial_state
     
-    def run_workflow(self, initial_state: CareerNavigatorState) -> Dict[str, Any]:
+    def run_workflow(self, initial_state: CareerNavigatorState, stream_callback=None) -> Dict[str, Any]:
         """
         运行工作流
         
         Args:
             initial_state: 初始状态
+            stream_callback: 流式回调函数
             
         Returns:
             工作流执行结果
@@ -243,7 +244,12 @@ class CareerNavigatorGraph:
         try:
             # 运行工作流 - 设置递归限制
             current_state = initial_state.copy()
-            config = RunnableConfig(recursion_limit=15)  # 降低递归限制，因为已经优化了工作流
+            
+            # 将回调函数放入 config 中，以便节点可以访问
+            config = RunnableConfig(
+                recursion_limit=15,
+                configurable={"stream_callback": stream_callback}
+            )
             
             for state_update in self.app.stream(initial_state, config=config):
                 print(f"工作流状态更新: {list(state_update.keys())}")

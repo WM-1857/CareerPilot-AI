@@ -100,7 +100,9 @@ def parse_llm_json_content(content: str) -> Dict[str, Any]:
     raise json.JSONDecodeError(f"无法解析JSON内容。原始内容: {content[:200]}...", content, 0)
 
 
-def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
+from langchain_core.runnables import RunnableConfig
+
+def coordinator_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     协调员节点 (入口点)
     
@@ -113,6 +115,13 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("🚀 正在执行: coordinator_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "coordinator", "status": "start"}))
+
     messages = state.get("messages", [])
     user_request = messages[-1].content if messages else ""
     print(f"📝 用户请求: {user_request}")
@@ -120,23 +129,30 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
     # 安全获取用户画像
     user_profile = state.get("user_profile")
     if not user_profile:
-        print("❌ 用户画像信息缺失，跳过目标明确度分析")
-        result = {
-            "planning_strategy": {
-                "analysis_approach": "direct_execution",
-                "confidence_level": 0.5,
-                "reasoning": "用户画像信息缺失，采用直接执行策略"
-            }
+        print("⚠️ 警告: 未找到用户画像，使用默认值")
+        user_profile = {
+            "user_id": "unknown",
+            "age": 0,
+            "education_level": "未知",
+            "work_experience": 0,
+            "current_position": "未知",
+            "industry": "未知",
+            "skills": [],
+            "interests": [],
+            "career_goals": "未知",
+            "location": "未知",
+            "salary_expectation": "未知"
         }
-        print("🔄 coordinator_node 返回值:")
-        print(f"📤 {json.dumps(result, ensure_ascii=False, indent=2)}")
-        return result
 
     # 调用百炼API分析目标明确度
     llm_response = llm_service.analyze_career_goal_clarity(
         user_request, 
-        user_profile
+        user_profile,
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "coordinator", "content": x})) if stream_callback else None
     )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -189,7 +205,7 @@ def coordinator_node(state: CareerNavigatorState) -> Dict[str, Any]:
         return updates
 
 
-def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def planner_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     计划员节点
     
@@ -201,6 +217,13 @@ def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("📋 正在执行: planner_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "planner", "status": "start"}))
+
     user_profile = state["user_profile"]
     feedback_history = state["user_feedback_history"]
     
@@ -210,8 +233,12 @@ def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
     # 调用百炼API制定分析策略
     llm_response = llm_service.create_analysis_strategy(
         user_profile, 
-        feedback_history
+        feedback_history,
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "planner", "content": x})) if stream_callback else None
     )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "planner", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -238,7 +265,7 @@ def planner_node(state: CareerNavigatorState) -> Dict[str, Any]:
         return updates
 
 
-def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def supervisor_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     管理员节点
     
@@ -251,6 +278,14 @@ def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("👨‍💼 正在执行: supervisor_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "supervisor", "status": "start"}))
+            stream_callback(json.dumps({"node": "supervisor", "content": "正在根据策略分配分析任务..."}))
+
     plan = state.get("planning_strategy", "制定个性化职业分析策略")
     print(f"📋 当前策略: {plan}")
     
@@ -339,6 +374,10 @@ def supervisor_node(state: CareerNavigatorState) -> Dict[str, Any]:
     # 更新状态，进入并行分析阶段
     updated_state = StateUpdater.update_stage(state, WorkflowStage.PARALLEL_ANALYSIS)
     updated_state["agent_tasks"] = tasks
+    
+    # 在 supervisor_node 结束前发送结束状态
+    if stream_callback:
+        stream_callback(json.dumps({"node": "supervisor", "status": "end"}))
     
     print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
     return updated_state

@@ -35,13 +35,14 @@ class DashScopeService:
             raise ValueError("请设置SPARK_API_KEY环境变量或提供api_key参数")
         
         # 默认模型配置
-        self.default_model = "4.0Ultra"
+        self.default_model = "Lite"
         self.default_temperature = 0.7
         self.default_max_tokens = 2000
     
     def call_llm(self, prompt: str, context: Optional[Dict] = None, 
                  model: Optional[str] = None, temperature: Optional[float] = None,
-                 max_tokens: Optional[int] = None) -> Dict[str, Any]:
+                 max_tokens: Optional[int] = None, stream: bool = False,
+                 stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         调用大语言模型 (讯飞星火)
         
@@ -51,6 +52,8 @@ class DashScopeService:
             model: 模型名称
             temperature: 温度参数
             max_tokens: 最大token数
+            stream: 是否使用流式输出
+            stream_callback: 流式输出回调函数
             
         Returns:
             包含模型响应的字典
@@ -71,9 +74,44 @@ class DashScopeService:
                 ],
                 "temperature": temperature or self.default_temperature,
                 "max_tokens": max_tokens or self.default_max_tokens,
-                "stream": False
+                "stream": stream or (stream_callback is not None)
             }
             
+            if body["stream"]:
+                response = requests.post(url=self.api_url, json=body, headers=headers, stream=True)
+                if response.status_code == 200:
+                    full_content = ""
+                    for line in response.iter_lines():
+                        if line:
+                            line_str = line.decode('utf-8')
+                            if line_str.startswith('data: '):
+                                data_str = line_str[6:]
+                                if data_str.strip() == '[DONE]':
+                                    break
+                                try:
+                                    data = json.loads(data_str)
+                                    if 'choices' in data and len(data['choices']) > 0:
+                                        delta = data['choices'][0].get('delta', {})
+                                        content = delta.get('content', '')
+                                        if content:
+                                            full_content += content
+                                            if stream_callback:
+                                                stream_callback(content)
+                                except:
+                                    continue
+                    return {
+                        "success": True,
+                        "content": full_content,
+                        "usage": {},
+                        "request_id": ""
+                    }
+                else:
+                    return {
+                        "success": False,
+                        "error": f"API流式调用失败: {response.status_code} - {response.text}",
+                        "status_code": response.status_code
+                    }
+
             response = requests.post(url=self.api_url, json=body, headers=headers)
             
             # 检查响应状态
@@ -135,13 +173,14 @@ class DashScopeService:
         
         return f"{context_str}\n\n{prompt}"
     
-    def analyze_career_goal_clarity(self, user_request: str, user_profile: Dict) -> Dict[str, Any]:
+    def analyze_career_goal_clarity(self, user_request: str, user_profile: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         分析用户职业目标是否明确
         
         Args:
             user_request: 用户请求
             user_profile: 用户基础信息
+            stream_callback: 流式输出回调
             
         Returns:
             分析结果
@@ -168,15 +207,16 @@ class DashScopeService:
 """
         
         context = {"user_profile": user_profile}
-        return self.call_llm(prompt, context)
+        return self.call_llm(prompt, context, stream_callback=stream_callback)
     
-    def create_analysis_strategy(self, user_profile: Dict, feedback_history: List = None) -> Dict[str, Any]:
+    def create_analysis_strategy(self, user_profile: Dict, feedback_history: List = None, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         制定职业分析策略
         
         Args:
             user_profile: 用户基础信息
             feedback_history: 用户反馈历史
+            stream_callback: 流式输出回调
             
         Returns:
             分析策略
@@ -204,7 +244,7 @@ class DashScopeService:
             "user_profile": user_profile,
             "feedback_history": feedback_history or []
         }
-        return self.call_llm(prompt, context)
+        return self.call_llm(prompt, context, stream_callback=stream_callback)
     
     def analyze_user_profile(self, user_data: Dict) -> Dict[str, Any]:
         """

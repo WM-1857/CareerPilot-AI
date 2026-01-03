@@ -4,7 +4,9 @@
 """
 
 import json
-from flask import Blueprint, request, jsonify
+import queue
+import threading
+from flask import Blueprint, request, jsonify, Response, stream_with_context
 from datetime import datetime
 
 from src.models.career_state import UserProfile, UserSatisfactionLevel
@@ -14,6 +16,51 @@ career_bp = Blueprint('career', __name__)
 
 # 存储会话状态的简单内存存储（生产环境应使用Redis或数据库）
 session_store = {}
+
+
+@career_bp.route('/stream', methods=['GET'])
+def stream_career_planning():
+    """
+    流式获取职业规划进度
+    使用 SSE (Server-Sent Events)
+    """
+    session_id = request.args.get('session_id')
+    if not session_id or session_id not in session_store:
+        return jsonify({"error": "无效的会话ID"}), 400
+
+    initial_state = session_store[session_id]
+    
+    def generate():
+        q = queue.Queue()
+        
+        def callback(data):
+            q.put(data)
+            
+        def run_graph():
+            try:
+                result = career_graph.run_workflow(initial_state, stream_callback=callback)
+                if result['success']:
+                    session_store[session_id] = result['final_state']
+                    # 发送完成信号
+                    q.put(json.dumps({"status": "completed", "session_id": session_id}))
+                else:
+                    q.put(json.dumps({"status": "error", "message": result.get('error', '未知错误')}))
+            except Exception as e:
+                q.put(json.dumps({"status": "error", "message": str(e)}))
+            finally:
+                q.put(None) # 结束信号
+
+        # 在后台线程运行工作流
+        thread = threading.Thread(target=run_graph)
+        thread.start()
+
+        while True:
+            data = q.get()
+            if data is None:
+                break
+            yield f"data: {data}\n\n"
+
+    return Response(stream_with_context(generate()), mimetype='text/event-stream')
 
 
 @career_bp.route('/start', methods=['POST'])
@@ -75,27 +122,12 @@ def start_career_planning():
         # 存储会话状态
         session_store[session_id] = initial_state
         
-        # 运行工作流
-        result = career_graph.run_workflow(initial_state)
-        
-        if result['success']:
-            # 更新会话状态
-            session_store[session_id] = result['final_state']
-            
-            # 获取当前阶段信息
-            stage_info = career_graph.get_current_stage_info(result['final_state'])
-            
-            return jsonify({
-                "success": True,
-                "session_id": session_id,
-                "stage_info": stage_info,
-                "message": "职业规划已开始"
-            })
-        else:
-            return jsonify({
-                "success": False,
-                "error": result['error']
-            }), 500
+        # 立即返回，不在这里运行工作流
+        return jsonify({
+            "success": True,
+            "session_id": session_id,
+            "message": "会话已创建，准备开始规划"
+        })
             
     except Exception as e:
         return jsonify({"error": f"服务器错误: {str(e)}"}), 500
@@ -186,52 +218,30 @@ def submit_feedback(session_id):
             feedback_text
         )
         
-        # 如果用户不满意，继续运行工作流
-        if satisfaction_level in [UserSatisfactionLevel.DISSATISFIED, UserSatisfactionLevel.VERY_DISSATISFIED]:
-            result = career_graph.run_workflow(updated_state)
-            
-            if result['success']:
-                session_store[session_id] = result['final_state']
-                stage_info = career_graph.get_current_stage_info(result['final_state'])
-                
-                return jsonify({
-                    "success": True,
-                    "message": "反馈已收到，正在重新分析",
-                    "stage_info": stage_info
-                })
-            else:
-                return jsonify({
-                    "success": False,
-                    "error": result['error']
-                }), 500
-        else:
-            # 用户满意，继续下一阶段
-            session_store[session_id] = updated_state
-            result = career_graph.run_workflow(updated_state)
-            
-            if result['success']:
-                session_store[session_id] = result['final_state']
-                stage_info = career_graph.get_current_stage_info(result['final_state'])
-                
-                return jsonify({
-                    "success": True,
-                    "message": "反馈已收到，进入下一阶段",
-                    "stage_info": stage_info
-                })
-            else:
-                return jsonify({
-                    "success": False,
-                    "error": result['error']
-                }), 500
+        # 清除需要用户输入的标志
+        from src.models.career_state import StateUpdater
+        updated_state.update(StateUpdater.set_user_input_required(updated_state, False))
         
+        # 存储更新后的状态
+        session_store[session_id] = updated_state
+        
+        # 立即返回，让前端通过 /stream 接口触发后续流程
+        return jsonify({
+            "success": True,
+            "message": "反馈已收到，正在处理",
+            "session_id": session_id
+        })
+            
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         return jsonify({"error": f"服务器错误: {str(e)}"}), 500
 
 
 @career_bp.route('/report/<session_id>', methods=['GET'])
-def get_report(session_id):
+def get_full_report(session_id):
     """
-    获取分析报告
+    获取完整报告
     """
     try:
         if session_id not in session_store:
@@ -263,7 +273,7 @@ def get_report(session_id):
 @career_bp.route('/sessions', methods=['GET'])
 def list_sessions():
     """
-    列出所有会话（用于调试）
+    列出所有会话 (用于调试)
     """
     try:
         sessions = []

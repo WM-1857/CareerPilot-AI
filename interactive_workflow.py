@@ -41,6 +41,7 @@ if not os.getenv('SPARK_API_KEY'):
 try:
     from src.services.career_graph import CareerNavigatorGraph
     from src.services.career_nodes import goal_decomposer_node, scheduler_node
+    from src.services.llm_service import llm_service
     from src.models.career_state import (
         CareerNavigatorState, WorkflowStage, UserProfile, UserSatisfactionLevel,
         create_initial_state, StateUpdater, UserFeedback
@@ -61,6 +62,8 @@ class InteractiveWorkflowRunner:
     def __init__(self):
         self.graph = CareerNavigatorGraph()
         self.current_state = None
+        # 启用LLM流式输出到控制台
+        llm_service.stream_to_console = True
         
     def print_separator(self, title: str, char: str = "=", length: int = 60):
         """打印分隔符"""

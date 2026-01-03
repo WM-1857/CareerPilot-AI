@@ -3,7 +3,7 @@ echo CareerNavigator 服务启动脚本
 echo ============================
 
 REM 设置环境变量
-set SPARK_API_KEY=Bearer orFKteCwMFcKbowYftHz:OpmCHRrdIjguGUkfFwUk
+set SPARK_API_KEY=Bearer ELKhwlIPLFySfaiUiJbZ:xRwkBIzxmTJrrephseJo
 set SPARK_API_URL=https://spark-api-open.xf-yun.com/v1/chat/completions
 set DASHSCOPE_API_KEY=%SPARK_API_KEY%
 set TAVILY_API_KEY=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
