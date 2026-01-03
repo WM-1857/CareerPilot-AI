@@ -15944,3 +15944,17 @@
 2026-01-04 00:33:09,850 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\interactive_workflow.py', reloading
 2026-01-04 00:33:09,850 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\interactive_workflow.py', reloading
 2026-01-04 00:33:10,940 - Main - ERROR - [logger.py:237] -  * Restarting with watchdog (windowsapi)
+2026-01-04 00:33:12,027 - Main - INFO - [logger.py:69] - ✅ 配置验证通过
+2026-01-04 00:33:12,027 - Main - INFO - [logger.py:69] - 📋 使用配置: type
+2026-01-04 00:33:12,029 - Main - INFO - [logger.py:69] - 🚀 CareerNavigator后端启动中...
+2026-01-04 00:33:12,029 - Main - INFO - [logger.py:69] - 📊 调试模式: True
+2026-01-04 00:33:12,029 - Main - INFO - [logger.py:69] - 📝 日志级别: DEBUG
+2026-01-04 00:33:12,029 - Main - INFO - [logger.py:69] - 📁 静态文件夹: H:\projects\coach\frontend
+2026-01-04 00:33:12,030 - Main - INFO - [logger.py:69] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2026-01-04 00:33:12,031 - Main - INFO - [logger.py:69] - 📚 API蓝图注册完成
+2026-01-04 00:33:12,032 - Main - INFO - [logger.py:69] - � 无数据库模式，跳过数据库初始化
+2026-01-04 00:33:12,033 - Main - INFO - [logger.py:69] - 🌟 CareerNavigator后端启动完成
+2026-01-04 00:33:12,033 - Main - INFO - [logger.py:69] - 🔗 服务地址: http://0.0.0.0:5050
+2026-01-04 00:33:12,034 - Main - INFO - [logger.py:69] - 🔧 调试模式: 开启
+2026-01-04 00:33:12,042 - Main - ERROR - [logger.py:237] -  * Debugger is active!
+2026-01-04 00:33:12,044 - Main - ERROR - [logger.py:237] -  * Debugger PIN: 449-446-645
