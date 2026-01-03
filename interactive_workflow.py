@@ -47,6 +47,7 @@ try:
     )
     from langchain_core.messages import HumanMessage
     from langchain_core.runnables import RunnableConfig
+    from src.utils.logger import workflow_logger
     IMPORT_SUCCESS = True
 except ImportError as e:
     IMPORT_SUCCESS = False
@@ -241,6 +242,7 @@ class InteractiveWorkflowRunner:
                             satisfaction, feedback_text = self.get_user_feedback()
                             
                             # 更新状态
+
                             self.current_state = self.graph.update_user_feedback(
                                 self.current_state, satisfaction, feedback_text
                             )
@@ -434,7 +436,8 @@ def main():
         "salary_expectation": "30-50万"
     }
     
-    initial_message = "我想从当前的软件工程师岗位转向AI产品经理，希望得到详细的职业规划建议"
+    # initial_message = "我想从当前的软件工程师岗位转向AI产品经理，希望得到详细的职业规划建议"
+    initial_message = "我是智能交互设计专业的大三本科生，应该从事什么岗位，帮我进行职业规划"
     
     # 创建交互式执行器并运行
     runner = InteractiveWorkflowRunner()
@@ -443,7 +446,7 @@ def main():
     if success:
         print("\n🎉 交互式职业规划完成！")
     else:
-        print("\n❌ 交互式职业规划失败")
+        print("\n❌ 交互式职业规划失败") 
 
 
 if __name__ == "__main__":

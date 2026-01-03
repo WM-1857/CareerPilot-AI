@@ -18,7 +18,7 @@ class BaseConfig:
     DASHSCOPE_API_KEY = SPARK_API_KEY
     
     # 日志配置
-    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
+    LOG_LEVEL = os.environ.get('LOG_LEVEL', 'DEBUG')
     LOG_DIR = os.environ.get('LOG_DIR', 'logs')
     
     # CORS配置

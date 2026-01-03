@@ -8,7 +8,7 @@ set SPARK_API_URL=https://spark-api-open.xf-yun.com/v1/chat/completions
 set DASHSCOPE_API_KEY=%SPARK_API_KEY%
 set TAVILY_API_KEY=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
 set FLASK_ENV=development
-set LOG_LEVEL=INFO
+set LOG_LEVEL=DEBUG
 
 echo 环境变量设置完成:
 echo SPARK_API_KEY: %SPARK_API_KEY%

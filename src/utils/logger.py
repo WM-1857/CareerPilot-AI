@@ -33,8 +33,8 @@ class CareerNavigatorLogger:
     def _setup_logger(self):
         """设置日志配置"""
         # 设置日志级别
-        log_level = os.getenv('LOG_LEVEL', 'INFO').upper()
-        self.logger.setLevel(getattr(logging, log_level, logging.INFO))
+        log_level = os.getenv('LOG_LEVEL', 'DEBUG').upper()
+        self.logger.setLevel(getattr(logging, log_level, logging.DEBUG))
         
         # 清除已有的处理器
         self.logger.handlers.clear()
@@ -45,7 +45,7 @@ class CareerNavigatorLogger:
         )
         
         # 控制台输出
-        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler = logging.StreamHandler(sys.__stdout__)
         console_handler.setFormatter(formatter)
         self.logger.addHandler(console_handler)
         
@@ -224,6 +224,22 @@ class DebugTracker:
         return changes
 
 
+class StreamToLogger:
+    """
+    将系统标准输出(stdout/stderr)重定向到日志记录器
+    """
+    def __init__(self, logger, log_level=logging.INFO):
+        self.logger = logger
+        self.log_level = log_level
+
+    def write(self, buf):
+        for line in buf.rstrip().splitlines():
+            self.logger.log(self.log_level, line.rstrip())
+
+    def flush(self):
+        pass
+
+
 # 全局日志实例
 main_logger = CareerNavigatorLogger("Main")
 workflow_logger = CareerNavigatorLogger("Workflow")
@@ -232,6 +248,16 @@ llm_logger = CareerNavigatorLogger("LLM")
 
 # 全局调试追踪器
 debug_tracker = DebugTracker(workflow_logger)
+
+
+def setup_stdout_logging():
+    """将控制台输出重定向到日志文件"""
+    sys.stdout = StreamToLogger(main_logger.logger, logging.INFO)
+    sys.stderr = StreamToLogger(main_logger.logger, logging.ERROR)
+
+
+# 默认开启控制台重定向
+setup_stdout_logging()
 
 
 def log_api_request(method: str, endpoint: str, request_data: Optional[Dict[str, Any]] = None):
