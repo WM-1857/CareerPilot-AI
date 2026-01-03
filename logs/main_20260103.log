@@ -15209,3 +15209,34 @@
 2026-01-03 21:11:39,934 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:39] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
 2026-01-03 21:11:41,943 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:41] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
 2026-01-03 21:11:43,956 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:43] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:11:46,011 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:46] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:11:49,018 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:49] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:11:52,014 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:52] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:11:55,009 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:55] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:11:58,022 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:11:58] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:12:01,009 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:12:01] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:12:04,027 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:12:04] "GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1" 200 -
+2026-01-03 21:12:04,927 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\services\\career_graph.py', reloading
+2026-01-03 21:12:04,928 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\routes\\career.py', reloading
+2026-01-03 21:12:04,928 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\services\\career_graph.py', reloading
+2026-01-03 21:12:04,929 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\routes\\career.py', reloading
+2026-01-03 21:12:04,932 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\models\\career_state.py', reloading
+2026-01-03 21:12:04,933 - Main - ERROR - [logger.py:237] -  * Detected change in 'H:\\projects\\coach\\src\\models\\career_state.py', reloading
+2026-01-03 21:12:05,392 - Main - ERROR - [logger.py:237] -  * Restarting with watchdog (windowsapi)
+2026-01-03 21:12:06,850 - Main - INFO - [logger.py:69] - ✅ 配置验证通过
+2026-01-03 21:12:06,851 - Main - INFO - [logger.py:69] - 📋 使用配置: type
+2026-01-03 21:12:06,851 - Main - INFO - [logger.py:69] - 🚀 CareerNavigator后端启动中...
+2026-01-03 21:12:06,851 - Main - INFO - [logger.py:69] - 📊 调试模式: True
+2026-01-03 21:12:06,851 - Main - INFO - [logger.py:69] - 📝 日志级别: DEBUG
+2026-01-03 21:12:06,852 - Main - INFO - [logger.py:69] - 📁 静态文件夹: H:\projects\coach\frontend
+2026-01-03 21:12:06,852 - Main - INFO - [logger.py:69] - 🌐 CORS配置: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5173']
+2026-01-03 21:12:06,854 - Main - INFO - [logger.py:69] - 📚 API蓝图注册完成
+2026-01-03 21:12:06,854 - Main - INFO - [logger.py:69] - � 无数据库模式，跳过数据库初始化
+2026-01-03 21:12:06,855 - Main - INFO - [logger.py:69] - 🌟 CareerNavigator后端启动完成
+2026-01-03 21:12:06,855 - Main - INFO - [logger.py:69] - 🔗 服务地址: http://0.0.0.0:5050
+2026-01-03 21:12:06,855 - Main - INFO - [logger.py:69] - 🔧 调试模式: 开启
+2026-01-03 21:12:06,865 - Main - ERROR - [logger.py:237] -  * Debugger is active!
+2026-01-03 21:12:06,871 - Main - ERROR - [logger.py:237] -  * Debugger PIN: 449-446-645
+2026-01-03 21:12:07,025 - Main - ERROR - [logger.py:237] - 127.0.0.1 - - [03/Jan/2026 21:12:07] "
+2026-01-03 21:12:07,025 - Main - ERROR - [logger.py:237] - GET /api/career/status/50769fb6-c526-4704-9221-0ff48b65f72e HTTP/1.1
+2026-01-03 21:12:07,025 - Main - ERROR - [logger.py:237] - " 404 -
