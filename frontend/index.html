@@ -12,411 +12,561 @@
         [v-cloak] { display: none; }
         .fade-enter-active, .fade-leave-active { transition: opacity 0.5s; }
         .fade-enter-from, .fade-leave-to { opacity: 0; }
-        .chat-bubble { max-width: 80%; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; }
-        .chat-bubble-user { background-color: #3b82f6; color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; }
-        .chat-bubble-bot { background-color: #f3f4f6; color: #1f2937; align-self: flex-start; border-bottom-left-radius: 0.25rem; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        .chat-container { flex: 1; }
+        .bot-icon {
+            background: #f97316;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .bot-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .message-action-btn {
+            color: #9ca3af;
+            transition: color 0.2s;
+            font-size: 14px;
+        }
+        .message-action-btn:hover { color: #4b5563; }
+        
+        .user-bubble {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            border-radius: 1.25rem;
+            padding: 0.75rem 1.25rem;
+            max-width: 80%;
+        }
+        
+        .input-container {
+            box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Login Animation */
+        .login-bg {
+            background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+            overflow: hidden;
+            position: relative;
+        }
+        .shape {
+            position: absolute;
+            filter: blur(40px);
+            opacity: 0.4;
+            animation: float 20s infinite alternate;
+        }
+        .shape-1 { width: 300px; height: 300px; background: #fb923c; top: -100px; left: -100px; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+        .shape-2 { width: 400px; height: 400px; background: #fdba74; bottom: -150px; right: -100px; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; animation-delay: -5s; }
+        .shape-3 { width: 250px; height: 250px; background: #fed7aa; top: 20%; right: 10%; border-radius: 40% 60% 70% 30% / 40% 40% 60% 60%; animation-delay: -10s; }
+        
+        /* Questionnaire Decoration */
+        .q-shape-left { width: 300px; height: 300px; background: #fb923c; top: 5%; left: -100px; border-radius: 40% 60% 70% 30%; opacity: 0.25; z-index: 0; filter: blur(50px); }
+        .q-shape-right { width: 350px; height: 350px; background: #fdba74; bottom: 10%; right: -120px; border-radius: 30% 70% 40% 60%; opacity: 0.25; z-index: 0; animation-delay: -7s; filter: blur(50px); }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(50px, 100px) rotate(20deg); }
+        }
+
+        .login-card {
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 260px;
+            background-color: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s;
+        }
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #4b5563;
+            font-size: 14px;
+            font-medium;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .sidebar-item:hover {
+            background-color: #f3f4f6;
+            color: #111827;
+        }
+        .sidebar-item.active {
+            background-color: #0d9488; /* Teal color from image */
+            color: white;
+            border-radius: 8px;
+            margin: 0 12px;
+        }
+        .sidebar-item.active:hover {
+            background-color: #0f766e;
+        }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen">
-    <div id="app" v-cloak class="max-w-4xl mx-auto p-4 md:p-8">
-        <!-- Header -->
-        <header class="mb-8 text-center">
-            <h1 class="text-3xl font-bold text-blue-600 flex items-center justify-center gap-2">
-                <i class="fas fa-compass"></i> CareerNavigator
-            </h1>
-            <p class="text-gray-600 mt-2">基于 AI 的智能职业规划与导航系统</p>
+<body class="bg-white text-gray-900 font-sans antialiased">
+    <div id="app" v-cloak class="flex flex-col h-screen">
+        <!-- Top Navigation -->
+        <header v-if="currentStep !== 'login'" class="flex items-center justify-between px-6 py-4 border-b bg-white sticky top-0 z-20">
+            <div class="flex items-center gap-4">
+                <button v-if="currentStep === 'workflow'" @click="currentStep = 'questionnaire'" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <h1 class="text-lg font-medium text-gray-800 flex items-center gap-2">
+                    <span v-if="currentStep === 'questionnaire'"><i class="fas fa-compass text-orange-500"></i> CareerNavigator</span>
+                    <span v-else>职业规划分析中</span>
+                </h1>
+            </div>
+            <button @click="reset" class="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 transition-colors">
+                <i class="fas fa-redo-alt"></i> 重新开始
+            </button>
         </header>
 
-        <!-- Main Content -->
-        <main>
-            <!-- Step 1: Questionnaire -->
-            <section v-if="currentStep === 'questionnaire'" class="bg-white rounded-xl shadow-md p-6 md:p-8">
-                <h2 class="text-xl font-semibold mb-6 border-b pb-2">个人信息问卷</h2>
-                <form @submit.prevent="startPlanning" class="space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">年龄</label>
-                            <input v-model.number="profile.age" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
+        <main class="flex-1 overflow-hidden flex flex-col">
+            <!-- Step 0: Login Page -->
+            <section v-if="currentStep === 'login'" class="flex-1 flex">
+                <!-- Left: Animation -->
+                <div class="hidden lg:flex lg:w-1/2 login-bg items-center justify-center p-12">
+                    <div class="shape shape-1"></div>
+                    <div class="shape shape-2"></div>
+                    <div class="shape shape-3"></div>
+                    <div class="relative z-10 text-center">
+                        <div class="w-24 h-24 bg-orange-500 rounded-3xl flex items-center justify-center text-white text-4xl mb-8 mx-auto shadow-2xl shadow-orange-200 rotate-12">
+                            <i class="fas fa-compass"></i>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">学历</label>
-                            <select v-model="profile.education_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
-                                <option value="本科">本科</option>
-                                <option value="硕士">硕士</option>
-                                <option value="博士">博士</option>
-                                <option value="大专">大专</option>
-                                <option value="其他">其他</option>
-                            </select>
+                        <h2 class="text-4xl font-bold text-gray-900 mb-4">CareerNavigator</h2>
+                        <p class="text-gray-500 text-lg max-w-md mx-auto">基于 AI 的智能职业规划与导航系统，为您开启职业生涯的新篇章。</p>
+                    </div>
+                </div>
+                <!-- Right: Login Form -->
+                <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-white">
+                    <div class="max-w-md w-full space-y-8">
+                        <div class="text-center lg:text-left">
+                            <h2 class="text-3xl font-bold text-gray-900">欢迎回来</h2>
+                            <p class="text-gray-500 mt-2">请输入您的账号信息以继续</p>
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">工作年限</label>
-                            <input v-model.number="profile.work_experience" type="number" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">当前职位</label>
-                            <input v-model="profile.current_position" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：软件工程师" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">所在行业</label>
-                            <input v-model="profile.industry" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：互联网" required>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">所在地区</label>
-                            <input v-model="profile.location" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：北京" required>
-                        </div>
+                        <form @submit.prevent="handleLogin" class="space-y-6">
+                            <div class="space-y-4">
+                                <div class="space-y-1">
+                                    <label class="text-sm font-medium text-gray-700">邮箱/用户名</label>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="far fa-envelope"></i></span>
+                                        <input type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 pl-12 border" placeholder="name@example.com" required>
+                                    </div>
+                                </div>
+                                <div class="space-y-1">
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-sm font-medium text-gray-700">密码</label>
+                                        <a href="#" class="text-xs text-orange-600 hover:underline">忘记密码？</a>
+                                    </div>
+                                    <div class="relative">
+                                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"><i class="fas fa-lock"></i></span>
+                                        <input type="password" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 pl-12 border" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center">
+                                <input type="checkbox" class="rounded border-gray-300 text-orange-600 focus:ring-orange-500">
+                                <label class="ml-2 text-sm text-gray-600">记住我</label>
+                            </div>
+                            <button type="submit" class="w-full bg-gray-900 text-white py-4 rounded-xl hover:bg-black transition-all font-semibold shadow-lg shadow-gray-200">
+                                登录
+                            </button>
+                            <div class="relative py-4">
+                                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-100"></div></div>
+                                <div class="relative flex justify-center text-xs uppercase"><span class="bg-white px-2 text-gray-400">或者通过以下方式</span></div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <button type="button" class="flex items-center justify-center gap-2 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all text-sm font-medium">
+                                    <i class="fab fa-weixin text-green-500"></i> 微信
+                                </button>
+                                <button type="button" class="flex items-center justify-center gap-2 py-3 border border-gray-100 rounded-xl hover:bg-gray-50 transition-all text-sm font-medium">
+                                    <i class="fab fa-github"></i> GitHub
+                                </button>
+                            </div>
+                        </form>
+                        <p class="text-center text-sm text-gray-500">
+                            还没有账号？ <a href="#" class="text-orange-600 font-bold hover:underline">立即注册</a>
+                        </p>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">技能 (逗号分隔)</label>
-                        <input v-model="skillsInput" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="Python, React, 项目管理">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">兴趣爱好 (逗号分隔)</label>
-                        <input v-model="interestsInput" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="人工智能, 摄影, 徒步">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">职业目标</label>
-                        <textarea v-model="profile.career_goals" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="描述您未来的职业愿景" required></textarea>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700">薪资期望</label>
-                        <input v-model="profile.salary_expectation" type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 border" placeholder="例如：30-50万">
-                    </div>
-
-                    <div class="pt-4">
-                        <button type="submit" :disabled="loading" class="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 transition-colors font-semibold flex items-center justify-center gap-2">
-                            <span v-if="loading" class="animate-spin"><i class="fas fa-spinner"></i></span>
-                            <span v-else>开始职业规划</span>
-                        </button>
-                    </div>
-                </form>
+                </div>
             </section>
 
-            <!-- Step 2: Interactive Workflow -->
-            <section v-if="currentStep === 'workflow'" class="flex flex-col h-[70vh]">
-                <!-- Chat History -->
-                <div class="flex-1 overflow-y-auto bg-white rounded-t-xl shadow-md p-4 space-y-4" ref="chatContainer">
-                    <div v-for="(msg, index) in chatHistory" :key="index" :class="['flex flex-col', msg.role === 'user' ? 'items-end' : 'items-start']">
-                        <div :class="['chat-bubble', msg.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-bot']">
-                            <div v-if="msg.type === 'text'" class="whitespace-pre-wrap">{{ msg.content }}</div>
-                            
-                            <!-- Report Display -->
-                            <div v-if="msg.type === 'report'" class="space-y-4">
-                                <h3 class="font-bold text-lg border-b pb-1 mb-2">📊 职业规划分析报告</h3>
-                                
-                                <!-- 错误提示 -->
-                                <div v-if="msg.content.error" class="bg-red-50 p-3 rounded border-l-4 border-red-500 text-red-700 text-xs mb-2">
-                                    <p class="font-bold">⚠️ 分析异常</p>
-                                    <p>{{ msg.content.error }}</p>
-                                </div>
-
-                                <div v-if="msg.content.executive_summary" class="bg-blue-50 p-3 rounded border-l-4 border-blue-500">
-                                    <p class="text-sm italic">{{ msg.content.executive_summary }}</p>
-                                </div>
-                                
-                                <div class="space-y-4 mt-4">
-                                    <!-- 个人分析 -->
-                                    <div v-if="msg.content.personal_analysis" class="bg-white p-3 rounded-lg border shadow-sm">
-                                        <h4 class="font-bold text-blue-700 text-sm mb-2 flex items-center gap-2">
-                                            <i class="fas fa-user-check"></i> 个人能力分析
-                                        </h4>
-                                        <p class="text-xs text-gray-700 leading-relaxed">{{ msg.content.personal_analysis }}</p>
-                                    </div>
-
-                                    <!-- 行业机会 -->
-                                    <div v-if="msg.content.industry_opportunities" class="bg-white p-3 rounded-lg border shadow-sm">
-                                        <h4 class="font-bold text-green-700 text-sm mb-2 flex items-center gap-2">
-                                            <i class="fas fa-lightbulb"></i> 行业机会分析
-                                        </h4>
-                                        <p class="text-xs text-gray-700 leading-relaxed">{{ msg.content.industry_opportunities }}</p>
-                                    </div>
-
-                                    <!-- 职业匹配度 -->
-                                    <div v-if="msg.content.career_match" class="bg-purple-50 p-3 rounded-lg border border-purple-100">
-                                        <div class="flex justify-between items-center mb-2">
-                                            <h4 class="font-bold text-purple-800 text-sm">🎯 职业匹配评估</h4>
-                                            <span class="text-xl font-black text-purple-600">{{ msg.content.career_match.match_score }}%</span>
-                                        </div>
-                                        <div class="space-y-2">
-                                            <div v-if="msg.content.career_match.match_reasons">
-                                                <p class="text-[10px] font-bold text-purple-700 uppercase tracking-wider">匹配优势</p>
-                                                <ul class="text-xs list-disc list-inside text-gray-700">
-                                                    <li v-for="reason in msg.content.career_match.match_reasons">{{ reason }}</li>
-                                                </ul>
-                                            </div>
-                                            <div v-if="msg.content.career_match.concerns">
-                                                <p class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">潜在挑战</p>
-                                                <ul class="text-xs list-disc list-inside text-gray-700">
-                                                    <li v-for="concern in msg.content.career_match.concerns">{{ concern }}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- 发展建议 -->
-                                    <div v-if="msg.content.development_plan" class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                                        <div v-for="(plan, period) in msg.content.development_plan" :key="period" class="p-2 rounded border bg-gray-50">
-                                            <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">{{ period === 'short_term' ? '短期' : (period === 'medium_term' ? '中期' : '长期') }}建议</p>
-                                            <ul class="text-[11px] list-disc list-inside text-gray-600">
-                                                <li v-for="item in plan">{{ item }}</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-
-                                    <!-- 风险提示 -->
-                                    <div v-if="msg.content.risk_warnings" class="p-3 bg-red-50 rounded-lg border border-red-100">
-                                        <h4 class="font-bold text-red-800 text-sm mb-1 flex items-center gap-2">
-                                            <i class="fas fa-exclamation-triangle"></i> 风险提示
-                                        </h4>
-                                        <ul class="text-xs list-disc list-inside text-red-700">
-                                            <li v-for="risk in msg.content.risk_warnings">{{ risk }}</li>
-                                        </ul>
-                                    </div>
-                                </div>
+            <!-- Step 1: Questionnaire (Minimalist Card) -->
+            <section v-if="currentStep === 'questionnaire'" class="flex-1 overflow-y-auto bg-gray-50 p-4 md:p-8 relative overflow-hidden">
+                <!-- Background Decorations -->
+                <div class="shape q-shape-left"></div>
+                <div class="shape q-shape-right"></div>
+                
+                <div class="max-w-2xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 p-8 relative z-10">
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-gray-900">开启您的职业导航</h2>
+                        <p class="text-gray-500 mt-2">请填写以下信息，帮助 AI 为您量身定制职业规划方案。</p>
+                    </div>
+                    
+                    <form @submit.prevent="startPlanning" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">年龄</label>
+                                <input v-model.number="profile.age" type="number" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" required>
                             </div>
-
-                            <!-- Goals Display -->
-                            <div v-if="msg.type === 'goals'" class="space-y-4">
-                                <h3 class="font-bold text-lg border-b pb-1 mb-2">🎯 职业目标拆解</h3>
-                                <div class="space-y-6">
-                                    <div v-for="(goals, type) in { '短期目标 (3-12个月)': msg.content.short_term_goals, '中期目标 (1-3年)': msg.content.medium_term_goals, '长期目标 (3-5年)': msg.content.long_term_goals }" :key="type">
-                                        <div v-if="goals && goals.length > 0">
-                                            <h4 class="font-bold text-gray-800 text-sm mb-3 flex items-center gap-2">
-                                                <span class="w-2 h-2 rounded-full" :class="type.includes('短期') ? 'bg-green-500' : (type.includes('中期') ? 'bg-blue-500' : 'bg-purple-500')"></span>
-                                                {{ type }}
-                                            </h4>
-                                            <div class="space-y-3 ml-4">
-                                                <div v-for="goal in goals" :key="goal.title" class="bg-white p-3 rounded-lg border shadow-sm">
-                                                    <div class="flex justify-between items-start mb-1">
-                                                        <h5 class="font-bold text-gray-900 text-xs">{{ goal.title }}</h5>
-                                                        <span class="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500">{{ goal.timeline }}</span>
-                                                    </div>
-                                                    <p class="text-[11px] text-gray-600 mb-2">{{ goal.description }}</p>
-                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2 pt-2 border-t border-gray-50">
-                                                        <div>
-                                                            <p class="text-[9px] font-bold text-gray-400 uppercase">所需技能</p>
-                                                            <div class="flex flex-wrap gap-1 mt-1">
-                                                                <span v-for="skill in goal.required_skills" class="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded">{{ skill }}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div>
-                                                            <p class="text-[9px] font-bold text-gray-400 uppercase">关键里程碑</p>
-                                                            <ul class="text-[10px] list-disc list-inside text-gray-500 mt-1">
-                                                                <li v-for="ms in goal.milestones">{{ ms }}</li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">学历</label>
+                                <select v-model="profile.education_level" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" required>
+                                    <option value="本科">本科</option>
+                                    <option value="硕士">硕士</option>
+                                    <option value="博士">博士</option>
+                                    <option value="大专">大专</option>
+                                    <option value="其他">其他</option>
+                                </select>
                             </div>
-
-                            <!-- Final Plan Display -->
-                            <div v-if="msg.type === 'plan'" class="space-y-4">
-                                <h3 class="font-bold text-lg border-b pb-1 mb-2">📅 职业行动计划</h3>
-                                
-                                <div v-if="msg.content.schedule_overview" class="bg-gray-50 p-3 rounded border-l-4 border-gray-400 mb-4">
-                                    <p class="text-sm italic">{{ msg.content.schedule_overview }}</p>
-                                </div>
-
-                                <!-- 每周计划 -->
-                                <div v-if="msg.content.weekly_schedule" class="space-y-4">
-                                    <h4 class="font-bold text-sm text-blue-700 flex items-center gap-2">
-                                        <i class="fas fa-calendar-week"></i> 近期周计划
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <div v-for="week in msg.content.weekly_schedule" :key="week.week" class="bg-white p-3 rounded-lg border shadow-sm">
-                                            <div class="flex justify-between items-center mb-2">
-                                                <span class="text-xs font-black text-blue-600">第 {{ week.week }} 周</span>
-                                                <span class="text-[10px] bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full">{{ week.focus_area }}</span>
-                                            </div>
-                                            <div class="space-y-2">
-                                                <div v-for="(task, tidx) in week.tasks" :key="tidx" class="border-l-2 border-gray-100 pl-2">
-                                                    <p class="text-xs font-medium text-gray-800">{{ task.task }}</p>
-                                                    <div class="flex justify-between items-center mt-1">
-                                                        <span class="text-[10px] text-gray-400"><i class="far fa-clock"></i> {{ task.duration }}</span>
-                                                        <span :class="['text-[9px] px-1 rounded', task.priority === '高' ? 'bg-red-50 text-red-500' : 'bg-gray-50 text-gray-500']">{{ task.priority }}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 月度里程碑 -->
-                                <div v-if="msg.content.monthly_milestones" class="mt-6">
-                                    <h4 class="font-bold text-sm text-green-700 mb-3 flex items-center gap-2">
-                                        <i class="fas fa-flag-checkered"></i> 月度里程碑
-                                    </h4>
-                                    <div class="space-y-3">
-                                        <div v-for="ms in msg.content.monthly_milestones" :key="ms.month" class="flex gap-3">
-                                            <div class="flex flex-col items-center">
-                                                <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-xs font-bold">{{ ms.month }}月</div>
-                                                <div class="w-0.5 flex-1 bg-green-50 my-1"></div>
-                                            </div>
-                                            <div class="flex-1 bg-green-50/30 p-3 rounded-lg border border-green-100 mb-2">
-                                                <h5 class="text-xs font-bold text-green-800">{{ ms.milestone }}</h5>
-                                                <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                                                    <div>
-                                                        <p class="text-[9px] font-bold text-green-600 uppercase">交付成果</p>
-                                                        <ul class="text-[10px] list-disc list-inside text-gray-600">
-                                                            <li v-for="d in ms.deliverables">{{ d }}</li>
-                                                        </ul>
-                                                    </div>
-                                                    <div>
-                                                        <p class="text-[9px] font-bold text-green-600 uppercase">成功指标</p>
-                                                        <ul class="text-[10px] list-disc list-inside text-gray-600">
-                                                            <li v-for="s in ms.success_metrics">{{ s }}</li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- 学习与资源 -->
-                                <div v-if="msg.content.learning_plan" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="p-3 bg-amber-50 rounded-lg border border-amber-100">
-                                        <h4 class="font-bold text-amber-800 text-sm mb-2 flex items-center gap-2">
-                                            <i class="fas fa-graduation-cap"></i> 学习计划
-                                        </h4>
-                                        <div class="space-y-2">
-                                            <div v-if="msg.content.learning_plan.courses">
-                                                <p class="text-[9px] font-bold text-amber-600 uppercase">推荐课程</p>
-                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
-                                                    <li v-for="c in msg.content.learning_plan.courses">{{ c }}</li>
-                                                </ul>
-                                            </div>
-                                            <div v-if="msg.content.learning_plan.books">
-                                                <p class="text-[9px] font-bold text-amber-600 uppercase">推荐书籍</p>
-                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
-                                                    <li v-for="b in msg.content.learning_plan.books">{{ b }}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="p-3 bg-blue-50 rounded-lg border border-blue-100">
-                                        <h4 class="font-bold text-blue-800 text-sm mb-2 flex items-center gap-2">
-                                            <i class="fas fa-users"></i> 人脉与跟踪
-                                        </h4>
-                                        <div class="space-y-2">
-                                            <div v-if="msg.content.networking_plan">
-                                                <p class="text-[9px] font-bold text-blue-600 uppercase">人脉建设</p>
-                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
-                                                    <li v-for="n in msg.content.networking_plan">{{ n }}</li>
-                                                </ul>
-                                            </div>
-                                            <div v-if="msg.content.progress_tracking">
-                                                <p class="text-[9px] font-bold text-blue-600 uppercase">进度跟踪</p>
-                                                <ul class="text-[10px] list-disc list-inside text-gray-700">
-                                                    <li v-for="p in msg.content.progress_tracking">{{ p }}</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">工作年限</label>
+                                <input v-model.number="profile.work_experience" type="number" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" required>
                             </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">当前职位</label>
+                                <input v-model="profile.current_position" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="例如：软件工程师" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">所在行业</label>
+                                <input v-model="profile.industry" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="例如：互联网" required>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">所在地区</label>
+                                <input v-model="profile.location" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="例如：北京" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">技能 (逗号分隔)</label>
+                                <input v-model="skillsInput" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="Python, React, 项目管理">
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-sm font-medium text-gray-700">兴趣爱好 (逗号分隔)</label>
+                                <input v-model="interestsInput" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="人工智能, 摄影, 徒步">
+                            </div>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">薪资期望</label>
+                            <input v-model="profile.salary_expectation" type="text" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="例如：30-50万">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="text-sm font-medium text-gray-700">职业目标</label>
+                            <textarea v-model="profile.career_goals" rows="3" class="w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 transition-all p-3 border" placeholder="描述您未来的职业愿景" required></textarea>
+                        </div>
+
+                        <button type="submit" :disabled="loading" class="w-full bg-gray-900 text-white py-4 rounded-xl hover:bg-black transition-all font-semibold flex items-center justify-center gap-2 shadow-lg shadow-gray-200">
+                            <span v-if="loading" class="animate-spin"><i class="fas fa-spinner"></i></span>
+                            <span v-else>生成我的职业规划</span>
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Step 2: Interactive Workflow (Chat Style) -->
+            <section v-if="currentStep === 'workflow'" class="flex-1 flex overflow-hidden">
+                <!-- Sidebar -->
+                <aside class="sidebar hidden md:flex py-6">
+                    <div class="px-6 mb-8">
+                        <div class="flex items-center gap-2 text-xl font-bold text-gray-900">
+                            <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white text-sm">
+                                <i class="fas fa-compass"></i>
+                            </div>
+                            <span>CareerNavigator</span>
                         </div>
                     </div>
 
-                    <!-- Streaming Content (Parallel Support) -->
-                    <div v-if="Object.keys(activeNodes).length > 0" class="w-full">
-                        <!-- Sequential Nodes (Standard Bubble) -->
-                        <div v-for="(info, node) in activeNodes" :key="node">
-                            <div v-if="!isParallelNode(node)" class="flex flex-col items-start mb-4">
-                                <div class="chat-bubble chat-bubble-bot bg-blue-50 border border-blue-100 w-full">
-                                    <div class="flex items-center gap-2 mb-1">
-                                        <span class="animate-pulse h-2 w-2 rounded-full bg-blue-500"></span>
-                                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{{ getNodeLabel(node) }} 正在思考...</span>
-                                    </div>
-                                    <div class="text-sm whitespace-pre-wrap text-gray-700">{{ info.content || '正在处理...' }}</div>
-                                </div>
-                            </div>
+                    <nav class="flex-1 space-y-1">
+                        <div class="sidebar-item">
+                            <i class="fas fa-home w-5"></i> Home
+                        </div>
+                        <div class="sidebar-item active">
+                            <i class="fas fa-plus-square w-5"></i> Find Activities
+                        </div>
+                        <div class="sidebar-item">
+                            <i class="fas fa-history w-5"></i> History
+                        </div>
+                    </nav>
+
+                    <div class="mt-auto pt-6 border-t border-gray-100 space-y-1">
+                        <div class="sidebar-item">
+                            <i class="fas fa-list-ul w-5"></i> Tutorial
+                        </div>
+                        <div class="sidebar-item">
+                            <i class="fas fa-comment-alt w-5"></i> Feedback
+                        </div>
+                        <div class="sidebar-item">
+                            <i class="fas fa-question-circle w-5"></i> Help
+                        </div>
+                        <div class="sidebar-item">
+                            <i class="fas fa-info-circle w-5"></i> About
                         </div>
                         
-                        <!-- Parallel Nodes (Grid) -->
-                        <div v-if="hasParallelNodes" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div v-for="(info, node) in parallelNodes" :key="node" class="bg-white rounded-lg border-2 border-blue-100 shadow-sm overflow-hidden flex flex-col">
-                                <div class="bg-blue-50 px-3 py-2 border-b border-blue-100 flex items-center justify-between">
-                                    <span class="text-[10px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
-                                        <i :class="getNodeIcon(node)"></i> {{ getNodeLabel(node) }}
-                                    </span>
-                                    <span class="flex h-2 w-2">
-                                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
-                                    </span>
-                                </div>
-                                <div class="p-3 flex-1">
-                                    <div class="text-[11px] whitespace-pre-wrap text-gray-600 leading-relaxed h-48 overflow-y-auto">
-                                        {{ info.content || '正在准备分析数据...' }}
+                        <div class="px-4 py-4 mt-4 flex items-center gap-3 border-t border-gray-100">
+                            <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold">
+                                {{ profile.name ? profile.name.charAt(0).toUpperCase() : 'U' }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-bold text-gray-900 truncate">{{ profile.name || 'User' }}</p>
+                            </div>
+                            <button @click="reset" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-sign-out-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- Main Chat Area -->
+                <div class="flex-1 flex flex-col overflow-hidden bg-white relative">
+                    <!-- Chat History -->
+                    <div class="flex-1 overflow-y-auto px-4 py-8 chat-container" ref="chatContainer">
+                        <div class="max-w-3xl mx-auto space-y-10">
+                            <div v-for="(msg, index) in chatHistory" :key="index" class="flex flex-col">
+                                <!-- Bot Message -->
+                                <div v-if="msg.role === 'bot'" class="flex gap-4 items-start">
+                                    <div class="bot-icon">
+                                        <img src="bot-avatar.png" alt="AI">
+                                    </div>
+                                    <div class="flex-1 space-y-2">
+                                    <div class="font-bold text-sm text-gray-800">CareerNavigator</div>
+                                    <!-- Report Display -->
+                                    <div v-if="msg.type === 'report'" class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6">
+                                        <h3 class="font-bold text-xl text-gray-900 flex items-center gap-2">
+                                            <i class="fas fa-chart-pie text-orange-500"></i> 职业规划分析报告
+                                        </h3>
+                                        
+                                        <div v-if="msg.content.executive_summary" class="bg-orange-50/50 p-4 rounded-xl text-gray-700 italic text-sm border-l-4 border-orange-400">
+                                            {{ msg.content.executive_summary }}
+                                        </div>
+                                        
+                                        <div class="grid grid-cols-1 gap-4">
+                                            <div v-if="msg.content.personal_analysis" class="p-4 rounded-xl border border-gray-50 bg-gray-50/30">
+                                                <h4 class="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                                                    <i class="fas fa-user-check text-teal-500"></i> 个人能力分析
+                                                </h4>
+                                                <p class="text-sm text-gray-600 leading-relaxed">{{ msg.content.personal_analysis }}</p>
+                                            </div>
+
+                                            <div v-if="msg.content.industry_opportunities" class="p-4 rounded-xl border border-gray-50 bg-gray-50/30">
+                                                <h4 class="font-bold text-gray-800 text-sm mb-2 flex items-center gap-2">
+                                                    <i class="fas fa-lightbulb text-yellow-500"></i> 行业机会分析
+                                                </h4>
+                                                <p class="text-sm text-gray-600 leading-relaxed">{{ msg.content.industry_opportunities }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div v-if="msg.content.career_match" class="p-5 rounded-2xl bg-gray-900 text-white">
+                                            <div class="flex justify-between items-center mb-4">
+                                                <h4 class="font-bold text-sm">🎯 职业匹配评估</h4>
+                                                <span class="text-2xl font-black text-orange-400">{{ msg.content.career_match.match_score }}%</span>
+                                            </div>
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div v-if="msg.content.career_match.match_reasons">
+                                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">匹配优势</p>
+                                                    <ul class="text-xs space-y-1 text-gray-300">
+                                                        <li v-for="reason in msg.content.career_match.match_reasons" class="flex items-start gap-2">
+                                                            <i class="fas fa-check text-green-400 mt-0.5"></i> {{ reason }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div v-if="msg.content.career_match.concerns">
+                                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">潜在挑战</p>
+                                                    <ul class="text-xs space-y-1 text-gray-300">
+                                                        <li v-for="concern in msg.content.career_match.concerns" class="flex items-start gap-2">
+                                                            <i class="fas fa-exclamation-triangle text-orange-400 mt-0.5"></i> {{ concern }}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Goals Display -->
+                                    <div v-if="msg.type === 'goals'" class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6">
+                                        <h3 class="font-bold text-xl text-gray-900 flex items-center gap-2">
+                                            <i class="fas fa-bullseye text-red-500"></i> 职业目标拆解
+                                        </h3>
+                                        <div class="space-y-8">
+                                            <div v-for="(goals, type) in { '短期目标': msg.content.short_term_goals, '中期目标': msg.content.medium_term_goals, '长期目标': msg.content.long_term_goals }" :key="type">
+                                                <div v-if="goals && goals.length > 0">
+                                                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                                        {{ type }}
+                                                    </h4>
+                                                    <div class="space-y-4">
+                                                        <div v-for="goal in goals" :key="goal.title" class="p-4 rounded-xl border border-gray-100 hover:border-orange-200 transition-colors">
+                                                            <div class="flex justify-between items-start mb-2">
+                                                                <h5 class="font-bold text-gray-900">{{ goal.title }}</h5>
+                                                                <span class="text-[10px] bg-gray-100 px-2 py-1 rounded-full text-gray-500 font-medium">{{ goal.timeline }}</span>
+                                                            </div>
+                                                            <p class="text-sm text-gray-600 mb-3">{{ goal.description }}</p>
+                                                            <div class="flex flex-wrap gap-2">
+                                                                <span v-for="skill in goal.required_skills" class="text-[10px] bg-orange-50 text-orange-600 px-2 py-0.5 rounded-full">{{ skill }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Final Plan Display -->
+                                    <div v-if="msg.type === 'plan'" class="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm space-y-6">
+                                        <h3 class="font-bold text-xl text-gray-900 flex items-center gap-2">
+                                            <i class="fas fa-calendar-alt text-orange-500"></i> 职业行动计划
+                                        </h3>
+                                        
+                                        <div v-if="msg.content.weekly_schedule" class="space-y-4">
+                                            <div class="grid grid-cols-1 gap-4">
+                                                <div v-for="week in msg.content.weekly_schedule" :key="week.week" class="p-4 rounded-xl bg-orange-50/30 border border-orange-100">
+                                                    <div class="flex justify-between items-center mb-3">
+                                                        <span class="text-sm font-bold text-orange-700">第 {{ week.week }} 周</span>
+                                                        <span class="text-[10px] bg-orange-100 text-orange-600 px-2 py-1 rounded-full font-bold">{{ week.focus_area }}</span>
+                                                    </div>
+                                                    <div class="space-y-3">
+                                                        <div v-for="(task, tidx) in week.tasks" :key="tidx" class="flex gap-3">
+                                                            <div class="w-1 h-1 rounded-full bg-orange-400 mt-2"></div>
+                                                            <div class="flex-1">
+                                                                <p class="text-sm font-medium text-gray-800">{{ task.task }}</p>
+                                                                <div class="flex gap-3 mt-1">
+                                                                    <span class="text-[10px] text-gray-400"><i class="far fa-clock"></i> {{ task.duration }}</span>
+                                                                    <span v-if="task.priority === '高'" class="text-[10px] text-red-500 font-bold">重要</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Action Buttons -->
+                                    <div class="flex items-center gap-4 pt-2">
+                                        <button class="message-action-btn"><i class="far fa-bookmark"></i></button>
+                                        <button class="message-action-btn"><i class="far fa-thumbs-up"></i></button>
+                                        <button class="message-action-btn"><i class="far fa-thumbs-down"></i></button>
+                                        <button class="message-action-btn"><i class="far fa-copy"></i></button>
+                                        <button class="message-action-btn"><i class="fas fa-volume-up"></i></button>
                                     </div>
                                 </div>
-                                <div class="bg-gray-50 px-3 py-1 text-[9px] text-gray-400 border-t flex justify-between">
-                                    <span>状态: {{ info.status === 'start' ? '分析中' : '处理中' }}</span>
-                                    <span class="animate-pulse">●</span>
+                            </div>
+
+                            <!-- User Message -->
+                            <div v-else class="flex justify-end items-start gap-4">
+                                <div class="user-bubble">
+                                    {{ msg.content }}
+                                </div>
+                                <div class="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 text-xs font-bold">
+                                    {{ profile.name ? profile.name.charAt(0).toUpperCase() : 'U' }}
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Loading Indicator -->
-                    <div v-if="loading" class="flex items-start">
-                        <div class="chat-bubble chat-bubble-bot flex items-center gap-2">
-                            <span class="animate-bounce">●</span>
-                            <span class="animate-bounce" style="animation-delay: 0.2s">●</span>
-                            <span class="animate-bounce" style="animation-delay: 0.4s">●</span>
-                            <span class="ml-2 text-sm text-gray-500">AI 正在思考中...</span>
+                        <!-- Streaming Content -->
+                        <div v-if="Object.keys(activeNodes).length > 0" class="space-y-6">
+                            <div v-for="(info, node) in activeNodes" :key="node">
+                                <div v-if="!isParallelNode(node)" class="flex gap-4 items-start">
+                                    <div class="bot-icon animate-pulse">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                    </div>
+                                    <div class="flex-1 space-y-2">
+                                        <div class="font-bold text-sm text-gray-400">{{ getNodeLabel(node) }} 正在处理...</div>
+                                        <div class="text-gray-400 text-sm italic">{{ formatStreamingContent(info.content) || '正在思考中...' }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Parallel Nodes Grid -->
+                            <div v-if="hasParallelNodes" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div v-for="(info, node) in parallelNodes" :key="node" class="bg-white rounded-2xl border border-orange-100 p-4 shadow-sm flex flex-col h-48">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="text-[10px] font-bold text-orange-600 uppercase tracking-widest flex items-center gap-2">
+                                            <i :class="getNodeIcon(node)"></i> {{ getNodeLabel(node) }}
+                                        </span>
+                                        <span class="flex h-2 w-2">
+                                            <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-orange-400 opacity-75"></span>
+                                            <span class="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                        </span>
+                                    </div>
+                                    <div class="flex-1 overflow-y-auto text-xs text-gray-500 leading-relaxed">
+                                        {{ formatStreamingContent(info.content) || '正在收集数据...' }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Loading Indicator -->
+                        <div v-if="loading" class="flex gap-4 items-start">
+                            <div class="bot-icon">
+                                <i class="fas fa-circle-notch fa-spin"></i>
+                            </div>
+                            <div class="flex gap-1 mt-3">
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style="animation-delay: 0.2s"></span>
+                                <span class="w-1.5 h-1.5 rounded-full bg-gray-300 animate-bounce" style="animation-delay: 0.4s"></span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Input Area / Feedback Area -->
-                <div class="bg-gray-100 p-4 rounded-b-xl border-t">
-                    <!-- Feedback Form -->
-                    <div v-if="waitingForFeedback" class="space-y-4">
-                        <div v-if="pendingQuestions && pendingQuestions.length > 0" class="bg-yellow-50 p-3 rounded border-l-4 border-yellow-400 mb-4">
-                            <p class="text-sm font-bold text-yellow-700 mb-1">AI 提出了以下问题：</p>
-                            <ul class="text-xs list-disc list-inside text-yellow-600">
-                                <li v-for="q in pendingQuestions">{{ q }}</li>
-                            </ul>
-                        </div>
-                        <p class="text-sm font-medium text-gray-700">您对上述分析报告满意吗？</p>
-                        <div class="flex flex-wrap gap-2">
-                            <button v-for="level in satisfactionLevels" :key="level.value" 
-                                @click="submitFeedback(level.value)"
-                                class="px-3 py-1 rounded-full text-xs border transition-colors"
-                                :class="feedback.satisfaction === level.value ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-600 border-gray-300 hover:border-blue-500'">
-                                {{ level.label }}
-                            </button>
-                        </div>
-                        <div class="flex gap-2">
-                            <input v-model="feedback.text" type="text" placeholder="输入您的具体意见 (可选)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 p-2 text-sm border">
-                            <button @click="submitFeedback(feedback.satisfaction)" class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-semibold">提交反馈</button>
+                <!-- Input Area -->
+                <div v-if="waitingForFeedback" class="p-6 bg-white border-t input-container">
+                    <div class="max-w-3xl mx-auto">
+                        <!-- Feedback Form -->
+                        <div class="space-y-4">
+                            <div v-if="pendingQuestions && pendingQuestions.length > 0" class="space-y-2">
+                                <p class="text-sm font-bold text-orange-800">AI 补充提问：</p>
+                                <ul class="text-sm space-y-1 text-orange-700">
+                                    <li v-for="q in pendingQuestions" class="flex items-start gap-2">
+                                        <i class="fas fa-question-circle mt-1"></i> {{ q }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <p class="text-sm font-medium text-gray-700">您对上述分析报告满意吗？</p>
+                            <div class="flex flex-wrap gap-2">
+                                <button v-for="level in satisfactionLevels" :key="level.value" 
+                                    @click="submitFeedback(level.value)"
+                                    class="px-4 py-2 rounded-full text-xs font-medium transition-all border"
+                                    :class="feedback.satisfaction === level.value ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-400'">
+                                    {{ level.label }}
+                                </button>
+                            </div>
+                            <div class="flex gap-2">
+                                <input v-model="feedback.text" type="text" placeholder="输入您的具体意见 (可选)" class="flex-1 rounded-xl border-gray-200 focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 p-3 text-sm border">
+                                <button @click="submitFeedback(feedback.satisfaction)" class="bg-gray-900 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-black transition-colors">提交反馈</button>
+                            </div>
                         </div>
                     </div>
-
-                    <!-- Normal Chat Input (Disabled for now as it's workflow driven) -->
-                    <div v-else-if="currentStage === 'completed'" class="text-center py-2">
-                        <p class="text-green-600 font-semibold"><i class="fas fa-check-circle"></i> 规划已完成！</p>
-                        <button @click="reset" class="mt-2 text-blue-600 text-sm hover:underline">重新开始</button>
-                    </div>
-                    <div v-else class="text-center py-2 text-gray-500 text-sm italic">
-                        工作流正在自动执行中...
-                    </div>
+                </div>
+                
+                <!-- Disclaimer (Always show at bottom of chat if not waiting for feedback, or inside input container) -->
+                <div v-if="!waitingForFeedback" class="pb-6 pt-2 text-center text-[10px] text-gray-400 bg-white">
+                    CareerNavigator 可能会产生误差。请核实重要信息。
+                </div>
                 </div>
             </section>
         </main>
-
-        <!-- Footer -->
-        <footer class="mt-8 text-center text-gray-400 text-xs">
-            &copy; 2024 CareerNavigator. All rights reserved.
-        </footer>
     </div>
 
     <script>
@@ -424,7 +574,7 @@
 
         createApp({
             setup() {
-                const currentStep = ref('questionnaire'); // questionnaire, workflow
+                const currentStep = ref('login'); // login, questionnaire, workflow
                 const currentStage = ref('initial');
                 const loading = ref(false);
                 const sessionId = ref(null);
@@ -435,12 +585,30 @@
                 const activeNodes = reactive({});
                 let pollTimer = null;
 
+                const handleLogin = () => {
+                    currentStep.value = 'questionnaire';
+                };
+
                 watch(activeNodes, () => {
                     scrollToBottom();
                 }, { deep: true });
 
                 const isParallelNode = (node) => {
                     return ['user_profiler', 'industry_researcher', 'job_analyzer'].includes(node);
+                };
+
+                const formatStreamingContent = (text) => {
+                    if (!text) return '';
+                    // 移除 markdown 代码块标识和 JSON 结构字符
+                    let cleanText = text.replace(/```json|```|\{|\}|\[|\]|"|:/g, '');
+                    
+                    // 如果处理后还有内容，提取中文字符、数字和常用标点
+                    const matches = cleanText.match(/[\u4e00-\u9fa50-9，。！？；：、\s]/g);
+                    if (matches) {
+                        const result = matches.join('').replace(/\s+/g, ' ').trim();
+                        return result || '正在整理结构化数据...';
+                    }
+                    return '正在整理结构化数据...';
                 };
 
                 const parallelNodes = computed(() => {
@@ -485,6 +653,7 @@
                 };
 
                 const profile = reactive({
+                    name: '',
                     age: 28,
                     education_level: '本科',
                     work_experience: 3,
@@ -736,7 +905,7 @@
                 };
 
                 const reset = () => {
-                    currentStep.value = 'questionnaire';
+                    currentStep.value = 'login';
                     chatHistory.value = [];
                     sessionId.value = null;
                     waitingForFeedback.value = false;
@@ -746,7 +915,8 @@
                     currentStep, profile, skillsInput, interestsInput, loading,
                     startPlanning, chatHistory, chatContainer, waitingForFeedback,
                     satisfactionLevels, feedback, submitFeedback, currentStage, reset,
-                    activeNodes, getNodeLabel, getNodeIcon, isParallelNode, parallelNodes, hasParallelNodes
+                    activeNodes, getNodeLabel, getNodeIcon, isParallelNode, parallelNodes, hasParallelNodes,
+                    handleLogin, formatStreamingContent
                 };
             }
         }).mount('#app');
