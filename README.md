@@ -81,10 +81,10 @@ run_tests.bat
 ## 📚 文档
 
 详细文档请查看 `docs/` 目录：
-- [快速开始指南](docs/CareerNavigator%20快速开始指南.md)
-- [API 文档](docs/CareerNavigator%20API%20文档.md)  
-- [部署指南](docs/CareerNavigator%20部署指南.md)
-- [完整文档索引](docs/README.md)
+- [用户指南](docs/User_Guide.md) - 项目介绍、安装步骤及使用流程
+- [技术设计文档](docs/Technical_Design.md) - 系统架构、LangGraph 工作流及状态管理
+- [API 参考手册](docs/API_Reference.md) - 完整 API 接口说明
+- [测试指南](docs/Testing_Guide.md) - 自动化测试及排查指南
 
 ## 🔧 开发工具
 
