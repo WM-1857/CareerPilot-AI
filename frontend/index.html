@@ -103,9 +103,103 @@
             padding: 12px 24px;
             color: #4b5563;
             font-size: 14px;
-            font-medium;
+            font-weight: 500;
             transition: all 0.2s;
             cursor: pointer;
+        }
+
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            border-top: 1px solid #e5e7eb;
+            border-left: 1px solid #e5e7eb;
+            background: #fff;
+            overflow-x: auto;
+        }
+        .calendar-header-cell {
+            padding: 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #6b7280;
+            background: #f9fafb;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 120px;
+        }
+        .calendar-day-cell {
+            min-height: 100px;
+            padding: 8px;
+            border-right: 1px solid #e5e7eb;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            transition: background 0.2s;
+            position: relative;
+            min-width: 150px;
+        }
+        .calendar-day-cell:hover {
+            background: #fcfcfc;
+        }
+        .calendar-event {
+            margin-bottom: 4px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 500;
+            line-height: 1.4;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            min-height: 80px;
+        }
+        .calendar-event:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .event-priority-高 {
+            background-color: #fee2e2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+        .event-priority-中 {
+            background-color: #ffedd5;
+            color: #9a3412;
+            border-left-color: #f97316;
+        }
+        .event-priority-低 {
+            background-color: #f0fdf4;
+            color: #166534;
+            border-left-color: #22c55e;
+        }
+        .calendar-week-label {
+            position: absolute;
+            top: 4px;
+            right: 8px;
+            font-size: 10px;
+            font-weight: 800;
+            color: #e5e7eb;
+            pointer-events: none;
+        }
+        .calendar-focus-badge {
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: #f3f4f6;
+            color: #6b7280;
+            margin-bottom: 8px;
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
         .sidebar-item:hover {
             background-color: #f3f4f6;
@@ -289,24 +383,66 @@
             <section v-if="currentStep === 'workflow'" class="flex-1 flex overflow-hidden">
                 <!-- Sidebar -->
                 <aside class="sidebar hidden md:flex py-6">
-                    <div class="px-6 mb-8">
-                        <div class="flex items-center gap-2 text-xl font-bold text-gray-900">
+                    <div class="px-6 mb-6">
+                        <div class="flex items-center gap-2 text-xl font-bold text-gray-900 mb-6">
                             <div class="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center text-white text-sm">
                                 <i class="fas fa-compass"></i>
                             </div>
                             <span>CareerNavigator</span>
                         </div>
+                        
+                        <!-- New Event Button Style -->
+                        <button @click="closePlanView" class="w-full py-2.5 px-4 bg-orange-500 hover:bg-orange-600 text-white rounded-xl font-bold text-sm shadow-lg shadow-orange-200 transition-all flex items-center justify-center gap-2 mb-6">
+                            <i class="fas fa-plus"></i> 开启新咨询
+                        </button>
+
+                        <!-- Mini Calendar Mockup -->
+                        <div class="mb-4 px-1">
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-[11px] font-bold text-gray-900">2026年 1月</span>
+                                <div class="flex gap-2 text-gray-400">
+                                    <i class="fas fa-chevron-left text-[9px] cursor-pointer hover:text-gray-600"></i>
+                                    <i class="fas fa-chevron-right text-[9px] cursor-pointer hover:text-gray-600"></i>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1 text-center mb-1">
+                                <div v-for="d in ['日','一','二','三','四','五','六']" :key="d" class="text-[9px] text-gray-400 font-medium">{{d}}</div>
+                            </div>
+                            <div class="grid grid-cols-7 gap-1 text-center">
+                                <div v-for="n in 31" :key="n" class="text-[9px] py-1 rounded-full cursor-pointer hover:bg-orange-100 transition-colors" :class="{'bg-orange-500 text-white font-bold': n === 4, 'text-gray-700': n !== 4}">{{n}}</div>
+                            </div>
+                        </div>
                     </div>
 
                     <nav class="flex-1 space-y-1">
-                        <div class="sidebar-item">
-                            <i class="fas fa-home w-5"></i> Home
+                        <div class="sidebar-item" @click="closePlanView" :class="{ 'active': !selectedPlan }">
+                            <i class="fas fa-home w-5"></i> 聊天主页
                         </div>
-                        <div class="sidebar-item active">
-                            <i class="fas fa-plus-square w-5"></i> Find Activities
+                        <div class="sidebar-item" :class="{ 'active': false }">
+                            <i class="fas fa-plus-square w-5"></i> 发现活动
                         </div>
                         <div class="sidebar-item">
-                            <i class="fas fa-history w-5"></i> History
+                            <i class="fas fa-history w-5"></i> 历史记录
+                        </div>
+                        
+                        <!-- Saved Plans Section -->
+                        <div class="pt-4 pb-2 px-6 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            我的计划
+                        </div>
+                        <div v-if="savedPlans.length === 0" class="px-6 py-2 text-xs text-gray-400 italic">
+                            暂无保存的计划
+                        </div>
+                        <div v-for="(plan, idx) in savedPlans" :key="idx" 
+                            @click="viewSavedPlan(plan)"
+                            class="sidebar-item text-xs py-2 cursor-pointer hover:bg-orange-50 group flex justify-between items-center"
+                            :class="{ 'active': selectedPlan === plan }">
+                            <div class="flex items-center overflow-hidden">
+                                <i class="fas fa-file-alt w-5 text-orange-500 group-hover:scale-110 transition-transform"></i> 
+                                <span class="truncate">{{ plan.title }}</span>
+                            </div>
+                            <button @click.stop="deletePlan(idx, $event)" class="opacity-0 group-hover:opacity-100 p-1 hover:text-red-500 transition-all">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </nav>
 
@@ -340,9 +476,11 @@
 
                 <!-- Main Chat Area -->
                 <div class="flex-1 flex flex-col overflow-hidden bg-white relative">
-                    <!-- Chat History -->
-                    <div class="flex-1 overflow-y-auto px-4 py-8 chat-container" ref="chatContainer">
-                        <div class="max-w-3xl mx-auto space-y-10">
+                    <!-- Chat View -->
+                    <div v-if="!selectedPlan" class="flex-1 flex flex-col overflow-hidden">
+                        <!-- Chat History -->
+                        <div class="flex-1 overflow-y-auto px-4 py-8 chat-container" ref="chatContainer">
+                            <div class="max-w-3xl mx-auto space-y-10">
                             <div v-for="(msg, index) in chatHistory" :key="index" class="flex flex-col">
                                 <!-- Bot Message -->
                                 <div v-if="msg.role === 'bot'" class="flex gap-4 items-start">
@@ -463,6 +601,9 @@
 
                                     <!-- Action Buttons -->
                                     <div class="flex items-center gap-4 pt-2">
+                                        <button v-if="msg.type === 'plan'" @click="savePlan(msg.content)" class="message-action-btn text-orange-600" title="保存计划">
+                                            <i class="fas fa-save"></i>
+                                        </button>
                                         <button class="message-action-btn"><i class="far fa-bookmark"></i></button>
                                         <button class="message-action-btn"><i class="far fa-thumbs-up"></i></button>
                                         <button class="message-action-btn"><i class="far fa-thumbs-down"></i></button>
@@ -565,6 +706,146 @@
                     CareerNavigator 可能会产生误差。请核实重要信息。
                 </div>
                 </div>
+
+                <!-- Plan Detail View -->
+                <div v-else class="flex-1 flex flex-col overflow-hidden bg-white animate-in fade-in duration-500">
+                    <!-- Header -->
+                    <div class="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center text-orange-600">
+                                <i class="fas fa-calendar-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <template v-if="!isEditing">
+                                    <h3 class="font-bold text-xl text-gray-900">{{ selectedPlan.title || '职业行动计划' }}</h3>
+                                    <p class="text-xs text-gray-400">查看已保存的详细行动方案</p>
+                                </template>
+                                <template v-else>
+                                    <input v-model="editablePlan.title" class="font-bold text-xl text-gray-900 border-b border-orange-300 focus:outline-none focus:border-orange-500 bg-transparent w-full" placeholder="输入计划标题">
+                                    <p class="text-xs text-orange-500 mt-1">正在编辑模式...</p>
+                                </template>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <template v-if="!isEditing">
+                                <button @click="startEditing" class="px-4 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                                    <i class="fas fa-edit"></i> 编辑计划
+                                </button>
+                                <button @click="deletePlan(savedPlans.indexOf(selectedPlan))" class="px-4 py-2 text-red-500 hover:bg-red-50 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                                    <i class="fas fa-trash-alt"></i> 删除
+                                </button>
+                                <button @click="closePlanView" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm font-bold text-gray-600 transition-colors flex items-center gap-2">
+                                    <i class="fas fa-arrow-left"></i> 返回聊天
+                                </button>
+                            </template>
+                            <template v-else>
+                                <button @click="saveChanges" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                                    <i class="fas fa-check"></i> 保存修改
+                                </button>
+                                <button @click="cancelEditing" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-sm font-bold transition-colors flex items-center gap-2">
+                                    <i class="fas fa-times"></i> 取消
+                                </button>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="flex-1 overflow-y-auto p-8 bg-gray-50/50">
+                        <div class="max-w-6xl mx-auto space-y-8">
+                            <!-- Calendar View -->
+                            <div v-if="selectedPlan.weekly_schedule" class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-calendar-alt"></i> 执行日程表
+                                    </h4>
+                                    <div class="flex gap-2">
+                                        <span class="flex items-center gap-1 text-[10px] text-gray-500"><span class="w-2 h-2 rounded-full bg-red-400"></span> 重要</span>
+                                        <span class="flex items-center gap-1 text-[10px] text-gray-500"><span class="w-2 h-2 rounded-full bg-orange-400"></span> 普通</span>
+                                        <span class="flex items-center gap-1 text-[10px] text-gray-500"><span class="w-2 h-2 rounded-full bg-green-400"></span> 次要</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="rounded-2xl overflow-hidden border border-gray-200 shadow-sm overflow-x-auto">
+                                    <div class="calendar-grid" :style="{ gridTemplateColumns: `100px repeat(${(isEditing ? editablePlan.weekly_schedule : selectedPlan.weekly_schedule).length}, 1fr)` }">
+                                        <!-- Header Row: Weeks -->
+                                        <div class="calendar-header-cell bg-gray-100 font-bold">时间 / 任务</div>
+                                        <div v-for="week in (isEditing ? editablePlan.weekly_schedule : selectedPlan.weekly_schedule)" :key="'h-'+week.week" class="calendar-header-cell">
+                                            第 {{ week.week }} 周
+                                        </div>
+                                        
+                                        <!-- Focus Area Row (Optional but helpful) -->
+                                        <div class="calendar-header-cell text-[10px] bg-orange-50">核心目标</div>
+                                        <div v-for="week in (isEditing ? editablePlan.weekly_schedule : selectedPlan.weekly_schedule)" :key="'f-'+week.week" class="calendar-day-cell bg-orange-50/30 min-h-[60px]">
+                                            <template v-if="!isEditing">
+                                                <div class="text-[11px] font-bold text-orange-700">🎯 {{ week.focus_area }}</div>
+                                            </template>
+                                            <template v-else>
+                                                <input v-model="week.focus_area" class="w-full bg-transparent border-none p-0 text-[11px] font-bold text-orange-700 focus:ring-0" placeholder="核心目标">
+                                            </template>
+                                        </div>
+
+                                        <!-- Task Rows -->
+                                        <template v-for="tIdx in maxTasksCount" :key="'row-'+tIdx">
+                                            <div class="calendar-header-cell font-bold">任务 {{ tIdx }}</div>
+                                            <div v-for="week in (isEditing ? editablePlan.weekly_schedule : selectedPlan.weekly_schedule)" :key="'cell-'+week.week+'-'+tIdx" class="calendar-day-cell">
+                                                <div v-if="week.tasks && week.tasks[tIdx-1]" 
+                                                     class="calendar-event h-full" 
+                                                     :class="'event-priority-' + (week.tasks[tIdx-1].priority || '中')">
+                                                    
+                                                    <template v-if="!isEditing">
+                                                        <div class="font-bold mb-1">{{ week.tasks[tIdx-1].task }}</div>
+                                                        <div class="text-[9px] opacity-70 flex justify-between mt-auto">
+                                                            <span><i class="far fa-clock mr-1"></i>{{ week.tasks[tIdx-1].duration }}</span>
+                                                            <span class="font-bold">{{ week.tasks[tIdx-1].priority }}</span>
+                                                        </div>
+                                                    </template>
+                                                    <template v-else>
+                                                        <textarea v-model="week.tasks[tIdx-1].task" rows="3" class="w-full bg-transparent border-none p-0 text-[11px] focus:ring-0 resize-none font-medium" placeholder="任务描述..."></textarea>
+                                                        <div class="flex justify-between items-center mt-2 pt-2 border-t border-black/5">
+                                                            <input v-model="week.tasks[tIdx-1].duration" class="w-2/3 bg-transparent border-none p-0 text-[9px] opacity-70 focus:ring-0" placeholder="时长">
+                                                            <select v-model="week.tasks[tIdx-1].priority" class="bg-transparent border-none p-0 text-[9px] font-bold focus:ring-0">
+                                                                <option value="高">高</option>
+                                                                <option value="中">中</option>
+                                                                <option value="低">低</option>
+                                                            </select>
+                                                        </div>
+                                                    </template>
+                                                </div>
+                                                <div v-else class="h-full flex items-center justify-center text-gray-200 italic text-[10px]">
+                                                    -
+                                                </div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Key Milestones -->
+                            <div v-if="selectedPlan.key_milestones" class="space-y-6">
+                                <h4 class="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                    <i class="fas fa-flag-checkered"></i> 关键里程碑
+                                </h4>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <div v-for="(milestone, mIdx) in (isEditing ? editablePlan.key_milestones : selectedPlan.key_milestones)" :key="mIdx" class="p-4 rounded-xl border border-gray-200 bg-white shadow-sm hover:shadow-md transition-shadow">
+                                        <template v-if="!isEditing">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <div class="w-2 h-2 rounded-full bg-orange-500"></div>
+                                                <p class="text-sm font-bold text-gray-900">{{ milestone.milestone }}</p>
+                                            </div>
+                                            <p class="text-xs text-gray-500 ml-4"><i class="far fa-calendar-check mr-1"></i> {{ milestone.target_date }}</p>
+                                        </template>
+                                        <template v-else>
+                                            <input v-model="milestone.milestone" class="w-full text-sm font-bold text-gray-900 bg-gray-50 border border-gray-200 rounded p-1 mb-1 focus:outline-none focus:border-orange-500" placeholder="里程碑">
+                                            <input v-model="milestone.target_date" class="w-full text-xs text-gray-500 bg-gray-50 border border-gray-200 rounded p-1 focus:outline-none focus:border-orange-500" placeholder="日期">
+                                        </template>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
@@ -582,11 +863,72 @@
                 const chatContainer = ref(null);
                 const waitingForFeedback = ref(false);
                 const pendingQuestions = ref([]);
+                const savedPlans = ref(JSON.parse(localStorage.getItem('career_plans') || '[]'));
+                const selectedPlan = ref(null);
+                const isEditing = ref(false);
+                const editablePlan = ref(null);
                 const activeNodes = reactive({});
                 let pollTimer = null;
 
                 const handleLogin = () => {
                     currentStep.value = 'questionnaire';
+                };
+
+                const savePlan = (plan) => {
+                    const isAlreadySaved = savedPlans.value.some(p => 
+                        JSON.stringify(p) === JSON.stringify(plan)
+                    );
+                    if (!isAlreadySaved) {
+                        const title = plan.title || `职业行动计划 (${new Date().toLocaleDateString()})`;
+                        savedPlans.value.push({ ...plan, title });
+                        localStorage.setItem('career_plans', JSON.stringify(savedPlans.value));
+                        alert('计划已保存到左侧菜单栏！');
+                    } else {
+                        alert('该计划已在保存列表中。');
+                    }
+                };
+
+                const viewSavedPlan = (plan) => {
+                    selectedPlan.value = plan;
+                    isEditing.value = false;
+                };
+
+                const closePlanView = () => {
+                    selectedPlan.value = null;
+                    isEditing.value = false;
+                };
+
+                const startEditing = () => {
+                    editablePlan.value = JSON.parse(JSON.stringify(selectedPlan.value));
+                    isEditing.value = true;
+                };
+
+                const cancelEditing = () => {
+                    isEditing.value = false;
+                    editablePlan.value = null;
+                };
+
+                const saveChanges = () => {
+                    const index = savedPlans.value.findIndex(p => p === selectedPlan.value);
+                    if (index !== -1) {
+                        savedPlans.value[index] = editablePlan.value;
+                        selectedPlan.value = savedPlans.value[index];
+                        localStorage.setItem('career_plans', JSON.stringify(savedPlans.value));
+                        isEditing.value = false;
+                        editablePlan.value = null;
+                    }
+                };
+
+                const deletePlan = (index, event) => {
+                    if (event) event.stopPropagation();
+                    if (confirm('确定要删除这个计划吗？')) {
+                        const planToDelete = savedPlans.value[index];
+                        if (selectedPlan.value === planToDelete) {
+                            selectedPlan.value = null;
+                        }
+                        savedPlans.value.splice(index, 1);
+                        localStorage.setItem('career_plans', JSON.stringify(savedPlans.value));
+                    }
                 };
 
                 watch(activeNodes, () => {
@@ -622,6 +964,12 @@
                 });
 
                 const hasParallelNodes = computed(() => Object.keys(parallelNodes.value).length > 0);
+
+                const maxTasksCount = computed(() => {
+                    const plan = isEditing.value ? editablePlan.value : selectedPlan.value;
+                    if (!plan || !plan.weekly_schedule) return 0;
+                    return Math.max(...plan.weekly_schedule.map(w => w.tasks ? w.tasks.length : 0));
+                });
 
                 const getNodeLabel = (node) => {
                     const labels = {
@@ -924,7 +1272,9 @@
                     startPlanning, chatHistory, chatContainer, waitingForFeedback,
                     satisfactionLevels, feedback, submitFeedback, currentStage, reset,
                     activeNodes, getNodeLabel, getNodeIcon, isParallelNode, parallelNodes, hasParallelNodes,
-                    handleLogin, formatStreamingContent
+                    handleLogin, formatStreamingContent, savedPlans, savePlan, viewSavedPlan,
+                    selectedPlan, closePlanView, deletePlan, isEditing, editablePlan,
+                    startEditing, cancelEditing, saveChanges, maxTasksCount
                 };
             }
         }).mount('#app');
