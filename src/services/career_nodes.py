@@ -885,6 +885,17 @@ def reporter_node(state: CareerNavigatorState, config: RunnableConfig = None) ->
             report["iteration_count"] = iteration_count
             if iteration_count > 0:
                 report["iteration_summary"] = f"这是基于您反馈的第{iteration_count}次优化报告"
+            
+            # 收集所有数据源
+            all_sources = []
+            if "industry_research_result" in state and "market_data" in state["industry_research_result"]:
+                all_sources.extend(state["industry_research_result"]["market_data"].get("data_sources", []))
+            if "career_analysis_result" in state and "job_market_data" in state["career_analysis_result"]:
+                all_sources.extend(state["career_analysis_result"]["job_market_data"].get("data_sources", []))
+            
+            # 去重并添加到报告
+            report["sources"] = list(set([s for s in all_sources if s]))
+
             print(f"📊 综合报告生成成功 (迭代{iteration_count}): {json.dumps(report, ensure_ascii=False, indent=2)}")
         except json.JSONDecodeError as e:
             report = {
