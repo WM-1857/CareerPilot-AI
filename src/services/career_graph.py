@@ -9,6 +9,7 @@ from datetime import datetime
 from typing import Dict, Any, List
 
 from langgraph.graph import StateGraph, END
+from langgraph.checkpoint.memory import MemorySaver
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import RunnableConfig
 
@@ -55,7 +56,13 @@ class CareerNavigatorGraph:
         self._add_edges()
         
         # 编译图
-        self.app = self.workflow.compile()
+        self.memory = MemorySaver()
+        # 使用 interrupt_after 实现人工干预 (Human-in-the-loop)
+        # 在 reporter 节点（生成分析报告）和 scheduler 节点（生成最终计划）后暂停
+        self.app = self.workflow.compile(
+            checkpointer=self.memory,
+            interrupt_after=["reporter", "scheduler"]
+        )
         
         # 设置默认配置
         self.default_config = {
@@ -93,62 +100,33 @@ class CareerNavigatorGraph:
         # 汇报员的条件路由 (检查迭代次数和用户满意度)
         self.workflow.add_conditional_edges(
             "reporter",
-            self._route_reporter_decision,
+            self._route_user_satisfaction_analysis,
             {
-                "max_iterations_reached": "goal_decomposer",  # 达到最大迭代次数，直接进入目标拆分
-                "needs_user_feedback": END,  # 需要用户反馈时暂停
                 "satisfied": "goal_decomposer",  # 用户满意，进入目标拆分
-                "not_satisfied": "supervisor",  # 用户不满意，重新分析
+                "not_satisfied": "planner",  # 用户不满意，重新规划策略
             }
         )
         
         # 目标拆分 -> 日程计划
         self.workflow.add_edge("goal_decomposer", "scheduler")
         
-        # 日程计划直接结束，不需要用户确认
-        self.workflow.add_edge("scheduler", END)
+        # 日程计划后的条件路由 (最终确认)
+        self.workflow.add_conditional_edges(
+            "scheduler",
+            self._route_user_satisfaction_planning,
+            {
+                "satisfied": END,
+                "not_satisfied": "goal_decomposer"
+            }
+        )
     
     def _route_coordinator(self, state: CareerNavigatorState) -> str:
         """协调员节点后的路由逻辑"""
         # coordinator_node 会在 state 中设置 'next_node'
         return state.get("next_node", "planner")  # 默认路由到 planner
     
-    def _route_reporter_decision(self, state: CareerNavigatorState) -> str:
-        """reporter节点后的路由决策逻辑"""
-        # 首先检查是否达到最大迭代次数
-        iteration_count = state.get("iteration_count", 0)
-        max_iterations = state.get("max_iterations", 3)
-        
-        if iteration_count >= max_iterations:
-            print(f"🔄 达到最大迭代次数({max_iterations})，直接进入目标拆分阶段")
-            return "max_iterations_reached"
-        
-        # 检查是否需要用户输入（未达到最大迭代次数的情况下）
-        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
-            print(f"📝 迭代次数({iteration_count}/{max_iterations})，等待用户反馈")
-            return "needs_user_feedback"
-        
-        # 检查用户满意度（已收到用户反馈的情况）
-        current_satisfaction = state.get("current_satisfaction")
-        if current_satisfaction is not None:
-            if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
-                print(f"✅ 用户满意({current_satisfaction.value})，进入目标拆分阶段")
-                return "satisfied"
-            else:
-                print(f"🔄 用户不满意({current_satisfaction.value})，重新进行分析")
-                return "not_satisfied"
-        
-        # 默认情况：需要用户反馈
-        print("📝 默认进入用户反馈阶段")
-        return "needs_user_feedback"
-    
     def _route_user_satisfaction_analysis(self, state: CareerNavigatorState) -> str:
         """用户对分析报告满意度判断后的路由逻辑"""
-        # 检查是否需要用户输入
-        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
-            print("⏸️ 等待用户反馈，暂停工作流执行")
-            return "needs_input"
-        
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
             print("达到最大迭代次数，强制进入目标拆分阶段。")
@@ -176,17 +154,13 @@ class CareerNavigatorGraph:
             print(f"用户满意({current_satisfaction.value})，进入目标拆分阶段")
             return "satisfied"
         else:
-            # 如果满意度未设置，默认进入下一阶段
+            # 如果满意度未设置（可能是因为 interrupt_after 刚恢复），默认进入下一阶段或保持现状
+            # 在 HITL 模式下，恢复时 current_satisfaction 应该已经被 update_state 设置了
             print("满意度未设置，默认进入目标拆分阶段")
             return "satisfied"
         
     def _route_user_satisfaction_planning(self, state: CareerNavigatorState) -> str:
         """用户对规划计划满意度判断后的路由逻辑"""
-        # 检查是否需要用户输入
-        if state.get("requires_user_input", False) and state.get("current_satisfaction") is None:
-            print("⏸️ 等待用户对规划的反馈，暂停工作流执行")
-            return "needs_input"
-        
         # 检查迭代次数限制
         if StateUpdater.check_iteration_limit(state):
             print("达到最大迭代次数，强制完成规划。")
@@ -232,45 +206,69 @@ class CareerNavigatorGraph:
         initial_state["messages"] = [HumanMessage(content=user_message)]
         return initial_state
     
-    def run_workflow(self, initial_state: CareerNavigatorState, stream_callback=None) -> Dict[str, Any]:
+    def run_workflow(self, initial_state: Dict[str, Any], stream_callback=None) -> Dict[str, Any]:
         """
         运行工作流
         
         Args:
-            initial_state: 初始状态
+            initial_state: 初始状态或更新的状态字典
             stream_callback: 流式回调函数
             
         Returns:
             工作流执行结果
         """
         try:
-            # 运行工作流 - 设置递归限制
-            current_state = initial_state.copy()
-            
-            # 将回调函数放入 config 中，以便节点可以访问
+            # 获取 session_id 作为 thread_id
+            session_id = initial_state.get("session_id")
+            if not session_id:
+                return {"success": False, "error": "缺少 session_id"}
+
+            # 配置运行参数
             config = RunnableConfig(
-                recursion_limit=15,
-                configurable={"stream_callback": stream_callback}
+                recursion_limit=50,
+                configurable={
+                    "stream_callback": stream_callback,
+                    "thread_id": session_id
+                }
             )
             
-            # 使用 stream 模式运行，并确保状态在迭代中累积
-            for state_update in self.app.stream(current_state, config=config):
-                print(f"工作流状态更新: {list(state_update.keys())}")
-                # 合并每个节点的更新到当前状态
-                for node_name, node_update in state_update.items():
-                    if isinstance(node_update, dict):
-                        # 特殊处理：如果 node_update 中包含 next_node，确保它被正确更新
-                        current_state.update(node_update)
-                    else:
-                        current_state = node_update
+            # 检查当前图的状态，判断是新开始还是恢复执行
+            snapshot = self.app.get_state(config)
             
+            if snapshot.next:
+                # 如果有 next 节点，说明工作流处于暂停状态（interrupt）
+                print(f"⏭️ 恢复工作流执行，当前暂停在: {snapshot.next}")
+                # 如果 initial_state 包含更新（如用户反馈），则更新状态
+                # 注意：我们只更新非元数据字段
+                update_data = {k: v for k, v in initial_state.items() if k not in ["session_id"]}
+                if update_data:
+                    print(f"📝 更新工作流状态: {list(update_data.keys())}")
+                    self.app.update_state(config, update_data)
+                
+                # 恢复执行时，输入应为 None
+                workflow_input = None
+            else:
+                # 如果没有 next 节点，说明是新开始或已结束
+                print("🚀 开始新的工作流执行")
+                workflow_input = initial_state
+            
+            # 使用 stream 模式运行
+            # 注意：在 stream 模式下，如果遇到 interrupt，循环会正常结束
+            for state_update in self.app.stream(workflow_input, config=config):
+                print(f"工作流状态更新: {list(state_update.keys())}")
+            
+            # 无论是否中断，都从 checkpointer 获取完整的最新状态
+            new_snapshot = self.app.get_state(config)
+            final_state = new_snapshot.values
+
             # 检查是否成功执行并获得了状态
-            if current_state:
-                # 确保返回的是累积后的完整状态
+            if final_state:
+                print(f"✅ 工作流执行结束/暂停，当前阶段: {final_state.get('current_stage')}")
                 return {
                     "success": True,
-                    "final_state": current_state,
-                    "session_id": current_state.get("session_id")
+                    "final_state": final_state,
+                    "session_id": session_id,
+                    "is_interrupted": bool(new_snapshot.next)
                 }
             else:
                 return {
@@ -316,6 +314,9 @@ class CareerNavigatorGraph:
         # 更新状态
         updated_state = state.copy()
         updated_state.update(StateUpdater.add_user_feedback(state, feedback))
+        
+        # 设置当前满意度，供工作流路由使用
+        updated_state["current_satisfaction"] = satisfaction_level
         
         # 只有在用户不满意时才增加迭代计数器
         if satisfaction_level in [UserSatisfactionLevel.VERY_DISSATISFIED, 

@@ -477,7 +477,9 @@
                         'industry_researcher': 'fas fa-chart-line',
                         'job_analyzer': 'fas fa-briefcase',
                         'coordinator': 'fas fa-route',
-                        'planner': 'fas fa-clipboard-list'
+                        'planner': 'fas fa-clipboard-list',
+                        'goal_decomposer': 'fas fa-tasks',
+                        'scheduler': 'fas fa-calendar-alt'
                     };
                     return icons[node] || 'fas fa-robot';
                 };
@@ -606,7 +608,7 @@
                                     activeNodes[data.node].status = 'end';
                                     // For parallel nodes, we might want to keep them until all are done
                                     // For sequential nodes, we can remove them or keep them briefly
-                                    if (['coordinator', 'planner', 'supervisor', 'reporter'].includes(data.node)) {
+                                    if (['coordinator', 'planner', 'supervisor', 'reporter', 'goal_decomposer', 'scheduler'].includes(data.node)) {
                                         setTimeout(() => {
                                             delete activeNodes[data.node];
                                         }, 1000);

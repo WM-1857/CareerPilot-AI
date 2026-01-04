@@ -369,25 +369,28 @@ def planner_node(state: CareerNavigatorState, config: RunnableConfig = None) -> 
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
+    # 准备更新，同时清除满意度状态，以便下次反馈循环
+    updates = {"current_satisfaction": None}
+    
     if llm_response.get("success"):
         try:
             # 使用智能JSON解析
             strategy = parse_llm_json_content(llm_response["content"])
             print(f"📊 分析策略结果: {json.dumps(strategy, ensure_ascii=False, indent=2)}")
             
-            updates = {"planning_strategy": strategy.get("strategy_overview", "制定个性化职业分析策略")}
+            updates["planning_strategy"] = strategy.get("strategy_overview", "制定个性化职业分析策略")
             print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2)}")
             return updates
         except json.JSONDecodeError as e:
             print(f"❌ 策略解析失败: {str(e)}")
             print(f"📄 原始响应内容: {llm_response['content'][:300]}...")
             print("🔄 使用默认策略")
-            updates = {"planning_strategy": "制定个性化职业分析策略"}
+            updates["planning_strategy"] = "制定个性化职业分析策略"
             print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2)}")
             return updates
     else:
         print(f"❌ 策略制定失败: {llm_response.get('error')}")
-        updates = {"planning_strategy": "制定个性化职业分析策略"}
+        updates["planning_strategy"] = "制定个性化职业分析策略"
         print(f"🔄 状态更新: {json.dumps(updates, ensure_ascii=False, indent=2)}")
         return updates
 
@@ -967,16 +970,20 @@ def goal_decomposer_node(state: CareerNavigatorState, config: RunnableConfig = N
     print(f"🎯 目标职业方向: {career_direction}")
     print(f"👤 用户画像: {json.dumps(dict(user_profile), ensure_ascii=False, indent=2)}")
     
-    # 调用百炼API进行目标拆分 (不需要流式输出内容)
+    # 调用百炼API进行目标拆分
     llm_response = llm_service.decompose_career_goals(
         career_direction, 
-        user_profile
+        user_profile,
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "goal_decomposer", "content": x})) if stream_callback else None
     )
     
     if stream_callback:
         stream_callback(json.dumps({"node": "goal_decomposer", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
+    
+    # 准备更新，同时清除满意度状态，以便下次反馈循环
+    updated_state = {"current_satisfaction": None}
     
     if llm_response.get("success"):
         try:
@@ -999,7 +1006,7 @@ def goal_decomposer_node(state: CareerNavigatorState, config: RunnableConfig = N
         print(f"❌ 目标拆分失败: {decomposed_goals}")
     
     # 更新状态，进入日程规划阶段
-    updated_state = StateUpdater.update_stage(state, WorkflowStage.SCHEDULE_PLANNING)
+    updated_state.update(StateUpdater.update_stage(state, WorkflowStage.SCHEDULE_PLANNING))
     updated_state["career_goals"] = decomposed_goals
     
     print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
@@ -1043,10 +1050,11 @@ def scheduler_node(state: CareerNavigatorState, config: RunnableConfig = None) -
     
     print(f"⚙️ 用户约束条件: {json.dumps(user_constraints, ensure_ascii=False, indent=2)}")
     
-    # 调用百炼API制定行动计划 (不需要流式输出内容)
+    # 调用百炼API制定行动计划
     llm_response = llm_service.create_action_schedule(
         [career_goals] if career_goals else [], 
-        user_constraints
+        user_constraints,
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "scheduler", "content": x})) if stream_callback else None
     )
     
     if stream_callback:
