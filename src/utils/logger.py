@@ -231,10 +231,20 @@ class StreamToLogger:
     def __init__(self, logger, log_level=logging.INFO):
         self.logger = logger
         self.log_level = log_level
+        self._is_logging = False
 
     def write(self, buf):
-        for line in buf.rstrip().splitlines():
-            self.logger.log(self.log_level, line.rstrip())
+        if self._is_logging:
+            return
+        
+        self._is_logging = True
+        try:
+            for line in buf.rstrip().splitlines():
+                line = line.rstrip()
+                if line:
+                    self.logger.log(self.log_level, line)
+        finally:
+            self._is_logging = False
 
     def flush(self):
         pass

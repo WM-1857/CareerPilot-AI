@@ -71,7 +71,9 @@ class CareerNavigatorGraph:
             self._route_coordinator,
             {
                 "planner": "planner",
-                "goal_decomposer": "goal_decomposer"
+                "goal_decomposer": "goal_decomposer",
+                "scheduler": "scheduler",
+                "end": END
             }
         )
         
@@ -251,17 +253,20 @@ class CareerNavigatorGraph:
                 configurable={"stream_callback": stream_callback}
             )
             
-            for state_update in self.app.stream(initial_state, config=config):
+            # 使用 stream 模式运行，并确保状态在迭代中累积
+            for state_update in self.app.stream(current_state, config=config):
                 print(f"工作流状态更新: {list(state_update.keys())}")
                 # 合并每个节点的更新到当前状态
                 for node_name, node_update in state_update.items():
                     if isinstance(node_update, dict):
+                        # 特殊处理：如果 node_update 中包含 next_node，确保它被正确更新
                         current_state.update(node_update)
                     else:
                         current_state = node_update
             
             # 检查是否成功执行并获得了状态
             if current_state:
+                # 确保返回的是累积后的完整状态
                 return {
                     "success": True,
                     "final_state": current_state,

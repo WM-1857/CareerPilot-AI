@@ -15,7 +15,7 @@ from searchsrc.config import TAVILY_MAX_RESULTS, TAVILY_API_KEY
 from decorators import create_logged_tool
 
 # 导入自定义JSON编码器
-from src.utils.logger import CustomJsonEncoder
+from src.utils.logger import CustomJsonEncoder, llm_logger
 
 class DashScopeService:
     """讯飞星火API服务类 (原DashScope服务)"""
@@ -37,7 +37,7 @@ class DashScopeService:
         # 默认模型配置
         self.default_model = "Lite"
         self.default_temperature = 0.7
-        self.default_max_tokens = 2000
+        self.default_max_tokens = 4000  # 增加最大token数，防止截断
     
     def call_llm(self, prompt: str, context: Optional[Dict] = None, 
                  model: Optional[str] = None, temperature: Optional[float] = None,
@@ -58,94 +58,165 @@ class DashScopeService:
         Returns:
             包含模型响应的字典
         """
-        try:
-            # 构建完整的提示词
-            full_prompt = self._build_prompt(prompt, context)
-            
-            headers = {
-                'Authorization': self.api_key,
-                'Content-Type': 'application/json'
-            }
-            
-            body = {
-                "model": model or self.default_model,
-                "messages": [
-                    {"role": "user", "content": full_prompt}
-                ],
-                "temperature": temperature or self.default_temperature,
-                "max_tokens": max_tokens or self.default_max_tokens,
-                "stream": stream or (stream_callback is not None)
-            }
-            
-            if body["stream"]:
-                response = requests.post(url=self.api_url, json=body, headers=headers, stream=True)
-                if response.status_code == 200:
-                    full_content = ""
-                    for line in response.iter_lines():
-                        if line:
-                            line_str = line.decode('utf-8')
-                            if line_str.startswith('data: '):
-                                data_str = line_str[6:]
-                                if data_str.strip() == '[DONE]':
-                                    break
-                                try:
-                                    data = json.loads(data_str)
+        max_retries = 2
+        retry_delay = 1.0
+        
+        for attempt in range(max_retries + 1):
+            try:
+                # 构建完整的提示词
+                full_prompt = self._build_prompt(prompt, context)
+                
+                headers = {
+                    'Authorization': self.api_key,
+                    'Content-Type': 'application/json'
+                }
+                
+                body = {
+                    "model": model or self.default_model,
+                    "messages": [
+                        {"role": "user", "content": full_prompt}
+                    ],
+                    "temperature": temperature or self.default_temperature,
+                    "max_tokens": max_tokens or self.default_max_tokens,
+                    "stream": stream or (stream_callback is not None)
+                }
+                
+                if body["stream"]:
+                    response = requests.post(url=self.api_url, json=body, headers=headers, stream=True, timeout=60)
+                    if response.status_code == 200:
+                        full_content = ""
+                        request_id = ""
+                        usage = {}
+                        buffer = ""
+                        
+                        for line in response.iter_lines():
+                            if line:
+                                line_str = line.decode('utf-8').strip()
+                                if not line_str:
+                                    continue
+                                    
+                                if line_str.startswith('data:'):
+                                    data_str = line_str[5:].strip()
+                                    if data_str == '[DONE]':
+                                        break
+                                    
+                                    # 处理可能被分割的JSON
+                                    try:
+                                        # 尝试直接解析
+                                        data = json.loads(data_str)
+                                        buffer = "" # 解析成功，清空缓存
+                                    except json.JSONDecodeError:
+                                        # 解析失败，加入缓存尝试
+                                        buffer += data_str
+                                        try:
+                                            data = json.loads(buffer)
+                                            buffer = "" # 缓存解析成功，清空
+                                        except json.JSONDecodeError:
+                                            # 仍然失败，等待下一行
+                                            continue
+                                    
+                                    if not request_id and 'id' in data:
+                                        request_id = data['id']
+                                    if 'usage' in data:
+                                        usage = data['usage']
+                                        
                                     if 'choices' in data and len(data['choices']) > 0:
-                                        delta = data['choices'][0].get('delta', {})
-                                        content = delta.get('content', '')
+                                        choice = data['choices'][0]
+                                        container = choice.get('delta') or choice.get('message') or {}
+                                        content = container.get('content') or container.get('text') or ''
+                                        
                                         if content:
                                             full_content += content
                                             if stream_callback:
                                                 stream_callback(content)
-                                except:
+                                    elif 'error' in data:
+                                        llm_logger.error(f"流式响应包含错误: {data['error']}")
+                                else:
+                                    # 非 data: 开头的行，可能是错误信息或其它格式
+                                    try:
+                                        data = json.loads(line_str)
+                                        if 'error' in data:
+                                            llm_logger.error(f"API返回错误: {data['error']}")
+                                    except:
+                                        pass
                                     continue
-                    return {
-                        "success": True,
-                        "content": full_content,
-                        "usage": {},
-                        "request_id": ""
-                    }
-                else:
-                    return {
-                        "success": False,
-                        "error": f"API流式调用失败: {response.status_code} - {response.text}",
-                        "status_code": response.status_code
-                    }
+                        
+                        if not full_content and attempt < max_retries:
+                            llm_logger.warning(f"API未返回内容，尝试第 {attempt + 1} 次重试...")
+                            import time
+                            time.sleep(retry_delay * (attempt + 1))
+                            continue
 
-            response = requests.post(url=self.api_url, json=body, headers=headers)
-            
-            # 检查响应状态
-            if response.status_code == 200:
-                result = response.json()
-                if 'choices' in result and len(result['choices']) > 0:
-                    return {
-                        "success": True,
-                        "content": result['choices'][0]['message']['content'],
-                        "usage": result.get('usage', {}),
-                        "request_id": result.get('id', '')
-                    }
+                        return {
+                            "success": len(full_content) > 0,
+                            "content": full_content,
+                            "error": "API未返回任何内容" if len(full_content) == 0 else None,
+                            "usage": usage,
+                            "request_id": request_id
+                        }
+                    else:
+                        if attempt < max_retries:
+                            llm_logger.warning(f"API调用失败 ({response.status_code})，尝试第 {attempt + 1} 次重试...")
+                            import time
+                            time.sleep(retry_delay * (attempt + 1))
+                            continue
+                        return {
+                            "success": False,
+                            "error": f"API流式调用失败: {response.status_code} - {response.text}",
+                            "status_code": response.status_code
+                        }
+
+                response = requests.post(url=self.api_url, json=body, headers=headers, timeout=60)
+                
+                # 检查响应状态
+                if response.status_code == 200:
+                    result = response.json()
+                    if 'choices' in result and len(result['choices']) > 0:
+                        return {
+                            "success": True,
+                            "content": result['choices'][0]['message']['content'],
+                            "usage": result.get('usage', {}),
+                            "request_id": result.get('id', '')
+                        }
+                    else:
+                        if attempt < max_retries:
+                            llm_logger.warning(f"API返回内容为空或格式不正确，尝试第 {attempt + 1} 次重试...")
+                            import time
+                            time.sleep(retry_delay * (attempt + 1))
+                            continue
+                        return {
+                            "success": False,
+                            "error": f"API返回格式异常: {response.text}",
+                            "status_code": response.status_code
+                        }
                 else:
+                    if attempt < max_retries:
+                        llm_logger.warning(f"API调用失败 ({response.status_code})，尝试第 {attempt + 1} 次重试...")
+                        import time
+                        time.sleep(retry_delay * (attempt + 1))
+                        continue
+                    error_msg = f"API调用失败: {response.status_code} - {response.text}"
+                    if response.status_code == 401:
+                        error_msg += " (请检查API_KEY是否正确)"
                     return {
                         "success": False,
-                        "error": f"API返回格式异常: {response.text}",
+                        "error": error_msg,
                         "status_code": response.status_code
                     }
-            else:
-                error_msg = f"API调用失败: {response.status_code} - {response.text}"
-                if response.status_code == 401:
-                    error_msg += " (请检查API_KEY是否正确)"
+                    
+            except Exception as e:
+                if attempt < max_retries:
+                    llm_logger.warning(f"调用API发生异常: {str(e)}，尝试第 {attempt + 1} 次重试...")
+                    import time
+                    time.sleep(retry_delay * (attempt + 1))
+                    continue
+                error_msg = f"调用星火API时发生异常: {str(e)}"
                 return {
                     "success": False,
-                    "error": error_msg,
-                    "status_code": response.status_code
+                    "error": error_msg
                 }
-                
-        except Exception as e:
-            error_msg = f"调用星火API时发生异常: {str(e)}"
-            return {
-                "success": False,
-                "error": error_msg
-            }
+        
+        return {"success": False, "error": "重试多次后仍然失败"}
     
     def _build_prompt(self, prompt: str, context: Optional[Dict] = None) -> str:
         """
@@ -246,18 +317,23 @@ class DashScopeService:
         }
         return self.call_llm(prompt, context, stream_callback=stream_callback)
     
-    def analyze_user_profile(self, user_data: Dict) -> Dict[str, Any]:
+    def analyze_user_profile(self, user_profile: Dict, feedback_adjustments: Optional[Dict] = None, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         分析用户个人画像
         
         Args:
-            user_data: 用户数据
+            user_profile: 用户画像数据
+            feedback_adjustments: 反馈调整信息
+            stream_callback: 流式输出回调
             
         Returns:
             个人画像分析结果
         """
         prompt = f"""
-作为职业测评专家，请对用户进行全面的个人能力画像分析。
+作为职业测评专家，请基于提供的用户信息，对用户进行全面的个人能力画像分析。
+
+用户信息如下：
+{json.dumps(user_profile, ensure_ascii=False, indent=2)}
 
 请从以下维度进行分析：
 1. 核心技能评估
@@ -266,7 +342,7 @@ class DashScopeService:
 4. 发展潜力评估
 5. 优势与劣势识别
 
-请以JSON格式返回分析结果：
+请严格以JSON格式返回分析结果，不要包含任何解释性文字或Markdown代码块标记以外的内容：
 {{
     "strengths": ["核心优势"],
     "weaknesses": ["需要改进的方面"],
@@ -282,15 +358,18 @@ class DashScopeService:
 }}
 """
         
-        context = {"user_data": user_data}
-        return self.call_llm(prompt, context)
-    
-    def research_industry_trends(self, target_industry: str) -> Dict[str, Any]:
+        context = {
+            "feedback_adjustments": feedback_adjustments or {}
+        }
+        return self.call_llm(prompt, context, stream_callback=stream_callback, max_tokens=3000)
+
+    def research_industry_trends(self, target_industry: str, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         研究行业趋势
         
         Args:
             target_industry: 目标行业
+            stream_callback: 流式输出回调
             
         Returns:
             行业研究结果
@@ -306,7 +385,7 @@ class DashScopeService:
 5. 薪资水平分析
 6. 就业前景评估
 
-请以JSON格式返回研究结果：
+请严格以JSON格式返回研究结果，不要包含任何解释性文字：
 {{
     "industry_overview": "行业概述",
     "current_status": "发展现状",
@@ -324,21 +403,25 @@ class DashScopeService:
 }}
 """
         
-        return self.call_llm(prompt)
-    
-    def analyze_career_opportunities(self, target_career: str, user_profile: Dict) -> Dict[str, Any]:
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=3000)
+
+    def analyze_career_opportunities(self, target_career: str, user_profile: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         分析职业机会
         
         Args:
             target_career: 目标职业
             user_profile: 用户画像
+            stream_callback: 流式输出回调
             
         Returns:
             职业分析结果
         """
         prompt = f"""
 作为职业发展顾问，请分析"{target_career}"这个职业方向的机会和要求。
+
+用户信息如下：
+{json.dumps(user_profile, ensure_ascii=False, indent=2)}
 
 请从以下方面进行分析：
 1. 职位职责和要求
@@ -348,7 +431,7 @@ class DashScopeService:
 5. AI替代风险评估
 6. 与用户背景的匹配度
 
-请以JSON格式返回分析结果：
+请严格以JSON格式返回分析结果，不要包含任何解释性文字：
 {{
     "job_description": "职位描述",
     "key_responsibilities": ["主要职责"],
@@ -370,20 +453,24 @@ class DashScopeService:
 """
         
         context = {"user_profile": user_profile}
-        return self.call_llm(prompt, context)
-    
-    def generate_integrated_report(self, analysis_results: Dict) -> Dict[str, Any]:
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=3000)
+
+    def generate_integrated_report(self, analysis_results: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         生成综合分析报告
         
         Args:
             analysis_results: 各项分析结果
+            stream_callback: 流式输出回调
             
         Returns:
             综合报告
         """
         prompt = f"""
 作为资深职业规划顾问，请基于以下分析结果，为用户生成一份综合的职业规划报告。
+
+分析结果如下：
+{json.dumps(analysis_results, ensure_ascii=False, indent=2, cls=CustomJsonEncoder)}
 
 报告应该包括：
 1. 执行摘要
@@ -393,7 +480,7 @@ class DashScopeService:
 5. 发展建议和行动计划
 6. 风险提示
 
-请以JSON格式返回报告：
+请严格以JSON格式返回报告，不要包含任何解释性文字：
 {{
     "executive_summary": "执行摘要",
     "personal_analysis": "个人分析总结",
@@ -414,16 +501,16 @@ class DashScopeService:
 }}
 """
         
-        context = {"analysis_results": analysis_results}
-        return self.call_llm(prompt, context)
-    
-    def decompose_career_goals(self, career_direction: str, user_profile: Dict) -> Dict[str, Any]:
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=4000)
+
+    def decompose_career_goals(self, career_direction: str, user_profile: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         拆分职业目标
         
         Args:
             career_direction: 职业方向
             user_profile: 用户画像
+            stream_callback: 流式输出回调
             
         Returns:
             目标拆分结果
@@ -432,6 +519,9 @@ class DashScopeService:
 作为职业规划专家，请将用户的职业目标拆分为具体的、可执行的阶段性目标。
 
 职业方向: {career_direction}
+
+用户信息如下：
+{json.dumps(user_profile, ensure_ascii=False, indent=2)}
 
 请按照SMART原则（具体、可衡量、可达成、相关性、时限性）制定目标：
 
@@ -470,22 +560,28 @@ class DashScopeService:
 }}
 """
         
-        context = {"user_profile": user_profile}
-        return self.call_llm(prompt, context)
-    
-    def create_action_schedule(self, career_goals: List[Dict], user_constraints: Dict) -> Dict[str, Any]:
+        return self.call_llm(prompt, stream_callback=stream_callback)
+
+    def create_action_schedule(self, career_goals: List[Dict], user_constraints: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
         创建行动计划
         
         Args:
             career_goals: 职业目标列表
             user_constraints: 用户约束条件
+            stream_callback: 流式输出回调
             
         Returns:
             行动计划
         """
         prompt = f"""
 作为时间管理和职业规划专家，请基于用户的职业目标，制定详细的行动计划。
+
+职业目标如下：
+{json.dumps(career_goals, ensure_ascii=False, indent=2)}
+
+用户约束条件如下：
+{json.dumps(user_constraints, ensure_ascii=False, indent=2)}
 
 请考虑用户的时间约束和实际情况，制定可执行的计划：
 
@@ -524,11 +620,7 @@ class DashScopeService:
 }}
 """
         
-        context = {
-            "career_goals": career_goals,
-            "user_constraints": user_constraints
-        }
-        return self.call_llm(prompt, context)
+        return self.call_llm(prompt, stream_callback=stream_callback)
 
 
 # 创建全局服务实例

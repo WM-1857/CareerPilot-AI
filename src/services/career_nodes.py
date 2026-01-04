@@ -96,6 +96,51 @@ def parse_llm_json_content(content: str) -> Dict[str, Any]:
         except json.JSONDecodeError:
             pass
     
+    # 方法6: 处理截断的JSON (尝试补齐括号)
+    try:
+        # 提取最外层的 { } 内容
+        start = content.find('{')
+        if start != -1:
+            json_part = content[start:]
+            # 移除末尾的非JSON字符（如 ```）
+            json_part = re.sub(r'```.*$', '', json_part, flags=re.DOTALL).strip()
+            
+            # 修复常见的列表未闭合问题: "key": ["val" \n "next_key": -> "key": ["val"], \n "next_key":
+            # 这种错误常出现在LLM输出中，它开启了一个列表但忘记关闭就直接写下一个键值对了
+            json_part = re.sub(r'(\[[^\]]*?)\s*\n\s*(\s*\"[\w_]+\"\s*:\s*)', r'\1], \n \2', json_part)
+            
+            # 修复缺失逗号的问题: "key1": "val1" \n "key2": "val2" -> "key1": "val1", \n "key2": "val2"
+            # 匹配模式：一个值后面紧跟换行和下一个键名，但中间没有逗号
+            json_part = re.sub(r'(\"(?:[^\"\\]|\\.)*\"\s*:\s*(?:\"(?:[^\"\\]|\\.)*\"|\d+|true|false|null|\[(?:[^\[\]]|\[[^\[\]]*\])*\]|\{(?:[^{}]|\{[^{}]*\})*\}))\s*\n\s*(\"(?:[^\"\\]|\\.)*\"\s*:\s*)', r'\1, \n \2', json_part)
+
+            # 尝试修复被截断的字符串（如果最后一行没有闭合引号）
+            # 查找最后一个未闭合的引号
+            last_quote = json_part.rfind('"')
+            if last_quote != -1:
+                # 检查这个引号是否是闭合引号
+                # 简单逻辑：如果引号后面紧跟的是 , } ] 或空白，则认为是闭合的
+                remaining = json_part[last_quote+1:].strip()
+                if remaining and not any(c in remaining for c in [',', '}', ']', ':']):
+                    # 可能是截断在字符串中间，尝试补齐引号
+                    json_part += '"'
+            
+            # 统计括号
+            open_braces = json_part.count('{')
+            close_braces = json_part.count('}')
+            open_brackets = json_part.count('[')
+            close_brackets = json_part.count(']')
+            
+            # 补齐缺失的括号
+            fixed_json = json_part
+            if open_brackets > close_brackets:
+                fixed_json += ']' * (open_brackets - close_brackets)
+            if open_braces > close_braces:
+                fixed_json += '}' * (open_braces - close_braces)
+                
+            return json.loads(fixed_json)
+    except:
+        pass
+    
     # 如果所有方法都失败，抛出异常
     raise json.JSONDecodeError(f"无法解析JSON内容。原始内容: {content[:200]}...", content, 0)
 
@@ -121,6 +166,88 @@ def coordinator_node(state: CareerNavigatorState, config: RunnableConfig = None)
         stream_callback = config["configurable"]["stream_callback"]
         if stream_callback:
             stream_callback(json.dumps({"node": "coordinator", "status": "start"}))
+
+    # 检查用户满意度，如果已经有了满意度反馈，说明是点击了“满意”或“不满意”后重新进入的
+    # 优先从 state 直接获取，如果不存在则尝试从 user_feedback_history 获取
+    current_satisfaction = state.get("current_satisfaction")
+    if current_satisfaction is None and state.get("user_feedback_history"):
+        latest_feedback = state["user_feedback_history"][-1]
+        # 兼容字典和对象格式
+        if isinstance(latest_feedback, dict):
+            current_satisfaction = latest_feedback.get("satisfaction_level")
+        else:
+            current_satisfaction = getattr(latest_feedback, "satisfaction_level", None)
+        print(f"ℹ️ 从历史记录中恢复满意度状态: {current_satisfaction}")
+
+    current_stage = state.get("current_stage")
+    
+    print(f"🔍 Coordinator 检查状态: stage={current_stage}, satisfaction={current_satisfaction}")
+    
+    # 如果已经有综合报告且处于等待反馈阶段，但没有新的满意度输入，说明可能是重复触发，直接结束
+    if current_satisfaction is None and current_stage == WorkflowStage.USER_FEEDBACK and state.get("integrated_report"):
+        print("⏸️ 当前处于等待用户反馈阶段，且已有报告，跳过重复执行")
+        if stream_callback:
+            stream_callback(json.dumps({"node": "coordinator", "content": "正在等待您的反馈..."}))
+            stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
+        return {"next_node": "end"}
+    
+    # 如果处于后续阶段，自动跳转
+    if current_satisfaction is None:
+        if current_stage == WorkflowStage.GOAL_DECOMPOSITION:
+            print("⏩ 自动跳转到目标拆解阶段")
+            updates = {"next_node": "goal_decomposer"}
+            return updates
+        elif current_stage == WorkflowStage.SCHEDULE_PLANNING:
+            print("⏩ 自动跳转到日程规划阶段")
+            updates = {"next_node": "scheduler"}
+            return updates
+        elif current_stage == WorkflowStage.COMPLETED:
+            print("✅ 流程已完成，直接结束")
+            updates = {"next_node": "end"}
+            return updates
+
+    if current_satisfaction is not None:
+        # 处理分析报告阶段的反馈
+        if current_stage == WorkflowStage.USER_FEEDBACK:
+            if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+                print(f"✅ 检测到用户已满意分析报告({current_satisfaction.value})，直接跳转到目标拆分阶段")
+                updates = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
+                updates["next_node"] = "goal_decomposer"
+                updates["current_satisfaction"] = None
+                if stream_callback:
+                    stream_callback(json.dumps({"node": "coordinator", "content": "检测到您已确认报告，正在进入目标拆解阶段..."}))
+                    stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
+                return updates
+            elif current_satisfaction in [UserSatisfactionLevel.DISSATISFIED, UserSatisfactionLevel.VERY_DISSATISFIED]:
+                print(f"🔄 检测到用户不满意分析报告({current_satisfaction.value})，重新进入策略制定阶段")
+                updates = StateUpdater.update_stage(state, WorkflowStage.PLANNING)
+                updates["next_node"] = "planner"
+                updates["current_satisfaction"] = None
+                if stream_callback:
+                    stream_callback(json.dumps({"node": "coordinator", "content": "检测到您对报告有修改意见，正在重新为您分析..."}))
+                    stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
+                return updates
+        
+        # 处理最终确认阶段的反馈
+        elif current_stage == WorkflowStage.FINAL_CONFIRMATION:
+            if current_satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+                print(f"✅ 检测到用户已满意最终计划({current_satisfaction.value})，流程结束")
+                updates = StateUpdater.update_stage(state, WorkflowStage.COMPLETED)
+                updates["next_node"] = "end"
+                updates["current_satisfaction"] = None
+                if stream_callback:
+                    stream_callback(json.dumps({"node": "coordinator", "content": "感谢您的确认，职业规划流程已圆满完成！"}))
+                    stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
+                return updates
+            elif current_satisfaction in [UserSatisfactionLevel.DISSATISFIED, UserSatisfactionLevel.VERY_DISSATISFIED]:
+                print(f"🔄 检测到用户不满意最终计划({current_satisfaction.value})，返回目标拆分阶段重新调整")
+                updates = StateUpdater.update_stage(state, WorkflowStage.GOAL_DECOMPOSITION)
+                updates["next_node"] = "goal_decomposer"
+                updates["current_satisfaction"] = None
+                if stream_callback:
+                    stream_callback(json.dumps({"node": "coordinator", "content": "检测到您对计划有修改意见，正在为您重新调整目标拆解..."}))
+                    stream_callback(json.dumps({"node": "coordinator", "status": "end"}))
+                return updates
 
     messages = state.get("messages", [])
     user_request = messages[-1].content if messages else ""
@@ -384,16 +511,25 @@ def supervisor_node(state: CareerNavigatorState, config: RunnableConfig = None) 
 
 
 # --- 并行分析节点 ---
-def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def user_profiler_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """用户建模节点 (并行)"""
     print("=" * 60)
     print("👤 正在执行: user_profiler_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "user_profiler", "status": "start"}))
+
     task = next((t for t in state["agent_tasks"] if t["agent_name"] == "user_profiler_node"), None)
     
     if not task:
         print("❌ 未找到用户画像分析任务")
+        if stream_callback:
+            stream_callback(json.dumps({"node": "user_profiler", "status": "end"}))
         return StateUpdater.log_error(state, {"error": "未找到用户画像分析任务"})
     
     print(f"📋 任务信息: {task['task_type']} - {task['description']}")
@@ -408,7 +544,8 @@ def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     # 构建分析请求，包含反馈调整
     analysis_request = {
-        **input_data,
+        "user_profile": dict(input_data.get("user_profile", {})),
+        "feedback_adjustments": feedback_adjustments,
         "focus_areas": feedback_adjustments.get("focus_areas", []),
         "is_iteration": iteration_count > 0,
         "improvement_notes": "结合用户反馈重新分析用户能力和优势"
@@ -417,7 +554,14 @@ def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print(f"📤 分析请求: {json.dumps(analysis_request, ensure_ascii=False, indent=2, default=str)}")
     
     # 调用百炼API进行用户画像分析
-    llm_response = llm_service.analyze_user_profile(analysis_request)
+    llm_response = llm_service.analyze_user_profile(
+        analysis_request["user_profile"],
+        feedback_adjustments=analysis_request["feedback_adjustments"],
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "user_profiler", "content": x})) if stream_callback else None
+    )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "user_profiler", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -463,16 +607,25 @@ def user_profiler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     return updates
 
 
-def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def industry_researcher_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """行业研究节点 (并行)"""
     print("=" * 60)
     print("🏢 正在执行: industry_researcher_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "industry_researcher", "status": "start"}))
+
     task = next((t for t in state["agent_tasks"] if t["agent_name"] == "industry_researcher_node"), None)
     
     if not task:
         print("❌ 未找到行业研究任务")
+        if stream_callback:
+            stream_callback(json.dumps({"node": "industry_researcher", "status": "end"}))
         return StateUpdater.log_error(state, {"error": "未找到行业研究任务"})
     
     print(f"📋 任务信息: {task['task_type']} - {task['description']}")
@@ -496,7 +649,13 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print(f"📤 研究请求: {json.dumps(research_request, ensure_ascii=False, indent=2)}")
     
     # 调用百炼API进行行业研究
-    llm_response = llm_service.research_industry_trends(target_industry)
+    llm_response = llm_service.research_industry_trends(
+        target_industry,
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "industry_researcher", "content": x})) if stream_callback else None
+    )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "industry_researcher", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -548,16 +707,25 @@ def industry_researcher_node(state: CareerNavigatorState) -> Dict[str, Any]:
     return updates
 
 
-def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def job_analyzer_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """职业分析节点 (并行)"""
     print("=" * 60)
     print("💼 正在执行: job_analyzer_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "job_analyzer", "status": "start"}))
+
     task = next((t for t in state["agent_tasks"] if t["agent_name"] == "job_analyzer_node"), None)
     
     if not task:
         print("❌ 未找到职业分析任务")
+        if stream_callback:
+            stream_callback(json.dumps({"node": "job_analyzer", "status": "end"}))
         return StateUpdater.log_error(state, {"error": "未找到职业分析任务"})
     
     print(f"📋 任务信息: {task['task_type']} - {task['description']}")
@@ -583,7 +751,14 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print(f"📤 分析请求: {json.dumps(analysis_request, ensure_ascii=False, indent=2, default=str)}")
     
     # 调用百炼API进行职业分析
-    llm_response = llm_service.analyze_career_opportunities(target_career, dict(user_profile))
+    llm_response = llm_service.analyze_career_opportunities(
+        target_career, 
+        dict(user_profile),
+        stream_callback=lambda x: stream_callback(json.dumps({"node": "job_analyzer", "content": x})) if stream_callback else None
+    )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "job_analyzer", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -636,7 +811,7 @@ def job_analyzer_node(state: CareerNavigatorState) -> Dict[str, Any]:
 
 
 # --- 结果汇总与规划节点 ---
-def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def reporter_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     汇报员节点
     
@@ -650,6 +825,14 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("📊 正在执行: reporter_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "reporter", "status": "start"}))
+            stream_callback(json.dumps({"node": "reporter", "content": "正在汇总分析结果并生成综合报告..."}))
+
     # 检查所有分析是否已完成
     required_results = ["self_insight_result", "industry_research_result", "career_analysis_result"]
     if not all(state.get(key) for key in required_results):
@@ -685,8 +868,10 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     print(f"📤 综合报告请求: {json.dumps(analysis_results, ensure_ascii=False, indent=2, default=str)}")
     
-    # 调用百炼API生成综合报告
-    llm_response = llm_service.generate_integrated_report(analysis_results)
+    # 调用百炼API生成综合报告 (Reporter节点不需要流式输出)
+    llm_response = llm_service.generate_integrated_report(
+        analysis_results
+    )
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -724,6 +909,9 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
         updated_state["integrated_report"] = report
         updated_state["skip_feedback_reason"] = "达到最大迭代次数"
         
+        if stream_callback:
+            stream_callback(json.dumps({"node": "reporter", "status": "end"}))
+            
         print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
         return updated_state
     else:
@@ -737,11 +925,14 @@ def reporter_node(state: CareerNavigatorState) -> Dict[str, Any]:
             state, True, [feedback_question]
         ))
         
+        if stream_callback:
+            stream_callback(json.dumps({"node": "reporter", "status": "end"}))
+            
         print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
         return updated_state
 
 
-def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def goal_decomposer_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     目标拆分节点
     
@@ -753,6 +944,14 @@ def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("🎯 正在执行: goal_decomposer_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "goal_decomposer", "status": "start"}))
+            stream_callback(json.dumps({"node": "goal_decomposer", "content": "正在将职业目标拆解为阶段性计划..."}))
+
     # 获取职业方向
     integrated_report = state.get("integrated_report") or {}
     career_match = integrated_report.get("career_match") or {}
@@ -768,8 +967,14 @@ def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print(f"🎯 目标职业方向: {career_direction}")
     print(f"👤 用户画像: {json.dumps(dict(user_profile), ensure_ascii=False, indent=2)}")
     
-    # 调用百炼API进行目标拆分
-    llm_response = llm_service.decompose_career_goals(career_direction, user_profile)
+    # 调用百炼API进行目标拆分 (不需要流式输出内容)
+    llm_response = llm_service.decompose_career_goals(
+        career_direction, 
+        user_profile
+    )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "goal_decomposer", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     
@@ -801,7 +1006,7 @@ def goal_decomposer_node(state: CareerNavigatorState) -> Dict[str, Any]:
     return updated_state
 
 
-def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
+def scheduler_node(state: CareerNavigatorState, config: RunnableConfig = None) -> Dict[str, Any]:
     """
     日程计划节点
     
@@ -813,6 +1018,14 @@ def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     print("📅 正在执行: scheduler_node")
     print("=" * 60)
     
+    # 获取流式回调
+    stream_callback = None
+    if config and "configurable" in config and "stream_callback" in config["configurable"]:
+        stream_callback = config["configurable"]["stream_callback"]
+        if stream_callback:
+            stream_callback(json.dumps({"node": "scheduler", "status": "start"}))
+            stream_callback(json.dumps({"node": "scheduler", "content": "正在为您制定详细的行动日程表..."}))
+
     career_goals = state.get("career_goals") or {}
     user_profile = state.get("user_profile") or {}
     
@@ -830,11 +1043,14 @@ def scheduler_node(state: CareerNavigatorState) -> Dict[str, Any]:
     
     print(f"⚙️ 用户约束条件: {json.dumps(user_constraints, ensure_ascii=False, indent=2)}")
     
-    # 调用百炼API制定行动计划
+    # 调用百炼API制定行动计划 (不需要流式输出内容)
     llm_response = llm_service.create_action_schedule(
         [career_goals] if career_goals else [], 
         user_constraints
     )
+    
+    if stream_callback:
+        stream_callback(json.dumps({"node": "scheduler", "status": "end"}))
     
     print(f"🤖 LLM原始响应: {json.dumps(llm_response, ensure_ascii=False, indent=2)}")
     

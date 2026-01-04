@@ -325,14 +325,43 @@
                         </div>
                     </div>
 
-                    <!-- Streaming Content -->
-                    <div v-if="streamingText" class="flex flex-col items-start">
-                        <div class="chat-bubble chat-bubble-bot bg-blue-50 border border-blue-100">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="animate-pulse h-2 w-2 rounded-full bg-blue-500"></span>
-                                <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{{ streamingNode }} 正在思考...</span>
+                    <!-- Streaming Content (Parallel Support) -->
+                    <div v-if="Object.keys(activeNodes).length > 0" class="w-full">
+                        <!-- Sequential Nodes (Standard Bubble) -->
+                        <div v-for="(info, node) in activeNodes" :key="node">
+                            <div v-if="!isParallelNode(node)" class="flex flex-col items-start mb-4">
+                                <div class="chat-bubble chat-bubble-bot bg-blue-50 border border-blue-100 w-full">
+                                    <div class="flex items-center gap-2 mb-1">
+                                        <span class="animate-pulse h-2 w-2 rounded-full bg-blue-500"></span>
+                                        <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">{{ getNodeLabel(node) }} 正在思考...</span>
+                                    </div>
+                                    <div class="text-sm whitespace-pre-wrap text-gray-700">{{ info.content || '正在处理...' }}</div>
+                                </div>
                             </div>
-                            <div class="text-sm whitespace-pre-wrap text-gray-700">{{ streamingText }}</div>
+                        </div>
+                        
+                        <!-- Parallel Nodes (Grid) -->
+                        <div v-if="hasParallelNodes" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                            <div v-for="(info, node) in parallelNodes" :key="node" class="bg-white rounded-lg border-2 border-blue-100 shadow-sm overflow-hidden flex flex-col">
+                                <div class="bg-blue-50 px-3 py-2 border-b border-blue-100 flex items-center justify-between">
+                                    <span class="text-[10px] font-bold text-blue-700 uppercase tracking-wider flex items-center gap-2">
+                                        <i :class="getNodeIcon(node)"></i> {{ getNodeLabel(node) }}
+                                    </span>
+                                    <span class="flex h-2 w-2">
+                                        <span class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-blue-400 opacity-75"></span>
+                                        <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
+                                    </span>
+                                </div>
+                                <div class="p-3 flex-1">
+                                    <div class="text-[11px] whitespace-pre-wrap text-gray-600 leading-relaxed h-48 overflow-y-auto">
+                                        {{ info.content || '正在准备分析数据...' }}
+                                    </div>
+                                </div>
+                                <div class="bg-gray-50 px-3 py-1 text-[9px] text-gray-400 border-t flex justify-between">
+                                    <span>状态: {{ info.status === 'start' ? '分析中' : '处理中' }}</span>
+                                    <span class="animate-pulse">●</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -391,7 +420,7 @@
     </div>
 
     <script>
-        const { createApp, ref, reactive, onMounted, nextTick, watch } = Vue;
+        const { createApp, ref, reactive, onMounted, nextTick, watch, computed } = Vue;
 
         createApp({
             setup() {
@@ -403,13 +432,55 @@
                 const chatContainer = ref(null);
                 const waitingForFeedback = ref(false);
                 const pendingQuestions = ref([]);
-                const streamingNode = ref('');
-                const streamingText = ref('');
+                const activeNodes = reactive({});
                 let pollTimer = null;
 
-                watch(streamingText, () => {
+                watch(activeNodes, () => {
                     scrollToBottom();
+                }, { deep: true });
+
+                const isParallelNode = (node) => {
+                    return ['user_profiler', 'industry_researcher', 'job_analyzer'].includes(node);
+                };
+
+                const parallelNodes = computed(() => {
+                    const nodes = {};
+                    for (const node in activeNodes) {
+                        if (isParallelNode(node)) {
+                            nodes[node] = activeNodes[node];
+                        }
+                    }
+                    return nodes;
                 });
+
+                const hasParallelNodes = computed(() => Object.keys(parallelNodes.value).length > 0);
+
+                const getNodeLabel = (node) => {
+                    const labels = {
+                        'coordinator': '协调员',
+                        'planner': '计划员',
+                        'supervisor': '管理员',
+                        'user_profiler': '个人画像分析',
+                        'industry_researcher': '行业趋势研究',
+                        'job_analyzer': '职业机会分析',
+                        'reporter': '汇报员',
+                        'goal_decomposer': '目标拆解员',
+                        'scheduler': '日程规划员',
+                        'system': '系统'
+                    };
+                    return labels[node] || node;
+                };
+
+                const getNodeIcon = (node) => {
+                    const icons = {
+                        'user_profiler': 'fas fa-user-cog',
+                        'industry_researcher': 'fas fa-chart-line',
+                        'job_analyzer': 'fas fa-briefcase',
+                        'coordinator': 'fas fa-route',
+                        'planner': 'fas fa-clipboard-list'
+                    };
+                    return icons[node] || 'fas fa-robot';
+                };
 
                 const profile = reactive({
                     age: 28,
@@ -485,8 +556,9 @@
                 const startStreaming = () => {
                     if (!sessionId.value) return;
                     
-                    streamingNode.value = 'system';
-                    streamingText.value = '正在准备工作流...';
+                    // Reset active nodes
+                    for (const key in activeNodes) delete activeNodes[key];
+                    activeNodes['system'] = { content: '正在准备工作流...', status: 'start' };
                     
                     const eventSource = new EventSource(`/api/career/stream?session_id=${sessionId.value}`);
                     
@@ -495,24 +567,57 @@
                         
                         if (data.status === 'completed' || data.status === 'error') {
                             eventSource.close();
-                            streamingNode.value = '';
-                            streamingText.value = '';
+                            // Clear active nodes after a short delay to let user see completion
+                            setTimeout(() => {
+                                for (const key in activeNodes) delete activeNodes[key];
+                            }, 2000);
                             return;
                         }
 
                         if (data.node) {
-                            streamingNode.value = data.node;
                             if (data.status === 'start') {
-                                streamingText.value = `[${data.node}] 正在开始分析...`;
-                            } else if (data.status === 'end') {
-                                streamingText.value = `[${data.node}] 分析完成。`;
-                            } else if (data.content) {
-                                // 如果是内容更新，累加显示
-                                if (streamingText.value.startsWith('[')) {
-                                    streamingText.value = data.content;
+                                // 如果是并行节点，直接添加
+                                if (isParallelNode(data.node)) {
+                                    activeNodes[data.node] = { content: '', status: 'start' };
                                 } else {
-                                    streamingText.value += data.content;
+                                    // 如果是顺序节点（如 coordinator, planner, supervisor, reporter）
+                                    // 只有在不是 reporter 的时候才清空并行节点
+                                    // 这样并行分析的结果可以一直显示到报告生成
+                                    if (data.node !== 'reporter' && data.node !== 'system') {
+                                        for (const key in activeNodes) {
+                                            delete activeNodes[key];
+                                        }
+                                    } else if (data.node === 'reporter') {
+                                        // reporter 开始时，只删除之前的顺序节点，保留并行节点
+                                        for (const key in activeNodes) {
+                                            if (!isParallelNode(key)) delete activeNodes[key];
+                                        }
+                                    }
+                                    
+                                    activeNodes[data.node] = { content: '', status: 'start' };
                                 }
+                                
+                                // 移除系统消息
+                                if (data.node !== 'system' && activeNodes['system']) {
+                                    delete activeNodes['system'];
+                                }
+                            } else if (data.status === 'end') {
+                                if (activeNodes[data.node]) {
+                                    activeNodes[data.node].status = 'end';
+                                    // For parallel nodes, we might want to keep them until all are done
+                                    // For sequential nodes, we can remove them or keep them briefly
+                                    if (['coordinator', 'planner', 'supervisor', 'reporter'].includes(data.node)) {
+                                        setTimeout(() => {
+                                            delete activeNodes[data.node];
+                                        }, 1000);
+                                    }
+                                }
+                            } else if (data.content) {
+                                if (!activeNodes[data.node]) {
+                                    activeNodes[data.node] = { content: '', status: 'running' };
+                                }
+                                activeNodes[data.node].content += data.content;
+                                activeNodes[data.node].status = 'running';
                             }
                         }
                     };
@@ -639,7 +744,7 @@
                     currentStep, profile, skillsInput, interestsInput, loading,
                     startPlanning, chatHistory, chatContainer, waitingForFeedback,
                     satisfactionLevels, feedback, submitFeedback, currentStage, reset,
-                    streamingNode, streamingText
+                    activeNodes, getNodeLabel, getNodeIcon, isParallelNode, parallelNodes, hasParallelNodes
                 };
             }
         }).mount('#app');
