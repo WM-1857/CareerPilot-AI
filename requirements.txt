@@ -4,3 +4,7 @@ flask_sqlalchemy
 langchain-core
 langgraph
 dashscope
+mcp
+paddleocr-mcp[local-cpu]
+paddleocr>=3.2
+paddlepaddle>=3.0.0
