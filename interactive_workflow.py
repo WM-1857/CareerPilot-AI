@@ -342,6 +342,34 @@ class InteractiveWorkflowRunner:
                             except Exception as e:
                                 print(f"❌ 执行目标拆分和规划出错: {e}")
                                 break
+
+                        # 1.8. 最终确认阶段 (修复缺失的逻辑)
+                        elif current_stage == WorkflowStage.FINAL_CONFIRMATION:
+                            print(f"\n✅ 进入最终确认阶段")
+                            
+                            # 显示最终计划
+                            if "final_career_plan" in self.current_state:
+                                self.display_goal_plan(self.current_state["final_career_plan"])
+                            
+                            # 收集用户反馈
+                            print("\n请对最终职业规划方案进行评价:")
+                            satisfaction, feedback_text = self.get_user_feedback()
+                            
+                            # 更新状态
+                            self.current_state = self.graph.update_user_feedback(
+                                self.current_state, satisfaction, feedback_text
+                            )
+                            self.current_state["current_satisfaction"] = satisfaction
+                            
+                            if satisfaction in [UserSatisfactionLevel.SATISFIED, UserSatisfactionLevel.VERY_SATISFIED]:
+                                print(f"\n🎉 职业规划方案已确认！")
+                                self.current_state["current_stage"] = WorkflowStage.COMPLETED
+                                workflow_completed = True
+                                break
+                            else:
+                                print(f"\n🔄 用户不满意，将重新调整规划...")
+                                # 这里可以让循环继续，coordinator_node 会根据满意度将状态路由回 goal_decomposer
+                                pass
                         
                         # 2. 工作流完成
                         elif current_stage == WorkflowStage.COMPLETED:
@@ -424,22 +452,35 @@ def main():
         return
     
     # 测试用户资料
-    test_user_profile = {
-        "user_id": "interactive_user_001",
-        "age": 28,
-        "education_level": "本科",
-        "work_experience": 3,
-        "current_position": "软件工程师",
-        "industry": "互联网",
-        "skills": ["Python", "JavaScript", "React"],
-        "interests": ["人工智能", "产品管理"],
-        "career_goals": "希望转向AI产品经理方向发展",
-        "location": "北京",
-        "salary_expectation": "30-50万"
-    }
+    # test_user_profile = {
+    #     "user_id": "interactive_user_001",
+    #     "age": 28,
+    #     "education_level": "本科",
+    #     "work_experience": 3,
+    #     "current_position": "软件工程师",
+    #     "industry": "互联网",
+    #     "skills": ["Python", "JavaScript", "React"],
+    #     "interests": ["人工智能", "产品管理"],
+    #     "career_goals": "希望转向AI产品经理方向发展",
+    #     "location": "北京",
+    #     "salary_expectation": "30-50万"
+    # }
     
     # initial_message = "我想从当前的软件工程师岗位转向AI产品经理，希望得到详细的职业规划建议"
-    initial_message = "我是智能交互设计专业的大三本科生，应该从事什么岗位，帮我进行职业规划"
+    test_user_profile = {
+        "user_id": "interactive_user_001",
+        "age": 21,
+        "education_level": "本科",
+        "work_experience": 0,
+        "current_position": "学生",
+        "industry": "互联网",
+        "skills": ["Python"],
+        "interests": [],
+        "career_goals": "赚钱",
+        "location": "北京",
+        "salary_expectation": "30万"
+    }
+    initial_message = "我是智能交互设计专业的本科生，可以从事什么岗位"
     
     # 创建交互式执行器并运行
     runner = InteractiveWorkflowRunner()
