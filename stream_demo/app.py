@@ -28,7 +28,7 @@ def chat():
         try:
             stream = client.chat.completions.create(
                 messages=[{"role": "user", "content": user_message}],
-                model="Lite",
+                model="lite",
                 stream=True,
                 user="123456",
             )

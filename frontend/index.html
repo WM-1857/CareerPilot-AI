@@ -1040,7 +1040,7 @@
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             },
-                            timeout: 180000 // 增加到 180 秒，OCR + LLM 过程可能较慢
+                            timeout: 360000 // 增加到 360 秒，OCR + LLM 过程可能较慢
                         });
 
                         const data = response.data;

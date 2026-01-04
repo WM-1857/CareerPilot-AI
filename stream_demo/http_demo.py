@@ -26,7 +26,7 @@ stream = client.chat.completions.create(
 
     ],
 
-    model="4.0Ultra",
+    model="lite",
     stream=stream_res,
     user="123456",
 
