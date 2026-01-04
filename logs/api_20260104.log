@@ -32554,3 +32554,1953 @@
   },
   "timestamp": "2026-01-04T15:45:22.000768"
 }
+2026-01-04 15:59:21,883 - API - INFO - [logger.py:69] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:21.883523"
+}
+2026-01-04 15:59:21,926 - API - INFO - [logger.py:69] - 📤 API响应: / - 200
+附加数据: {
+  "endpoint": "/",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.042s",
+    "content_length": 57618
+  },
+  "timestamp": "2026-01-04T15:59:21.925998"
+}
+2026-01-04 15:59:21,961 - API - INFO - [logger.py:69] - 📥 API请求: GET /bot-avatar.png
+附加数据: {
+  "method": "GET",
+  "endpoint": "/bot-avatar.png",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:21.961011"
+}
+2026-01-04 15:59:21,963 - API - INFO - [logger.py:69] - 📤 API响应: /bot-avatar.png - 304
+附加数据: {
+  "endpoint": "/bot-avatar.png",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.003s",
+    "content_length": 68276
+  },
+  "timestamp": "2026-01-04T15:59:21.963818"
+}
+2026-01-04 15:59:22,471 - API - INFO - [logger.py:69] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:22.471219"
+}
+2026-01-04 15:59:22,472 - API - INFO - [logger.py:69] - 📤 API响应: /favicon.ico - 200
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 57618
+  },
+  "timestamp": "2026-01-04T15:59:22.472600"
+}
+2026-01-04 15:59:32,854 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "name": "",
+      "age": 28,
+      "education_level": "本科",
+      "work_experience": 3,
+      "current_position": "软件工程师",
+      "industry": "互联网",
+      "location": "北京",
+      "career_goals": "希望转向 AI 产品经理方向发展",
+      "salary_expectation": "30-50万",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React",
+        "SQL"
+      ],
+      "interests": [
+        "人工智能",
+        "产品设计",
+        "心理学"
+      ]
+    },
+    "message": "我想进行职业规划，我的目标是：希望转向 AI 产品经理方向发展"
+  },
+  "timestamp": "2026-01-04T15:59:32.854711"
+}
+2026-01-04 15:59:32,855 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/start - 200
+附加数据: {
+  "endpoint": "/api/career/start",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 167
+  },
+  "timestamp": "2026-01-04T15:59:32.855586"
+}
+2026-01-04 15:59:32,862 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:32.862023"
+}
+2026-01-04 15:59:32,862 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:32.862697"
+}
+2026-01-04 15:59:32,863 - API - INFO - [logger.py:69] - 📥 API请求: GET /bot-avatar.png
+附加数据: {
+  "method": "GET",
+  "endpoint": "/bot-avatar.png",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:32.863860"
+}
+2026-01-04 15:59:32,865 - API - INFO - [logger.py:69] - 📤 API响应: /bot-avatar.png - 304
+附加数据: {
+  "endpoint": "/bot-avatar.png",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 68276
+  },
+  "timestamp": "2026-01-04T15:59:32.865856"
+}
+2026-01-04 15:59:32,873 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:32.872090"
+}
+2026-01-04 15:59:32,875 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.004s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T15:59:32.875638"
+}
+2026-01-04 15:59:34,899 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:34.899207"
+}
+2026-01-04 15:59:34,899 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:34.899754"
+}
+2026-01-04 15:59:36,910 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:36.910302"
+}
+2026-01-04 15:59:36,911 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:36.911186"
+}
+2026-01-04 15:59:38,916 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:38.916944"
+}
+2026-01-04 15:59:38,917 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:38.917785"
+}
+2026-01-04 15:59:40,925 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:40.925919"
+}
+2026-01-04 15:59:40,926 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:40.926369"
+}
+2026-01-04 15:59:42,942 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:42.942878"
+}
+2026-01-04 15:59:42,943 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:42.943872"
+}
+2026-01-04 15:59:44,958 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:44.958325"
+}
+2026-01-04 15:59:44,959 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:44.959138"
+}
+2026-01-04 15:59:46,968 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:46.968650"
+}
+2026-01-04 15:59:46,969 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:46.969383"
+}
+2026-01-04 15:59:48,975 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:48.975859"
+}
+2026-01-04 15:59:48,976 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:48.976441"
+}
+2026-01-04 15:59:50,984 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:50.984861"
+}
+2026-01-04 15:59:50,985 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:50.985430"
+}
+2026-01-04 15:59:52,993 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:52.993464"
+}
+2026-01-04 15:59:52,994 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T15:59:52.994280"
+}
+2026-01-04 15:59:55,024 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T15:59:55.024645"
+}
+2026-01-04 15:59:55,025 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2791
+  },
+  "timestamp": "2026-01-04T15:59:55.025369"
+}
+2026-01-04 16:00:07,253 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": {
+    "satisfaction_level": "very_dissatisfied",
+    "feedback_text": ""
+  },
+  "timestamp": "2026-01-04T16:00:07.253154"
+}
+2026-01-04 16:00:07,254 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 155
+  },
+  "timestamp": "2026-01-04T16:00:07.253966"
+}
+2026-01-04 16:00:07,259 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:07.259486"
+}
+2026-01-04 16:00:07,260 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:07.260280"
+}
+2026-01-04 16:00:07,260 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:07.260915"
+}
+2026-01-04 16:00:07,261 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:00:07.261898"
+}
+2026-01-04 16:00:09,267 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:09.267540"
+}
+2026-01-04 16:00:09,268 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:09.268203"
+}
+2026-01-04 16:00:11,276 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:11.276638"
+}
+2026-01-04 16:00:11,277 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:11.277403"
+}
+2026-01-04 16:00:13,286 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:13.286753"
+}
+2026-01-04 16:00:13,287 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:13.287626"
+}
+2026-01-04 16:00:15,327 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:15.327506"
+}
+2026-01-04 16:00:15,328 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:15.328085"
+}
+2026-01-04 16:00:17,346 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:17.346423"
+}
+2026-01-04 16:00:17,347 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:17.347594"
+}
+2026-01-04 16:00:19,363 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:19.363443"
+}
+2026-01-04 16:00:19,364 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:19.364065"
+}
+2026-01-04 16:00:21,381 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:21.381799"
+}
+2026-01-04 16:00:21,382 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:21.382903"
+}
+2026-01-04 16:00:23,393 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:23.393003"
+}
+2026-01-04 16:00:23,393 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:23.393811"
+}
+2026-01-04 16:00:25,401 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:25.401886"
+}
+2026-01-04 16:00:25,403 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:25.403115"
+}
+2026-01-04 16:00:27,413 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:27.413025"
+}
+2026-01-04 16:00:27,413 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2792
+  },
+  "timestamp": "2026-01-04T16:00:27.413621"
+}
+2026-01-04 16:00:29,423 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:29.423456"
+}
+2026-01-04 16:00:29,424 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3766
+  },
+  "timestamp": "2026-01-04T16:00:29.424526"
+}
+2026-01-04 16:00:42,131 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": {
+    "satisfaction_level": "very_dissatisfied",
+    "feedback_text": ""
+  },
+  "timestamp": "2026-01-04T16:00:42.131094"
+}
+2026-01-04 16:00:42,131 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/feedback/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 155
+  },
+  "timestamp": "2026-01-04T16:00:42.131670"
+}
+2026-01-04 16:00:42,136 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:42.136282"
+}
+2026-01-04 16:00:42,136 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:42.136812"
+}
+2026-01-04 16:00:42,137 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:42.137799"
+}
+2026-01-04 16:00:42,138 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:00:42.138139"
+}
+2026-01-04 16:00:44,146 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:44.146213"
+}
+2026-01-04 16:00:44,146 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:44.146890"
+}
+2026-01-04 16:00:46,154 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:46.154884"
+}
+2026-01-04 16:00:46,155 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:46.155612"
+}
+2026-01-04 16:00:48,162 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:48.162752"
+}
+2026-01-04 16:00:48,163 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:48.163336"
+}
+2026-01-04 16:00:50,175 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:50.175926"
+}
+2026-01-04 16:00:50,176 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:50.176601"
+}
+2026-01-04 16:00:52,191 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:52.191839"
+}
+2026-01-04 16:00:52,192 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:52.192467"
+}
+2026-01-04 16:00:54,211 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:54.211172"
+}
+2026-01-04 16:00:54,212 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:54.212033"
+}
+2026-01-04 16:00:56,223 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:56.223423"
+}
+2026-01-04 16:00:56,224 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:56.224137"
+}
+2026-01-04 16:00:58,234 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:00:58.234918"
+}
+2026-01-04 16:00:58,235 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:00:58.235857"
+}
+2026-01-04 16:01:00,248 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:01:00.248863"
+}
+2026-01-04 16:01:00,251 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:01:00.251134"
+}
+2026-01-04 16:01:02,299 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:01:02.299139"
+}
+2026-01-04 16:01:02,300 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:01:02.299960"
+}
+2026-01-04 16:01:04,307 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:01:04.307029"
+}
+2026-01-04 16:01:04,307 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3767
+  },
+  "timestamp": "2026-01-04T16:01:04.307679"
+}
+2026-01-04 16:01:06,328 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:01:06.328168"
+}
+2026-01-04 16:01:06,329 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d - 200
+附加数据: {
+  "endpoint": "/api/career/status/f8b7d436-96a8-4149-9691-499e3e657d8d",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 3361
+  },
+  "timestamp": "2026-01-04T16:01:06.329260"
+}
+2026-01-04 16:06:39,379 - API - INFO - [logger.py:69] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:39.379495"
+}
+2026-01-04 16:06:39,474 - API - INFO - [logger.py:69] - 📤 API响应: / - 200
+附加数据: {
+  "endpoint": "/",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.095s",
+    "content_length": 58249
+  },
+  "timestamp": "2026-01-04T16:06:39.474929"
+}
+2026-01-04 16:06:39,515 - API - INFO - [logger.py:69] - 📥 API请求: GET /bot-avatar.png
+附加数据: {
+  "method": "GET",
+  "endpoint": "/bot-avatar.png",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:39.515496"
+}
+2026-01-04 16:06:39,517 - API - INFO - [logger.py:69] - 📤 API响应: /bot-avatar.png - 304
+附加数据: {
+  "endpoint": "/bot-avatar.png",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 68276
+  },
+  "timestamp": "2026-01-04T16:06:39.517020"
+}
+2026-01-04 16:06:40,003 - API - INFO - [logger.py:69] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:40.003720"
+}
+2026-01-04 16:06:40,005 - API - INFO - [logger.py:69] - 📤 API响应: /favicon.ico - 200
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 58249
+  },
+  "timestamp": "2026-01-04T16:06:40.005368"
+}
+2026-01-04 16:06:43,915 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/start
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/start",
+  "request_data": {
+    "user_profile": {
+      "name": "",
+      "age": 28,
+      "education_level": "本科",
+      "work_experience": 3,
+      "current_position": "软件工程师",
+      "industry": "互联网",
+      "location": "北京",
+      "career_goals": "希望转向 AI 产品经理方向发展",
+      "salary_expectation": "30-50万",
+      "skills": [
+        "Python",
+        "JavaScript",
+        "React",
+        "SQL"
+      ],
+      "interests": [
+        "人工智能",
+        "产品设计",
+        "心理学"
+      ]
+    },
+    "message": "我想进行职业规划，我的目标是：希望转向 AI 产品经理方向发展"
+  },
+  "timestamp": "2026-01-04T16:06:43.915213"
+}
+2026-01-04 16:06:43,916 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/start - 200
+附加数据: {
+  "endpoint": "/api/career/start",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 167
+  },
+  "timestamp": "2026-01-04T16:06:43.916002"
+}
+2026-01-04 16:06:43,922 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:43.922258"
+}
+2026-01-04 16:06:43,922 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:43.922914"
+}
+2026-01-04 16:06:43,924 - API - INFO - [logger.py:69] - 📥 API请求: GET /bot-avatar.png
+附加数据: {
+  "method": "GET",
+  "endpoint": "/bot-avatar.png",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:43.924382"
+}
+2026-01-04 16:06:43,926 - API - INFO - [logger.py:69] - 📤 API响应: /bot-avatar.png - 304
+附加数据: {
+  "endpoint": "/bot-avatar.png",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 68276
+  },
+  "timestamp": "2026-01-04T16:06:43.926269"
+}
+2026-01-04 16:06:43,933 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:43.933420"
+}
+2026-01-04 16:06:43,933 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:06:43.933872"
+}
+2026-01-04 16:06:45,934 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:45.934888"
+}
+2026-01-04 16:06:45,936 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:45.936064"
+}
+2026-01-04 16:06:47,947 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:47.947733"
+}
+2026-01-04 16:06:47,948 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:47.948480"
+}
+2026-01-04 16:06:49,955 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:49.954996"
+}
+2026-01-04 16:06:49,955 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:49.955722"
+}
+2026-01-04 16:06:51,962 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:51.962882"
+}
+2026-01-04 16:06:51,963 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:51.963414"
+}
+2026-01-04 16:06:53,971 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:53.971884"
+}
+2026-01-04 16:06:53,973 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:53.973110"
+}
+2026-01-04 16:06:55,980 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:55.980143"
+}
+2026-01-04 16:06:55,981 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:55.981073"
+}
+2026-01-04 16:06:57,988 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:57.988159"
+}
+2026-01-04 16:06:57,988 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:57.988686"
+}
+2026-01-04 16:06:59,997 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:06:59.997474"
+}
+2026-01-04 16:06:59,998 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:06:59.998537"
+}
+2026-01-04 16:07:02,004 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:02.004934"
+}
+2026-01-04 16:07:02,006 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:07:02.005994"
+}
+2026-01-04 16:07:04,015 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:04.015380"
+}
+2026-01-04 16:07:04,015 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:07:04.015931"
+}
+2026-01-04 16:07:06,026 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:06.026834"
+}
+2026-01-04 16:07:06,027 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:07:06.027450"
+}
+2026-01-04 16:07:08,035 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:08.035158"
+}
+2026-01-04 16:07:08,036 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 502
+  },
+  "timestamp": "2026-01-04T16:07:08.036032"
+}
+2026-01-04 16:07:10,044 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:10.044088"
+}
+2026-01-04 16:07:10,044 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4102
+  },
+  "timestamp": "2026-01-04T16:07:10.044761"
+}
+2026-01-04 16:07:18,943 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": {
+    "satisfaction_level": "very_dissatisfied",
+    "feedback_text": ""
+  },
+  "timestamp": "2026-01-04T16:07:18.942954"
+}
+2026-01-04 16:07:18,943 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 155
+  },
+  "timestamp": "2026-01-04T16:07:18.943950"
+}
+2026-01-04 16:07:18,950 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:18.950490"
+}
+2026-01-04 16:07:18,951 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:18.951157"
+}
+2026-01-04 16:07:18,951 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:18.951776"
+}
+2026-01-04 16:07:18,952 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:07:18.952720"
+}
+2026-01-04 16:07:20,958 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:20.958661"
+}
+2026-01-04 16:07:20,959 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:20.959240"
+}
+2026-01-04 16:07:22,968 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:22.968426"
+}
+2026-01-04 16:07:22,969 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:22.969087"
+}
+2026-01-04 16:07:24,975 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:24.975257"
+}
+2026-01-04 16:07:24,975 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:24.975876"
+}
+2026-01-04 16:07:26,992 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:26.992090"
+}
+2026-01-04 16:07:26,993 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:26.993195"
+}
+2026-01-04 16:07:29,011 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:29.011024"
+}
+2026-01-04 16:07:29,012 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:29.012325"
+}
+2026-01-04 16:07:31,024 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:31.024176"
+}
+2026-01-04 16:07:31,025 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:31.025036"
+}
+2026-01-04 16:07:33,045 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:33.045187"
+}
+2026-01-04 16:07:33,046 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:33.046230"
+}
+2026-01-04 16:07:35,053 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:35.053887"
+}
+2026-01-04 16:07:35,054 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:35.054495"
+}
+2026-01-04 16:07:37,065 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:37.065297"
+}
+2026-01-04 16:07:37,066 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:37.066346"
+}
+2026-01-04 16:07:39,099 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:39.099802"
+}
+2026-01-04 16:07:39,100 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:39.100562"
+}
+2026-01-04 16:07:41,108 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:41.108871"
+}
+2026-01-04 16:07:41,109 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:41.109783"
+}
+2026-01-04 16:07:43,117 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:43.117785"
+}
+2026-01-04 16:07:43,118 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4103
+  },
+  "timestamp": "2026-01-04T16:07:43.118644"
+}
+2026-01-04 16:07:45,125 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:07:45.125823"
+}
+2026-01-04 16:07:45,126 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4826
+  },
+  "timestamp": "2026-01-04T16:07:45.126474"
+}
+2026-01-04 16:08:40,144 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": {
+    "satisfaction_level": "very_dissatisfied",
+    "feedback_text": ""
+  },
+  "timestamp": "2026-01-04T16:08:40.144329"
+}
+2026-01-04 16:08:40,145 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 155
+  },
+  "timestamp": "2026-01-04T16:08:40.145112"
+}
+2026-01-04 16:08:40,150 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:40.150290"
+}
+2026-01-04 16:08:40,151 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:40.150998"
+}
+2026-01-04 16:08:40,152 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:40.152900"
+}
+2026-01-04 16:08:40,153 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:08:40.153809"
+}
+2026-01-04 16:08:42,160 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:42.160416"
+}
+2026-01-04 16:08:42,161 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:42.161644"
+}
+2026-01-04 16:08:44,170 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:44.170551"
+}
+2026-01-04 16:08:44,171 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:44.171034"
+}
+2026-01-04 16:08:46,183 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:46.183413"
+}
+2026-01-04 16:08:46,184 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:46.184264"
+}
+2026-01-04 16:08:48,197 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:48.197839"
+}
+2026-01-04 16:08:48,199 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:48.199716"
+}
+2026-01-04 16:08:50,210 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:50.210602"
+}
+2026-01-04 16:08:50,211 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:50.211710"
+}
+2026-01-04 16:08:52,231 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:52.231397"
+}
+2026-01-04 16:08:52,233 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:52.233596"
+}
+2026-01-04 16:08:54,249 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:54.249886"
+}
+2026-01-04 16:08:54,250 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:54.250478"
+}
+2026-01-04 16:08:56,262 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:56.262671"
+}
+2026-01-04 16:08:56,263 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:56.263450"
+}
+2026-01-04 16:08:58,275 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:08:58.275146"
+}
+2026-01-04 16:08:58,275 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:08:58.275925"
+}
+2026-01-04 16:09:00,295 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:00.295590"
+}
+2026-01-04 16:09:00,296 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:09:00.296229"
+}
+2026-01-04 16:09:02,306 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:02.306066"
+}
+2026-01-04 16:09:02,306 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:09:02.306669"
+}
+2026-01-04 16:09:04,317 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:04.317858"
+}
+2026-01-04 16:09:04,318 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:09:04.318619"
+}
+2026-01-04 16:09:06,351 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:06.351145"
+}
+2026-01-04 16:09:06,351 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 4827
+  },
+  "timestamp": "2026-01-04T16:09:06.351898"
+}
+2026-01-04 16:09:08,366 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:08.366491"
+}
+2026-01-04 16:09:08,367 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2652
+  },
+  "timestamp": "2026-01-04T16:09:08.367180"
+}
+2026-01-04 16:09:58,682 - API - INFO - [logger.py:69] - 📥 API请求: POST /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "POST",
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": {
+    "satisfaction_level": "very_dissatisfied",
+    "feedback_text": ""
+  },
+  "timestamp": "2026-01-04T16:09:58.682239"
+}
+2026-01-04 16:09:58,682 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/feedback/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 155
+  },
+  "timestamp": "2026-01-04T16:09:58.682857"
+}
+2026-01-04 16:09:58,688 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:58.688069"
+}
+2026-01-04 16:09:58,688 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:09:58.688798"
+}
+2026-01-04 16:09:58,690 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/stream
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/stream",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:09:58.690520"
+}
+2026-01-04 16:09:58,691 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/stream - 200
+附加数据: {
+  "endpoint": "/api/career/stream",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": null
+  },
+  "timestamp": "2026-01-04T16:09:58.691105"
+}
+2026-01-04 16:10:00,697 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:00.697297"
+}
+2026-01-04 16:10:00,698 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:00.698666"
+}
+2026-01-04 16:10:02,709 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:02.709276"
+}
+2026-01-04 16:10:02,710 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:02.710246"
+}
+2026-01-04 16:10:04,717 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:04.717085"
+}
+2026-01-04 16:10:04,717 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:04.717804"
+}
+2026-01-04 16:10:07,222 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:07.222024"
+}
+2026-01-04 16:10:07,222 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:07.222714"
+}
+2026-01-04 16:10:10,209 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:10.209373"
+}
+2026-01-04 16:10:10,210 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:10.210202"
+}
+2026-01-04 16:10:13,249 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:13.249803"
+}
+2026-01-04 16:10:13,250 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.000s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:13.250289"
+}
+2026-01-04 16:10:15,263 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:15.263450"
+}
+2026-01-04 16:10:15,264 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 2653
+  },
+  "timestamp": "2026-01-04T16:10:15.264154"
+}
+2026-01-04 16:10:17,279 - API - INFO - [logger.py:69] - 📥 API请求: GET /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60
+附加数据: {
+  "method": "GET",
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "request_data": null,
+  "timestamp": "2026-01-04T16:10:17.279780"
+}
+2026-01-04 16:10:17,281 - API - INFO - [logger.py:69] - 📤 API响应: /api/career/status/daba213f-e976-4e16-9819-d8d19b470c60 - 200
+附加数据: {
+  "endpoint": "/api/career/status/daba213f-e976-4e16-9819-d8d19b470c60",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.001s",
+    "content_length": 10543
+  },
+  "timestamp": "2026-01-04T16:10:17.281324"
+}

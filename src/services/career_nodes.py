@@ -882,6 +882,7 @@ def reporter_node(state: CareerNavigatorState, config: RunnableConfig = None) ->
         try:
             # 使用智能JSON解析
             report = parse_llm_json_content(llm_response["content"])
+            report["iteration_count"] = iteration_count
             if iteration_count > 0:
                 report["iteration_summary"] = f"这是基于您反馈的第{iteration_count}次优化报告"
             print(f"📊 综合报告生成成功 (迭代{iteration_count}): {json.dumps(report, ensure_ascii=False, indent=2)}")
@@ -1007,6 +1008,7 @@ def goal_decomposer_node(state: CareerNavigatorState, config: RunnableConfig = N
     
     # 更新状态，进入日程规划阶段
     updated_state.update(StateUpdater.update_stage(state, WorkflowStage.SCHEDULE_PLANNING))
+    decomposed_goals["iteration_count"] = state.get("iteration_count", 0)
     updated_state["career_goals"] = decomposed_goals
     
     print(f"🔄 状态更新: {json.dumps(updated_state, ensure_ascii=False, indent=2, default=str)}")
@@ -1082,6 +1084,7 @@ def scheduler_node(state: CareerNavigatorState, config: RunnableConfig = None) -
     
     # 更新状态，进入最终确认阶段
     updated_state = StateUpdater.update_stage(state, WorkflowStage.FINAL_CONFIRMATION)
+    final_schedule["iteration_count"] = state.get("iteration_count", 0)
     updated_state["final_career_plan"] = final_schedule  # 使用与interactive_workflow.py一致的键名
     # 再次请求用户输入
     updated_state.update(StateUpdater.set_user_input_required(

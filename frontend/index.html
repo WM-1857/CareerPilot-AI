@@ -821,7 +821,9 @@
                             const report = data.results.integrated_report;
                             const alreadyDisplayed = chatHistory.value.some(m => 
                                 m.type === 'report' && 
-                                (m.content.iteration_count === report.iteration_count || JSON.stringify(m.content) === JSON.stringify(report))
+                                (m.content.iteration_count !== undefined && report.iteration_count !== undefined ? 
+                                 m.content.iteration_count === report.iteration_count : 
+                                 JSON.stringify(m.content) === JSON.stringify(report))
                             );
                             
                             if (!alreadyDisplayed) {
@@ -836,7 +838,10 @@
                         if (data.results.career_goals) {
                             const goals = data.results.career_goals;
                             const alreadyDisplayed = chatHistory.value.some(m => 
-                                m.type === 'goals' && JSON.stringify(m.content) === JSON.stringify(goals)
+                                m.type === 'goals' && 
+                                (m.content.iteration_count !== undefined && goals.iteration_count !== undefined ? 
+                                 m.content.iteration_count === goals.iteration_count : 
+                                 JSON.stringify(m.content) === JSON.stringify(goals))
                             );
                             
                             if (!alreadyDisplayed) {
@@ -847,7 +852,10 @@
                         if (data.results.final_career_plan) {
                             const plan = data.results.final_career_plan;
                             const alreadyDisplayed = chatHistory.value.some(m => 
-                                m.type === 'plan' && JSON.stringify(m.content) === JSON.stringify(plan)
+                                m.type === 'plan' && 
+                                (m.content.iteration_count !== undefined && plan.iteration_count !== undefined ? 
+                                 m.content.iteration_count === plan.iteration_count : 
+                                 JSON.stringify(m.content) === JSON.stringify(plan))
                             );
                             
                             if (!alreadyDisplayed) {
