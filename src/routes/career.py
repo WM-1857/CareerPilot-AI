@@ -6,11 +6,15 @@
 import json
 import queue
 import threading
+import os
+import uuid
+import asyncio
 from flask import Blueprint, request, jsonify, Response, stream_with_context
 from datetime import datetime
 
 from src.models.career_state import UserProfile, UserSatisfactionLevel
 from src.services.career_graph import career_graph
+from mcp_app.paddle_ocr_client import PaddleOCRClient
 
 career_bp = Blueprint('career', __name__)
 
@@ -61,6 +65,78 @@ def stream_career_planning():
             yield f"data: {data}\n\n"
 
     return Response(stream_with_context(generate()), mimetype='text/event-stream')
+
+
+@career_bp.route('/upload-resume', methods=['POST'])
+def upload_resume():
+    """
+    上传简历图片并使用 OCR 提取信息
+    """
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "没有文件上传"}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({"error": "未选择文件"}), 400
+        
+        if file:
+            # 确保上传目录存在
+            # 路径相对于项目根目录
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+            upload_dir = os.path.join(project_root, 'uploads')
+            if not os.path.exists(upload_dir):
+                os.makedirs(upload_dir)
+                
+            # 生成唯一文件名
+            ext = os.path.splitext(file.filename)[1]
+            filename = f"{uuid.uuid4()}{ext}"
+            file_path = os.path.join(upload_dir, filename)
+            file.save(file_path)
+            print(f"文件已保存至: {file_path}")
+            
+            try:
+                # 调用 OCR 客户端
+                print("正在初始化 PaddleOCRClient...")
+                client = PaddleOCRClient()
+                
+                # 运行异步任务处理简历
+                print("正在启动异步任务处理简历...")
+                try:
+                    # 尝试获取当前事件循环
+                    loop = asyncio.get_event_loop()
+                except RuntimeError:
+                    # 如果没有当前循环，创建一个新的
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+                
+                result = loop.run_until_complete(client.process_file(file_path))
+                print(f"简历解析完成，结果长度: {len(str(result))}")
+                
+                # 删除临时文件
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    
+                if not result:
+                    return jsonify({"error": "未能从简历中提取有效信息，请确保图片清晰"}), 422
+                    
+                return jsonify(result)
+            except Exception as e:
+                # 发生错误也尝试删除临时文件
+                if os.path.exists(file_path):
+                    try:
+                        os.remove(file_path)
+                    except:
+                        pass
+                print(f"OCR 处理过程中发生错误: {str(e)}")
+                import traceback
+                traceback.print_exc()
+                return jsonify({"error": f"解析失败: {str(e)}"}), 500
+    except Exception as e:
+        print(f"上传简历接口发生未捕获错误: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": f"服务器内部错误: {str(e)}"}), 500
 
 
 @career_bp.route('/start', methods=['POST'])

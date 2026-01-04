@@ -311,9 +311,18 @@
                 <div class="shape q-shape-right"></div>
                 
                 <div class="max-w-2xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-gray-100 p-8 relative z-10">
-                    <div class="mb-8">
-                        <h2 class="text-2xl font-bold text-gray-900">开启您的职业导航</h2>
-                        <p class="text-gray-500 mt-2">请填写以下信息，帮助 AI 为您量身定制职业规划方案。</p>
+                    <div class="mb-8 flex justify-between items-start">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">开启您的职业导航</h2>
+                            <p class="text-gray-500 mt-2">请填写以下信息，帮助 AI 为您量身定制职业规划方案。</p>
+                        </div>
+                        <div class="flex flex-col items-end gap-2">
+                            <button @click="$refs.fileInput.click()" type="button" :disabled="ocrLoading" class="flex items-center gap-2 text-sm bg-orange-50 text-orange-600 px-4 py-2 rounded-xl hover:bg-orange-100 transition-all border border-orange-100 font-medium disabled:opacity-50 disabled:cursor-not-allowed">
+                                <i class="fas fa-file-upload"></i> 上传简历自动填写
+                            </button>
+                            <input type="file" ref="fileInput" class="hidden" accept="image/*,.pdf" @change="handleFileUpload">
+                            <span v-if="ocrLoading" class="text-[10px] text-orange-500 animate-pulse">正在解析简历...</span>
+                        </div>
                     </div>
                     
                     <form @submit.prevent="startPlanning" class="space-y-6">
@@ -1016,6 +1025,55 @@
                     return icons[node] || 'fas fa-robot';
                 };
 
+                const ocrLoading = ref(false);
+
+                const handleFileUpload = async (event) => {
+                    const file = event.target.files[0];
+                    if (!file) return;
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+
+                    ocrLoading.value = true;
+                    try {
+                        const response = await axios.post('/api/career/upload-resume', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            },
+                            timeout: 180000 // 增加到 180 秒，OCR + LLM 过程可能较慢
+                        });
+
+                        const data = response.data;
+                        if (data) {
+                            // 更新表单
+                            if (data.age) profile.age = data.age;
+                            if (data.education_level) profile.education_level = data.education_level;
+                            if (data.work_experience !== undefined) profile.work_experience = data.work_experience;
+                            if (data.current_position) profile.current_position = data.current_position;
+                            if (data.industry) profile.industry = data.industry;
+                            if (data.location) profile.location = data.location;
+                            if (data.career_goals) profile.career_goals = data.career_goals;
+                            if (data.salary_expectation) profile.salary_expectation = data.salary_expectation;
+                            
+                            if (data.skills && Array.isArray(data.skills)) {
+                                skillsInput.value = data.skills.join(', ');
+                            }
+                            if (data.interests && Array.isArray(data.interests)) {
+                                interestsInput.value = data.interests.join(', ');
+                            }
+                            
+                            alert('简历解析成功，已自动填入表单！');
+                        }
+                    } catch (error) {
+                        console.error('OCR Error:', error);
+                        alert('简历解析失败: ' + (error.response?.data?.error || error.message));
+                    } finally {
+                        ocrLoading.value = false;
+                        // 清空 input 以便下次选择同一文件
+                        event.target.value = '';
+                    }
+                };
+
                 const profile = reactive({
                     name: '',
                     age: 28,
@@ -1290,7 +1348,8 @@
                     activeNodes, getNodeLabel, getNodeIcon, isParallelNode, parallelNodes, hasParallelNodes,
                     handleLogin, formatStreamingContent, savedPlans, savePlan, viewSavedPlan,
                     selectedPlan, closePlanView, deletePlan, isEditing, editablePlan,
-                    startEditing, cancelEditing, saveChanges, maxTasksCount
+                    startEditing, cancelEditing, saveChanges, maxTasksCount,
+                    ocrLoading, handleFileUpload
                 };
             }
         }).mount('#app');

@@ -82,7 +82,7 @@ class DashScopeService:
                 }
                 
                 if body["stream"]:
-                    response = requests.post(url=self.api_url, json=body, headers=headers, stream=True, timeout=60)
+                    response = requests.post(url=self.api_url, json=body, headers=headers, stream=True, timeout=120)
                     if response.status_code == 200:
                         full_content = ""
                         request_id = ""
@@ -166,7 +166,7 @@ class DashScopeService:
                             "status_code": response.status_code
                         }
 
-                response = requests.post(url=self.api_url, json=body, headers=headers, timeout=60)
+                response = requests.post(url=self.api_url, json=body, headers=headers, timeout=120)
                 
                 # 检查响应状态
                 if response.status_code == 200:

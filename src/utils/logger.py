@@ -249,6 +249,32 @@ class StreamToLogger:
     def flush(self):
         pass
 
+    @property
+    def encoding(self):
+        return getattr(sys.__stdout__, 'encoding', 'utf-8')
+
+    @property
+    def errors(self):
+        return getattr(sys.__stdout__, 'errors', 'strict')
+
+    def fileno(self):
+        """返回文件描述符，解决某些库（如 subprocess）调用 fileno() 报错的问题"""
+        try:
+            # 优先尝试从原始流获取
+            if self.log_level == logging.ERROR:
+                if hasattr(sys, '__stderr__') and sys.__stderr__:
+                    return sys.__stderr__.fileno()
+                return 2
+            else:
+                if hasattr(sys, '__stdout__') and sys.__stdout__:
+                    return sys.__stdout__.fileno()
+                return 1
+        except Exception:
+            return 2 if self.log_level == logging.ERROR else 1
+
+    def isatty(self):
+        return False
+
 
 # 全局日志实例
 main_logger = CareerNavigatorLogger("Main")
