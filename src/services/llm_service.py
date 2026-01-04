@@ -486,7 +486,7 @@ class DashScopeService:
     "personal_analysis": "个人分析总结",
     "industry_opportunities": "行业机会分析",
     "career_match": {{
-        "match_score": 0-100,
+        "match_score": "整数类型，取值范围 0-100（例如 95，不要使用小数）",
         "match_reasons": ["匹配原因"],
         "concerns": ["关注点"]
     }},

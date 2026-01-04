@@ -46755,3 +46755,54 @@
   },
   "timestamp": "2026-01-04T22:53:04.056751"
 }
+2026-01-04 23:24:23,458 - API - INFO - [logger.py:69] - 📥 API请求: GET /
+附加数据: {
+  "method": "GET",
+  "endpoint": "/",
+  "request_data": null,
+  "timestamp": "2026-01-04T23:24:23.458423"
+}
+2026-01-04 23:24:23,519 - API - INFO - [logger.py:69] - 📤 API响应: / - 200
+附加数据: {
+  "endpoint": "/",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.062s",
+    "content_length": 86050
+  },
+  "timestamp": "2026-01-04T23:24:23.519995"
+}
+2026-01-04 23:24:23,533 - API - INFO - [logger.py:69] - 📥 API请求: GET /bot-avatar.png
+附加数据: {
+  "method": "GET",
+  "endpoint": "/bot-avatar.png",
+  "request_data": null,
+  "timestamp": "2026-01-04T23:24:23.533154"
+}
+2026-01-04 23:24:23,536 - API - INFO - [logger.py:69] - 📤 API响应: /bot-avatar.png - 304
+附加数据: {
+  "endpoint": "/bot-avatar.png",
+  "status_code": 304,
+  "response_data": {
+    "response_time": "0.003s",
+    "content_length": 68276
+  },
+  "timestamp": "2026-01-04T23:24:23.536092"
+}
+2026-01-04 23:24:23,864 - API - INFO - [logger.py:69] - 📥 API请求: GET /favicon.ico
+附加数据: {
+  "method": "GET",
+  "endpoint": "/favicon.ico",
+  "request_data": null,
+  "timestamp": "2026-01-04T23:24:23.864901"
+}
+2026-01-04 23:24:23,866 - API - INFO - [logger.py:69] - 📤 API响应: /favicon.ico - 200
+附加数据: {
+  "endpoint": "/favicon.ico",
+  "status_code": 200,
+  "response_data": {
+    "response_time": "0.002s",
+    "content_length": 86050
+  },
+  "timestamp": "2026-01-04T23:24:23.866907"
+}
