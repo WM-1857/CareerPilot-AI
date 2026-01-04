@@ -361,7 +361,7 @@ class DashScopeService:
         context = {
             "feedback_adjustments": feedback_adjustments or {}
         }
-        return self.call_llm(prompt, context, stream_callback=stream_callback, max_tokens=3000)
+        return self.call_llm(prompt, context, stream_callback=stream_callback, max_tokens=5000)
 
     def research_industry_trends(self, target_industry: str, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
@@ -403,7 +403,7 @@ class DashScopeService:
 }}
 """
         
-        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=3000)
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=5000)
 
     def analyze_career_opportunities(self, target_career: str, user_profile: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
@@ -453,7 +453,7 @@ class DashScopeService:
 """
         
         context = {"user_profile": user_profile}
-        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=3000)
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=5000)
 
     def generate_integrated_report(self, analysis_results: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
@@ -501,7 +501,7 @@ class DashScopeService:
 }}
 """
         
-        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=4000)
+        return self.call_llm(prompt, stream_callback=stream_callback, max_tokens=5000)
 
     def decompose_career_goals(self, career_direction: str, user_profile: Dict, stream_callback: Optional[callable] = None) -> Dict[str, Any]:
         """
