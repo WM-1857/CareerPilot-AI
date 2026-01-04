@@ -35,7 +35,7 @@ class DashScopeService:
             raise ValueError("请设置SPARK_API_KEY环境变量或提供api_key参数")
         
         # 默认模型配置
-        self.default_model = "Lite"
+        self.default_model = "4.0Ultra"
         self.default_temperature = 0.7
         self.default_max_tokens = 4000  # 增加最大token数，防止截断
     
@@ -582,6 +582,13 @@ class DashScopeService:
 
 用户约束条件如下：
 {json.dumps(user_constraints, ensure_ascii=False, indent=2)}
+请考虑用户的时间约束和实际情况，制定一个为期 8 周的可执行计划。
+
+硬性执行标准：
+
+覆盖周期：weekly_schedule 数组必须精确包含 8 个对象（Week 1 至 Week 8），严禁合并或省略任何一周。
+
+周内多任务制：每周的 tasks 数组必须包含 2到4 个具体的子任务，这些任务应共同支撑该周的 focus_area。
 
 请考虑用户的时间约束和实际情况，制定可执行的计划：
 
